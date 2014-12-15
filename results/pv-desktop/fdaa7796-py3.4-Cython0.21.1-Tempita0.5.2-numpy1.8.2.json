@@ -1,0 +1,30 @@
+{
+    "commit_hash": "fdaa7796bfa4789704d13787de46ff974d6d8c5a", 
+    "date": 1418675607000, 
+    "params": {
+        "Cython": "0.21.1", 
+        "Tempita": "0.5.2", 
+        "arch": "x86_64", 
+        "cpu": "Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz", 
+        "machine": "pv-desktop", 
+        "numpy": "1.8.2", 
+        "os": "Linux Ubuntu", 
+        "python": "3.4", 
+        "ram": "16GB"
+    }, 
+    "profiles": {}, 
+    "python": "3.4", 
+    "requirements": {
+        "Cython": "0.21.1", 
+        "Tempita": "0.5.2", 
+        "numpy": "1.8.2"
+    }, 
+    "results": {
+        "benchmarks.MemSuite.mem_list": 2424, 
+        "benchmarks.TimeSuite.time_iterkeys": 5.87456228e-06, 
+        "benchmarks.TimeSuite.time_keys": 5.616398509999998e-06, 
+        "benchmarks.TimeSuite.time_range": 1.755732903e-05, 
+        "benchmarks.TimeSuite.time_xrange": 1.5760783600000003e-05
+    }, 
+    "version": 1
+}
