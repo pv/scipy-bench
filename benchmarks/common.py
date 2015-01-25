@@ -226,29 +226,36 @@ class Benchmark(with_metaclass(BenchmarkMetaclass, object)):
 
 
 class SimpleTimer(object):
-    def __init__(self, duration=0.5):
+    def __init__(self, duration=0.5, min_iter=1):
         self.start = None
-        self.end = None
+        self.initial = None
         self.duration = duration
         self.numiter = 0
+        self.min_time = 1e99
+        self.min_iter = min_iter
 
     def __iter__(self):
-        self.start = time.clock()
+        self.initial = time.clock()
         return self
 
     def next(self):
-        if time.clock() > self.start + self.duration:
-            if self.numiter > 0:
-                self.end = time.clock()
-                raise StopIteration()
-        self.numiter += 1
+        if self.start is not None:
+            t = time.clock()
+            d = t - self.start
+            if d < self.min_time:
+                self.min_time = d
+            if t > self.initial + self.duration:
+                if self.numiter >= self.min_iter:
+                    raise StopIteration()
+            self.numiter += 1
+        self.start = time.clock()
         return None
 
     __next__ = next
 
     @property
     def timing(self):
-        return (self.end - self.start) / self.numiter
+        return self.min_time
 
 
 def measure(code_str):
