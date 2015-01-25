@@ -182,6 +182,20 @@ class SimpleTimer(object):
         return (self.end - self.start) / self.numiter
 
 
+def measure(code_str):
+    """
+    Return elapsed time for executing code in the namespace of the caller.
+    """
+    frame = sys._getframe(1)
+    locs, globs = frame.f_locals, frame.f_globals
+
+    code = compile(code_str, '<string>', 'exec')
+    t = SimpleTimer()
+    for _ in t:
+        exec(code, globs, locs)
+    return t.timing
+
+
 def run_monitored(code):
     """
     Run code in a new Python process, and monitor peak memory usage.

@@ -14,7 +14,11 @@ record the result)::
 
     asv dev --bench bench_sparse.Arithmetic
 
-Run a benchmark using Scipy ``runtests.py`` (don't record results)::
+You only need to specify the start of the benchmark full name:
+
+    asv dev --bench bench_spatial_ckdtree.Basics.track_sparse_distance_matrix
+
+Run benchmarks using Scipy ``runtests.py`` (don't record results)::
 
     cd ../scipy
     python runtests.py -g --python ../scipy-bench/run.sh dev --bench bench_sparse.Arithmetic
