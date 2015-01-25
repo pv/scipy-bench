@@ -213,3 +213,31 @@ def run_monitored(code):
         raise AssertionError("Running failed:\n%s" % code)
 
     return duration, peak_memusage
+
+
+def get_mem_info():
+    """Get information about available memory"""
+    if not sys.platform.startswith('linux'):
+        raise RuntimeError("Memory information implemented only for Linux")
+
+    info = {}
+    with open('/proc/meminfo', 'r') as f:
+        for line in f:
+            p = line.split()
+            info[p[0].strip(':').lower()] = float(p[1]) * 1e3
+    return info
+
+
+def set_mem_rlimit(max_mem=None):
+    """
+    Set address space rlimit
+    """
+    import resource
+    if max_mem is None:
+        mem_info = get_mem_info()
+        max_mem = int(mem_info['memtotal'] * 0.7)
+    cur_limit = resource.getrlimit(resource.RLIMIT_AS)
+    if cur_limit[0] > 0:
+        max_mem = min(max_mem, cur_limit[0])
+
+    resource.setrlimit(resource.RLIMIT_AS, (max_mem, cur_limit[1]))
