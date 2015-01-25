@@ -82,11 +82,22 @@ follows::
 
             # Loop over arguments. All arguments must be strings that can
             # appear in function names!
-            for arg in ['a', 'b']:
-                    yield time_foo, arg
+            for arg1 in ['a', 'b']:
+                for arg2 in ['a', 'b']:
+                    yield time_foo, arg1, arg2
+
+        # If the test is run via the Numpy/Nose test runner,
+	# print the final result in a different format, grouping
+	# several entries into a fancy ASCII table
+	#
+	# This is a list of the same length as the argument lists yielded
+	# in the generator. Each entry is either 'col' or 'row'.
+	# 'col' entries are grouped together on the same row.
+	gen_bar_group_by = ['row', 'col']
+
 
 The ``gen_`` methods in general should only contain two things:
-(i) the function returned, (ii) for loops over a string list literals.
+(i) the function returned, (ii) for loops over string list literals.
 
 Avoid putting anything that requires much memory into the ``gen_``
 methods.  Rather, put the allocations in the ``setup`` method, or do

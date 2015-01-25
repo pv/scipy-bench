@@ -10,6 +10,8 @@ import textwrap
 import tempfile
 import subprocess
 import inspect
+import collections
+import itertools
 
 from six import with_metaclass
 
@@ -94,7 +96,9 @@ class BenchmarkMetaclass(type):
 
                 # Insert NumpyTest style benchmarks
                 bench_name = "bench_" + name[4:]
-                func = lambda self, basename=basename, names=names: self._do_bench_multi(basename, names)
+                group_by = getattr(cls, 'group_by', {}).get(name)
+                func = lambda self, groupby=group_by, basename=bench_name, names=names: self._do_bench_multi(basename, names,
+                                                                                                             group_by)
                 func.__name__ = bench_name
                 add_to_dict(bench_name, func)
 
@@ -111,15 +115,26 @@ class Benchmark(with_metaclass(BenchmarkMetaclass, object)):
     # benchmark support
     __test__ = True
 
-    def _do_bench_multi(self, basename, names):
+    def _do_bench_multi(self, basename, names, group_by):
         name = self.__class__.__name__ + "." + basename
         sys.stdout.write("\n\n")
         sys.stdout.write(name)
-        sys.stdout.write("\n" + "-"*len(name) + "\n")
-        for name in names:
-            self._do_bench(name)
+        sys.stdout.write("\n" + "="*len(name) + "\n")
 
-    def _do_bench(self, method_name):
+        if group_by is None:
+            for name in names:
+                self._do_bench(name, quiet=False)
+        else:
+            results = []
+            for name in names:
+                info = self.benchmark_info.get(name)
+                result = self._do_bench(name)
+                results.append(info + (result,))
+            sys.stdout.write('\n\n')
+
+            self._print_result_table(sys.stdout, results, group_by)
+
+    def _do_bench(self, method_name, quiet=False):
         from asv.benchmark import TimeBenchmark, MemBenchmark, TrackBenchmark
         if method_name.startswith('time_'):
             bm_type = TimeBenchmark
@@ -145,15 +160,69 @@ class Benchmark(with_metaclass(BenchmarkMetaclass, object)):
         finally:
             benchmark.do_teardown()
 
-        if info:
-            args = [str(x) for x in info]
-            result = " | ".join([str(x).center(15) for x in args] + [str(result).center(15)])
-        else:
-            result = repr(result)
+        if not quiet:
+            if info:
+                args = [str(x) for x in info]
+                text = " | ".join([str(x).center(15) for x in args] + [str(result).center(15)])
+            else:
+                text = repr(result)
 
-        sys.stdout.write(result)
-        sys.stdout.write("\n")
-        sys.stdout.flush()
+            sys.stdout.write(text)
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+
+        return result
+
+
+    def _print_result_table(self, stream, results, group_by):
+        def sort_key(r):
+            k = []
+            for x in r:
+                try:
+                    k.append(float(x))
+                except ValueError:
+                    k.append(x)
+            return k
+
+        def unique(values):
+            value_set = set()
+            result = []
+            for value in values:
+                if value not in value_set:
+                    value_set.add(value)
+                    result.append(value)
+            return result
+
+        results.sort(key=sort_key)
+        possible_values = [unique([r[k] for r in results])
+                           for k in range(len(results[0]) - 1)]
+
+        col_values = [v for status, v in zip(group_by, possible_values)
+                      if status == 'col']
+        row_values = [v for status, v in zip(group_by, possible_values)
+                      if status == 'row']
+
+        stream.write("| ")
+        stream.write(" | ".join(''.center(15) for value in row_values))
+        stream.write("| ")
+        stream.write(" | ".join(", ".join(map(str, values)).center(15)
+                                    for values in itertools.product(*col_values)))
+        last_row_value = ()
+        for r in results:
+            row_value = [value for status, value in zip(group_by, r) 
+                         if status == 'row']
+            if row_value != last_row_value:
+                stream.write("\n")
+                vals = []
+                for status, value in zip(group_by, r):
+                    if status == 'row':
+                        vals.append(str(value).center(15))
+                stream.write("| ")
+                stream.write(" | ".join(vals))
+            stream.write("| %s " % (str(r[-1]).center(15),))
+            last_row_value = row_value
+        stream.write("\n")
+        stream.flush()
 
 
 class SimpleTimer(object):

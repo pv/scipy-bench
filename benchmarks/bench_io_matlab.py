@@ -16,6 +16,11 @@ from scipy.io import savemat, loadmat
 
 
 class MemUsage(Benchmark):
+    group_by = {
+        'gen_loadmat': ['row', 'col'],
+        'gen_savemat': ['row', 'col']
+    }
+
     @classmethod
     def _get_sizes(cls):
         sizes = collections.OrderedDict([
@@ -102,6 +107,11 @@ class MemUsage(Benchmark):
 
 
 class StructArr(Benchmark):
+    group_by = {
+        'gen_loadmat': ['row', 'row', 'row', 'col'],
+        'gen_savemat': ['row', 'row', 'row', 'col']
+    }
+
     @staticmethod
     def make_structarr(n_vars, n_fields, n_structs):
         var_dict = {}
