@@ -1,8 +1,10 @@
-"""general tests and simple benchmarks for the sparse module"""
+"""
+Simple benchmarks for the sparse module
+"""
 from __future__ import division, print_function, absolute_import
 
-import time
 import warnings
+import time
 
 import numpy
 import numpy as np
@@ -100,8 +102,6 @@ class Sort(Benchmark):
                 A.indices[:2] = 2,1
                 A.sort_indices()
             return t.timing
-
-        track.unit = "s"
 
         for name, N, K in matrices:
             yield track, name, N, K
@@ -208,17 +208,12 @@ class Construction(Benchmark):
 
             A = A.tocoo()
 
-            start = time.clock()
-
-            iter = 0
-            while time.clock() < start + 0.5:
+            t = SimpleTimer()
+            for _ in t:
                 T = cls(A.shape)
                 for i,j,v in zip(A.row,A.col,A.data):
                     T[i,j] = v
-                iter += 1
-            end = time.clock()
-            result = (end-start)/float(iter)
-            return result
+            return t.timing
 
         for mat in ['Empty', 'Identity', 'Poisson5pt']:
             for format in ['lil', 'dok']:
@@ -244,14 +239,10 @@ class Conversion(Benchmark):
                 pass
             else:
                 x = fn()  # warmup
-                start = time.clock()
-                iter = 0
-                while time.clock() < start + 0.2:
+                t = SimpleTimer()
+                for _ in t:
                     x = fn()
-                    iter += 1
-                end = time.clock()
-                del x
-                result = (end - start)/float(iter)
+                return t.timing
 
             return result
 
@@ -260,16 +251,13 @@ class Conversion(Benchmark):
                 yield track, fromfmt, tofmt
 
 
-class Getset(object):
+class Getset(Benchmark):
     def setup(self):
         self.A = rand(1000, 1000, density=1e-5)
 
-    def _getset_bench(kernel, formats):
-        blurb = '==========================================================\n'
-        blurb += '      N | s.patt. |' + ''.join(' %7s |' % fmt for fmt in formats) + "\n"
-        blurb += '----------------------------------------------------------\n'
-
-        def track_getset(N, spat, fmt):
+    @classmethod
+    def _getset_bench(cls, kernel_name, kernel, formats):
+        def track(self, N, spat, fmt):
             A = self.A
             N = int(N)
             spat = (spat != 'False')
@@ -314,23 +302,26 @@ class Getset(object):
             result = total_time/float(iter)
             return result
 
-        track_getset.__doc__ = blurb
+        track.__name__ = "track_" + kernel_name
 
         for N in [1, 10, 100, 1000, 10000]:
             for spat in [False, True]:
                 for fmt in formats:
-                    yield track_getset, str(N), str(spat), fmt
+                    yield track, str(N), str(spat), fmt
 
-    def aagen_setitem(self):
+    @classmethod
+    def gen_setitem(cls):
         def kernel(A, i, j, v):
             A[i, j] = v
-        print()
-        print('           Sparse Matrix fancy __setitem__')
-        self._getset_bench(kernel, ['csr', 'csc', 'lil', 'dok'])
 
-    def bench_getitem(self):
+        for v in cls._getset_bench("fancy_setitem", kernel, 
+                                   ['csr', 'csc', 'lil', 'dok']):
+            yield v[0], v[1], v[2], v[3]
+
+    @classmethod
+    def gen_getitem(cls):
         def kernel(A, i, j, v=None):
             A[i, j]
-        print()
-        print('           Sparse Matrix fancy __getitem__')
-        self._getset_bench(kernel, ['csr', 'csc', 'lil'])
+        for v in cls._getset_bench("fancy_getitem", kernel,
+                                   ['csr', 'csc', 'lil']):
+            yield v[0], v[1], v[2], v[3]
