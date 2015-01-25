@@ -14,6 +14,10 @@ import inspect
 from six import with_metaclass
 
 
+ASV_SPECIAL_ATTRIBUTES = ['unit', 'setup', 'timeout', 'goal_time', 'number',
+                          'repeat', 'timer']
+
+
 class BenchmarkMetaclass(type):
     """
     Autogenerate additional methods to a benchmark class:
@@ -67,7 +71,13 @@ class BenchmarkMetaclass(type):
                 basename = ""
                 for r in obj():
                     basename = r[0].__name__
+                    if any(not isinstance(x, str) for x in r[1:]):
+                        raise ValueError("One of the arguments yielded from %s.%s is not a string" % (
+                            cls_name, name))
                     bench_name = basename + "_" + "_".join(x for x in r[1:])
+                    if not re.match(r'^[a-zA-Z0-9_]+$', bench_name):
+                        raise ValueError("Benchmark name %r is not a valid Python function name" % (
+                            bench_name))
                     if not (bench_name.startswith('time_') or
                             bench_name.startswith('track_') or
                             bench_name.startswith('mem_')):
@@ -75,6 +85,9 @@ class BenchmarkMetaclass(type):
                                          "start with time_ OR mem_ OR track_")
                     func = lambda self, f=r[0], a=r[1:]: f(self, *a)
                     func.__name__ = bench_name
+                    for attr in ['__doc__'] + ASV_SPECIAL_ATTRIBUTES:
+                        if hasattr(r[0], attr):
+                            setattr(func, attr, getattr(r[0], attr))
                     add_to_dict(bench_name, func)
                     benchmark_info[bench_name] = r[1:]
                     names.append(bench_name)
