@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-run.py COMMAND
-
+Convenience wrapper around the ``asv`` command; just sets environment
+variables and chdirs to the correct place.
 """
 from __future__ import division, absolute_import, print_function
 

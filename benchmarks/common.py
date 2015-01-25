@@ -1,5 +1,5 @@
 """
-Make Airspeed Velocity benchmarks Numpy benchmark suite compatible
+Airspeed Velocity benchmark utilities
 """
 from __future__ import division, absolute_import, print_function
 
@@ -30,6 +30,8 @@ class BenchmarkMetaclass(type):
     def __init__(cls, cls_name, bases, dct):
         super(BenchmarkMetaclass, cls).__init__(cls_name, bases, dct)
 
+        benchmark_info = {}
+
         def add_to_dict(key, value):
             if hasattr(cls, key):
                 raise ValueError(("Entry %r already exists in benchmark class %r; "
@@ -43,6 +45,13 @@ class BenchmarkMetaclass(type):
                 raise ValueError("%s.%s starts with bench_ or test_, which is not allowed; "
                                  "test should be written to be ASV compatible" % (cls_name, name))
 
+        # NumpyTest compatibility
+        for name, obj in list(dct.items()):
+            if name.startswith('time_') or name.startswith('mem_') or name.startswith('track_'):
+                func = lambda self, name=name: self._do_bench(name)
+                func.__name__ = "bench_" + name
+                add_to_dict(func.__name__, func)
+
         # Generator support
         for name, obj in list(dct.items()):
             if name.startswith('gen_'):
@@ -55,8 +64,10 @@ class BenchmarkMetaclass(type):
 
                 # Insert ASV benchmark routines
                 names = []
+                basename = ""
                 for r in obj():
-                    bench_name = r[0].__name__ + "_" + "_".join(x for x in r[1:])
+                    basename = r[0].__name__
+                    bench_name = basename + "_" + "_".join(x for x in r[1:])
                     if not (bench_name.startswith('time_') or
                             bench_name.startswith('track_') or
                             bench_name.startswith('mem_')):
@@ -65,11 +76,71 @@ class BenchmarkMetaclass(type):
                     func = lambda self, f=r[0], a=r[1:]: f(self, *a)
                     func.__name__ = bench_name
                     add_to_dict(bench_name, func)
+                    benchmark_info[bench_name] = r[1:]
                     names.append(bench_name)
+
+                # Insert NumpyTest style benchmarks
+                bench_name = "bench_" + name[4:]
+                func = lambda self, basename=basename, names=names: self._do_bench_multi(basename, names)
+                func.__name__ = bench_name
+                add_to_dict(bench_name, func)
+
+        # Store some information for pretty-printing results in Numpy
+        # style benchmarks
+        if hasattr(cls, 'benchmark_info'):
+            cls.benchmark_info.update(benchmark_info)
+        else:
+            cls.benchmark_info = benchmark_info
 
 
 class Benchmark(with_metaclass(BenchmarkMetaclass, object)):
-    pass
+    # The methods in this class are **only** needed for NumpyTest
+    # benchmark support
+    __test__ = True
+
+    def _do_bench_multi(self, basename, names):
+        name = self.__class__.__name__ + "." + basename
+        sys.stdout.write("\n\n")
+        sys.stdout.write(name)
+        sys.stdout.write("\n" + "-"*len(name) + "\n")
+        for name in names:
+            self._do_bench(name)
+
+    def _do_bench(self, method_name):
+        from asv.benchmark import TimeBenchmark, MemBenchmark, TrackBenchmark
+        if method_name.startswith('time_'):
+            bm_type = TimeBenchmark
+        elif method_name.startswith('mem_'):
+            bm_type = MemBenchmark
+        elif method_name.startswith('track_'):
+            bm_type = TrackBenchmark
+        else:
+            raise ValueError("Unknown benchmark type prefix in method name %r" % (method_name,))
+
+        info = self.benchmark_info.get(method_name)
+
+        benchmark = bm_type.from_class_method(self.__class__, method_name)
+        benchmark.do_setup()
+        try:
+            result = benchmark.do_run()
+            try:
+                result = float(result)
+            except (ValueError, TypeError):
+                raise ValueError("Benchmark functions should return "
+                                 "a floating point number describing "
+                                 "the result (in seconds or bytes)")
+        finally:
+            benchmark.do_teardown()
+
+        if info:
+            args = [str(x) for x in info]
+            result = " | ".join([str(x).center(15) for x in args] + [str(result).center(15)])
+        else:
+            result = repr(result)
+
+        sys.stdout.write(result)
+        sys.stdout.write("\n")
+        sys.stdout.flush()
 
 
 class SimpleTimer(object):

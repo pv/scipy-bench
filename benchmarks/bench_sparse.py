@@ -5,6 +5,7 @@ from __future__ import division, print_function, absolute_import
 
 import warnings
 import time
+import collections
 
 import numpy
 import numpy as np
@@ -110,7 +111,7 @@ class Sort(Benchmark):
 class Matvec(Benchmark):
     @classmethod
     def _get_matrices(cls):
-        matrices = {}
+        matrices = collections.OrderedDict()
 
         matrices['Identity_dia'] = sparse.eye(10**4,format='dia')
         matrices['Identity_csr'] = sparse.eye(10**4,format='csr')
