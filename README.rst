@@ -35,7 +35,9 @@ The basics in `ASV documentation`_ apply. We structure things here as
 follows::
 
     # benchmarks/bench_<submodule>.py
+    from __future__ import division, absolute_import, print_function
     from .common import Benchmark, run_monitored
+
     from scipy.foo import bar
 
     class SomeFeature(Benchmark):
