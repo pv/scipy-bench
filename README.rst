@@ -14,12 +14,12 @@ record the result)::
 
     asv dev --bench bench_sparse.Arithmetic
 
-Run a benchmark using Scipy ``runtests.py`` (don't record results):
+Run a benchmark using Scipy ``runtests.py`` (don't record results)::
 
     cd ../scipy
     python runtests.py -g --python ../scipy-bench/run.sh dev --bench bench_sparse.Arithmetic
 
-Run benchmarks against various Scipy git versions (record results):
+Run benchmarks against various Scipy git versions (record results)::
 
     asv run --bench bench_sparse.Arithmetic
 
