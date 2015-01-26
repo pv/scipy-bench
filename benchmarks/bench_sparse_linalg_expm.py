@@ -35,22 +35,24 @@ def random_sparse_csc(m, n, nnz_per_row):
 class MultiBenchmark(Benchmark):
     """
     Lazy man's way of splitting multiple test results obtained from a
-    single function to multiple ASV test results.  Stuff has to be
-    stored in the class, since ASV uses one instance per test.
+    single function to multiple ASV test results.
+
+    Note that ASV may run each benchmark in a separate process,
+    so ALL the results must be computed even if only one is returned.
     """
     def run_if_needed(self):
-        if not hasattr(self.__class__, '_results'):
+        if not hasattr(self, '_results'):
             self.run()
 
     def store_result(self, name, value):
-        if name not in self.__class__.result_names:
-            raise ValueError("Result name %r not in __class__.result_names" % (name,))
-        if not hasattr(self.__class__, '_results'):
-            self.__class__._results = {}
+        if name not in self.result_names:
+            raise ValueError("Result name %r not in self.result_names" % (name,))
+        if not hasattr(self, '_results'):
+            self._results = {}
         self._results[name] = value
 
     def get_result(self, name):
-        return self.__class__._results[name]
+        return self._results[name]
 
 
 class ExpmMultiply(MultiBenchmark):

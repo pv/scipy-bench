@@ -55,6 +55,8 @@ class _BenchOptimizers(object):
         """print the current list of results"""
         results = self.average_results()
         results = sorted(results, key=lambda x: (x.nfail, x.mean_time))
+        if not results:
+            return
         print("")
         print("=========================================================")
         print("Optimizer benchmark: %s" % (self.function_name))
@@ -89,12 +91,19 @@ class _BenchOptimizers(object):
             averaged_results[name] = newres
         return averaged_results.values()
 
-    def bench_run(self, x0, **minimizer_kwargs):
+    def bench_run(self, x0, methods=None, **minimizer_kwargs):
         """do an optimization test starting at x0 for all the optimizers"""
         kwargs = self.minimizer_kwargs
 
+        if methods is None:
+            methods = ["COBYLA", 'Powell',
+                       'L-BFGS-B', 'BFGS', 'CG', 'TNC', 'SLSQP',
+                       "Newton-CG", 'dogleg', 'trust-ncg']
+
         fonly_methods = ["COBYLA", 'Powell']
         for method in fonly_methods:
+            if method not in methods:
+                continue
             t0 = time.time()
             res = scipy.optimize.minimize(self.fun, x0, method=method,
                                           **kwargs)
@@ -104,6 +113,8 @@ class _BenchOptimizers(object):
         gradient_methods = ['L-BFGS-B', 'BFGS', 'CG', 'TNC', 'SLSQP']
         if self.der is not None:
             for method in gradient_methods:
+                if method not in methods:
+                    continue
                 t0 = time.time()
                 res = scipy.optimize.minimize(self.fun, x0, method=method,
                                               jac=self.der, **kwargs)
@@ -113,6 +124,8 @@ class _BenchOptimizers(object):
         hessian_methods = ["Newton-CG", 'dogleg', 'trust-ncg']
         if self.hess is not None:
             for method in hessian_methods:
+                if method not in methods:
+                    continue
                 t0 = time.time()
                 res = scipy.optimize.minimize(self.fun, x0, method=method,
                                               jac=self.der, hess=self.hess,
@@ -131,13 +144,15 @@ class BenchSmoothUnbounded(Benchmark):
                     'L-BFGS-B', 'BFGS', 'CG', 'TNC', 'SLSQP',
                     "Newton-CG", 'dogleg', 'trust-ncg']
 
+    group_by = {
+        'gen_all': ['row', 'row', 'col']
+    }
+
     @classmethod
     def gen_all(cls):
         def track(self, func_name, method_name, ret_val):
             method_name = method_name.replace('_', '-')
-            if func_name not in self.__class__.results:
-                getattr(self, 'run_' + func_name)()
-            b = self.__class__.results[func_name]
+            b = getattr(self, 'run_' + func_name)(methods=[method_name])
             results = b.average_results()
             for r in results:
                 if r.name == method_name:
@@ -152,80 +167,80 @@ class BenchSmoothUnbounded(Benchmark):
                 for ret_val in ['nfev', 'time']:
                     yield track, func_name, method_name.replace('-', '_'), ret_val
 
-    def run_rosenbrock(self):
+    def run_rosenbrock(self, methods=None):
         b = _BenchOptimizers("Rosenbrock function",
                              fun=rosen, der=rosen_der, hess=rosen_hess)
         for i in range(10):
-            b.bench_run(np.random.uniform(-3,3,3))
+            b.bench_run(np.random.uniform(-3,3,3), methods=methods)
         b.print_results()
-        self.__class__.results['rosenbrock'] = b
+        return b
 
-    def run_rosenbrock_tight(self):
+    def run_rosenbrock_tight(self, methods=None):
         b = _BenchOptimizers("Rosenbrock function",
                              fun=rosen, der=rosen_der, hess=rosen_hess,
                              tol=1e-8)
         for i in range(10):
-            b.bench_run(np.random.uniform(-3,3,3))
+            b.bench_run(np.random.uniform(-3,3,3), methods=methods)
         b.print_results()
-        self.__class__.results['rosenbrock_tight'] = b
+        return b
 
-    def run_simple_quadratic(self):
+    def run_simple_quadratic(self, methods=None):
         s = funcs.SimpleQuadratic()
         #    print "checking gradient", scipy.optimize.check_grad(s.fun, s.der, np.array([1.1, -2.3]))
         b = _BenchOptimizers("simple quadratic function",
                              fun=s.fun, der=s.der, hess=s.hess)
         for i in range(10):
-            b.bench_run(np.random.uniform(-2,2,3))
+            b.bench_run(np.random.uniform(-2,2,3), methods=methods)
         b.print_results()
-        self.__class__.results['simple_quadratic'] = b
+        return b
 
-    def run_asymmetric_quadratic(self):
+    def run_asymmetric_quadratic(self, methods=None):
         s = funcs.AsymmetricQuadratic()
         #    print "checking gradient", scipy.optimize.check_grad(s.fun, s.der, np.array([1.1, -2.3]))
         b = _BenchOptimizers("function sum(x**2) + x[0]",
                              fun=s.fun, der=s.der, hess=s.hess)
         for i in range(10):
-            b.bench_run(np.random.uniform(-2,2,3))
+            b.bench_run(np.random.uniform(-2,2,3), methods=methods)
         b.print_results()
-        self.__class__.results['asymmetric_quadratic'] = b
+        return b
 
-    def run_sin_1d(self):
+    def run_sin_1d(self, methods=None):
         fun = lambda x: np.sin(x[0])
         der = lambda x: np.array([np.cos(x[0])])
         b = _BenchOptimizers("1d sin function",
                              fun=fun, der=der, hess=None)
         for i in range(10):
-            b.bench_run(np.random.uniform(-2,2,1))
+            b.bench_run(np.random.uniform(-2,2,1), methods=methods)
         b.print_results()
-        self.__class__.results['sin_1d'] = b
+        return b
 
-    def run_booth(self):
+    def run_booth(self, methods=None):
         s = funcs.Booth()
         #    print "checking gradient", scipy.optimize.check_grad(s.fun, s.der, np.array([1.1, -2.3]))
         b = _BenchOptimizers("Booth's function",
                              fun=s.fun, der=s.der, hess=None)
         for i in range(10):
-            b.bench_run(np.random.uniform(0,10,2))
+            b.bench_run(np.random.uniform(0,10,2), methods=methods)
         b.print_results()
-        self.__class__.results['booth'] = b
+        return b
 
-    def run_beale(self):
+    def run_beale(self, methods=None):
         s = funcs.Beale()
         #    print "checking gradient", scipy.optimize.check_grad(s.fun, s.der, np.array([1.1, -2.3]))
         b = _BenchOptimizers("Beale's function",
                              fun=s.fun, der=s.der, hess=None)
         for i in range(10):
-            b.bench_run(np.random.uniform(0,10,2))
+            b.bench_run(np.random.uniform(0,10,2), methods=methods)
         b.print_results()
-        self.__class__.results['beale'] = b
+        return b
 
-    def run_LJ(self):
+    def run_LJ(self, methods=None):
         s = funcs.LJ()
         #    print "checking gradient", scipy.optimize.check_grad(s.get_energy, s.get_gradient, np.random.uniform(-2,2,3*4))
         natoms = 4
         b = _BenchOptimizers("%d atom Lennard Jones potential" % (natoms),
                              fun=s.fun, der=s.der, hess=None)
         for i in range(10):
-            b.bench_run(np.random.uniform(-2,2,natoms*3))
+            b.bench_run(np.random.uniform(-2,2,natoms*3), methods=methods)
         b.print_results()
-        self.__class__.results['LJ'] = b
+        return b
