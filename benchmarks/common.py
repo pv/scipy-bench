@@ -33,8 +33,8 @@ class BenchmarkMetaclass(type):
 
     """
 
-    def __init__(cls, cls_name, bases, dct):
-        super(BenchmarkMetaclass, cls).__init__(cls_name, bases, dct)
+    def __new__(mcls, cls_name, bases, dct):
+        cls = super(BenchmarkMetaclass, mcls).__new__(mcls, cls_name, bases, dct)
 
         benchmark_info = {}
 
@@ -65,8 +65,6 @@ class BenchmarkMetaclass(type):
                 if not inspect.isgeneratorfunction(obj):
                     raise ValueError("%s.%s must be a generator function" % (
                         cls_name, name,))
-
-                del dct[name]
 
                 # Insert ASV benchmark routines
                 names = []
@@ -108,6 +106,8 @@ class BenchmarkMetaclass(type):
             cls.benchmark_info.update(benchmark_info)
         else:
             cls.benchmark_info = benchmark_info
+
+        return cls
 
 
 class Benchmark(with_metaclass(BenchmarkMetaclass, object)):
