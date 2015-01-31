@@ -2,7 +2,7 @@
 Check the speed of the conjugate gradient solver.
 """
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark, measure
+from .common import Benchmark
 
 import time
 
@@ -29,72 +29,38 @@ def _create_sparse_poisson2d(n):
 
 
 class Bench(Benchmark):
-    group_by = {
-        'gen_cg': ['row', 'col'],
-        'gen_spsolve': ['row', 'col'],
-    }
+    params = [
+        [4, 6, 10, 16, 25, 40, 64, 100, 160, 250, 400, 640, 1000, 1600],
+        ['dense', 'sparse']
+    ]
+    param_names = ['(n,n)', 'solver']
+    goal_time = 0.5
 
-    @classmethod
-    def _gen_call(cls, name):
-        def track(self, n, soltype):
-            n = int(n)
-            dense_is_active = (n**2 < 600)
-            sparse_is_active = (n**2 < 20000)
+    def setup_params(self, n, solver):
+        dense_is_active = (n**2 < 600)
+        sparse_is_active = (n**2 < 20000)
 
-            if not dense_is_active and not sparse_is_active:
-                return np.nan
+        if solver == 'dense' and not dense_is_active:
+            raise NotImplementedError()
 
-            b = np.ones(n*n)
-            P_sparse = _create_sparse_poisson2d(n)
-            repeats = 100
+        if solver == 'sparse' and not sparse_is_active:
+            raise NotImplementedError()
 
-            # Optionally use the generic dense solver.
-            if soltype == 'dense':
-                if not dense_is_active:
-                    return np.nan
+        self.b = np.ones(n*n)
+        self.P_sparse = _create_sparse_poisson2d(n)
+        self.P_dense = self.P_sparse.A
 
-                P_dense = P_sparse.A
-                tm_start = time.clock()
-                for i in range(repeats):
-                    x_dense = linalg.solve(P_dense, b)
-                tm_end = time.clock()
-                tm = tm_end - tm_start
-            else:
-                if not sparse_is_active:
-                    return np.nan
+    def time_cg(self, n, solver):
+        if solver == 'dense':
+            linalg.solve(self.P_dense, self.b)
+        else:
+            sparse.linalg.cg(self.P_sparse, self.b)
 
-                # Optionally use the sparse conjugate gradient solver.
-                if name == 'spsolve':
-                    solver = getattr(sparse.linalg, name)
-                    tm_start = time.clock()
-                    for i in range(repeats):
-                        x_sparse = solver(P_sparse, b)
-                    tm_end = time.clock()
-                else:
-                    solver = getattr(sparse.linalg, name)
-                    tm_start = time.clock()
-                    for i in range(repeats):
-                        x_sparse, info = solver(P_sparse, b)
-                    tm_end = time.clock()
-                tm = tm_end - tm_start
-
-            return tm
-
-        track.__name__ = "track_" + name
-
-        for n in 4, 6, 10, 16, 25, 40, 64, 100, 160, 250, 400, 640, 1000, 1600:
-            for soltype in ['dense', 'sparse']:
-                yield track, str(n), soltype
-
-    @classmethod
-    def gen_cg(cls):
-        for func, n, soltype in cls._gen_call("cg"):
-            yield func, n, soltype
-
-    @classmethod
-    def gen_spsolve(cls):
-        for func, n, soltype in cls._gen_call("spsolve"):
-            yield func, n, soltype
+    def time_spsolve(self, n, solver):
+        if solver == 'dense':
+            linalg.solve(self.P_dense, self.b)
+        else:
+            sparse.linalg.cg(self.P_sparse, self.b)
 
 
 if __name__ == '__main__':

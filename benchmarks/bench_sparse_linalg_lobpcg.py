@@ -1,5 +1,5 @@
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark, measure
+from .common import Benchmark
 
 from functools import partial
 
@@ -7,7 +7,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 
 import time
-from scipy import *
+from scipy import array, r_, ones, arange, sort, diag, cos, rand, pi
 from scipy.linalg import eigh, orth, cho_factor, cho_solve
 import scipy.sparse
 from scipy.sparse.linalg import lobpcg
@@ -57,71 +57,51 @@ def _precond(LorU, lower, x):
     return _as2d(y)
 
 
-class Bench(Benchmark):
-    group_by = {
-        'gen_mikota': ['row', 'col'],
-        'gen_sakurai': ['row', 'col']
-    }
+class Bench(object):
+    params = [
+        [],
+        ['lobpcg', 'eigh']
+    ]
+    param_names = ['n', 'solver']
+    goal_time = 0.5
 
-    @classmethod
-    def gen_mikota(cls):
-        def track_mikota(self, n, soltype):
-            n = int(n)
-            m = 10
-            shape = (n, n)
-            A, B = _mikota_pair(n)
-            desired_evs = np.square(np.arange(1, m+1))
+    def __init__(self):
+        self.time_mikota.__func__.params = list(self.params)
+        self.time_mikota.__func__.params[0] = [128, 256, 512, 1024, 2048]
+        self.time_mikota.__func__.setup_params = self.setup_params_mikota
 
-            if soltype == 'lobpcg':
-                tt = time.clock()
-                X = rand(n, m)
-                X = orth(X)
-                LorU, lower = cho_factor(A, lower=0, overwrite_a=0)
-                M = LinearOperator(shape,
-                        matvec=partial(_precond, LorU, lower),
-                        matmat=partial(_precond, LorU, lower))
-                eigs, vecs = lobpcg(A, X, B, M, tol=1e-4, maxiter=40)
-                eigs = sorted(eigs)
-                elapsed = time.clock() - tt
-                assert_allclose(eigs, desired_evs)
-            else:
-                tt = time.clock()
-                w = eigh(A, B, eigvals_only=True, eigvals=(0, m-1))
-                elapsed = time.clock() - tt
-                assert_allclose(w, desired_evs)
-            return elapsed
+        self.time_sakurai.__func__.params = list(self.params)
+        self.time_sakurai.__func__.params[0] = [50, 400, 2400]
+        self.time_sakurai.__func__.setup_params = self.setup_params_sakurai
 
-        for n in 128, 256, 512, 1024, 2048:
-            for soltype in ['lobpcg', 'eigh']:
-                yield track_mikota, str(n), soltype
+    def setup_params_mikota(self, n, solver):
+        self.shape = (n, n)
+        self.A, self.B = _mikota_pair(n)
 
-    @classmethod
-    def gen_sakurai(cls):
-        def track_sakurai(self, n, soltype):
-            n = int(n)
-            m = 3
+    def setup_params_sakurai(self, n, solver):
+        self.shape = (n, n)
+        self.A, self.B, all_eigenvalues = _sakurai(n)
+        self.A_dense = self.A.A
+        self.B_dense = self.B.A
 
-            shape = (n, n)
-            A, B, all_eigenvalues = _sakurai(n)
-            desired_evs = all_eigenvalues[:m]
+    def time_mikota(self, n, solver):
+        m = 10
+        if solver == 'lobpcg':
+            X = rand(n, m)
+            X = orth(X)
+            LorU, lower = cho_factor(self.A, lower=0, overwrite_a=0)
+            M = LinearOperator(self.shape,
+                    matvec=partial(_precond, LorU, lower),
+                    matmat=partial(_precond, LorU, lower))
+            eigs, vecs = lobpcg(self.A, X, self.B, M, tol=1e-4, maxiter=40)
+        else:
+            w = eigh(self.A, self.B, eigvals_only=True, eigvals=(0, m-1))
 
-            if soltype == 'lobpcg':
-                tt = time.clock()
-                X = rand(n, m)
-                eigs, vecs, resnh = lobpcg(A, X, B, tol=1e-6, maxiter=500,
-                        retResidualNormsHistory=1)
-                w_lobpcg = sorted(eigs)
-                elapsed = time.clock() - tt
-                assert_allclose(w_lobpcg, desired_evs, 1e-7, 1e-5)
-            else:
-                tt = time.clock()
-                A_dense = A.A
-                B_dense = B.A
-                w_eigh = eigh(A_dense, B_dense, eigvals_only=True, eigvals=(0, m-1))
-                elapsed = time.clock() - tt
-                assert_allclose(w_eigh, desired_evs, 1e-7, 1e-5)
-            return elapsed
-
-        for n in 50, 400, 2400:
-            for soltype in ['lobpcg', 'eigh']:
-                yield track_sakurai, str(n), soltype
+    def time_sakurai(self, n, solver):
+        m = 3
+        if solver == 'lobpcg':
+            X = rand(n, m)
+            eigs, vecs, resnh = lobpcg(self.A, X, self.B, tol=1e-6, maxiter=500,
+                    retResidualNormsHistory=1)
+        else:
+            w_eigh = eigh(self.A_dense, self.B_dense, eigvals_only=True, eigvals=(0, m-1))

@@ -1,5 +1,5 @@
 from __future__ import division, print_function, absolute_import
-from .common import Benchmark, measure
+from .common import Benchmark
 
 from math import sqrt
 
@@ -9,23 +9,20 @@ from scipy.optimize._tstutils import (methods, mstrings, functions,
 
 
 class Zeros(Benchmark):
-    group_by = {
-        'gen_all': ['row', 'col'],
-    }
+    params = [
+        fstrings,
+        mstrings
+    ]
+    param_names = ['test function', 'solver']
+    goal_time = 0.5
 
-    @classmethod
-    def gen_all(self):
-        a = .5
-        b = sqrt(3)
+    def setup_params(self, func, meth):
+        self.a = .5
+        self.b = sqrt(3)
         repeat = 2000
 
-        def time(self, func_str, meth_str):
-            func = functions[fstrings.index(func_str.replace('_','.'))]
-            meth = methods[mstrings.index(meth_str.replace('_','.'))]
-            meth(func, a, b)
+        self.func = functions[fstrings.index(func)]
+        self.meth = methods[mstrings.index(meth)]
 
-        time.goal_time = 0.5
-
-        for func_str in fstrings:
-            for meth_str in mstrings:
-                yield time, func_str.replace('.','_'), meth_str.replace('.','_')
+    def time_zeros(self, func, meth):
+        self.meth(self.func, self.a, self.b)

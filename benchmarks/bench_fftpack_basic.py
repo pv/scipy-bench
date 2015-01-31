@@ -1,7 +1,7 @@
 """ Test functions for fftpack.basic module
 """
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark, measure
+from .common import Benchmark
 
 import sys
 from scipy.fftpack import ifft, fft, fftn, irfft, rfft
@@ -39,82 +39,76 @@ def direct_idft(x):
 
 
 class Fft(Benchmark):
-    group_by = {
-        'gen_fft': ['row', 'row', 'col', 'col']
-    }
+    params = [
+        [100, 256, 512, 1000,  1024, 2048, 2048*2, 2048*4],
+        ['real', 'cmplx'],
+        ['scipy', 'numpy']
+    ]
+    param_names = ['size', 'type', 'module']
+    goal_time = 0.5
 
-    @classmethod
-    def gen_fft(cls):
-        def track_random(self, func, size, cmplx, numpy_str):
-            from numpy.fft import fft as numpy_fft
-            from numpy.fft import ifft as numpy_ifft
-            from numpy.fft import rfft as numpy_rfft
-            from numpy.fft import irfft as numpy_irfft
+    def setup_params(self, size, cmplx, module):
+        if cmplx == 'cmplx':
+            self.x = random([size]).astype(cdouble)+random([size]).astype(cdouble)*1j
+        else:
+            self.x = random([size]).astype(double)
 
-            size = int(size)
+    def time_fft(self, size, cmplx, module):
+        if module == 'numpy':
+            numpy.fft.fft(self.x)
+        else:
+            fft(self.x)
 
-            if cmplx == 'cmplx':
-                x = random([size]).astype(cdouble)+random([size]).astype(cdouble)*1j
-            else:
-                x = random([size]).astype(double)
+    def time_ifft(self, size, cmplx, module):
+        if module == 'numpy':
+            numpy.fft.ifft(self.x)
+        else:
+            ifft(self.x)
 
-            if size > 500:
-                y = fft(x)
-            else:
-                y = direct_dft(x)
-            assert_array_almost_equal(fft(x),y)
-            if numpy_str == 'numpy':
-                return measure('numpy_' + func + '(x)')
-            else:
-                return measure(func + '(x)')
 
-        track_random.unit = "s"
+class RFft(Benchmark):
+    params = [
+        [100, 256, 512, 1000,  1024, 2048, 2048*2, 2048*4],
+        ['scipy', 'numpy']
+    ]
+    param_names = ['size', 'module']
+    goal_time = 0.5
 
-        for func in ['fft', 'ifft', 'rfft', 'irfft']:
-            for size,repeat in [(100,7000),(1000,2000),
-                                (256,10000),
-                                (512,10000),
-                                (1024,1000),
-                                (2048,1000),
-                                (2048*2,500),
-                                (2048*4,500),
-                                ]:
-                for cmplx in ['real', 'cmplx']:
-                    if func in ('rfft', 'irfft') and cmplx != 'real':
-                        continue
-                    for numpy_str in ['scipy', 'numpy']:
-                        yield track_random, func, str(size), cmplx, numpy_str
+    def setup_params(self, size, module):
+        self.x = random([size]).astype(double)
+
+    def time_rfft(self, size, module):
+        if module == 'numpy':
+            numpy.fft.rfft(self.x)
+        else:
+            rfft(self.x)
+
+    def time_irfft(self, size, module):
+        if module == 'numpy':
+            numpy.fft.irfft(self.x)
+        else:
+            irfft(self.x)
 
 
 class Fftn(Benchmark):
-    group_by = {
-        'gen_random': ['row', 'col', 'col']
-    }
+    params = [
+        ["100x100", "1000x100", "256x256", "512x512"],
+        ['real', 'cmplx'],
+        ['scipy', 'numpy']
+    ]
+    param_names = ['size', 'type', 'module']
+    goal_time = 0.5
 
-    @classmethod
-    def gen_random(self):
-        def track_random(self, size, cmplx, numpy_str):
-            from numpy.fft import fftn as numpy_fftn
+    def setup_params(self, size, cmplx, module):
+        size = map(int, size.split("x"))
 
-            size = map(int, size.split("x"))
+        if cmplx != 'cmplx':
+            self.x = random(size).astype(double)
+        else:
+            self.x = random(size).astype(cdouble)+random(size).astype(cdouble)*1j
 
-            if cmplx != 'cmplx':
-                x = random(size).astype(double)
-            else:
-                x = random(size).astype(cdouble)+random(size).astype(cdouble)*1j
-
-            func = 'fftn'
-            if numpy_str == 'numpy':
-                return measure('numpy_' + func + '(x)')
-            else:
-                return measure(func + '(x)')
-
-        track_random.unit = "s"
-
-        for size,repeat in [("100x100",100),("1000x100",7),
-                            ("256x256",10),
-                            ("512x512",3),
-                            ]:
-                for cmplx in ['real', 'cmplx']:
-                    for numpy_str in ['scipy', 'numpy']:
-                        yield track_random, str(size), cmplx, numpy_str
+    def time_fftn(self, size, cmplx, module):
+        if module == 'numpy':
+            numpy.fft.fftn(self.x)
+        else:
+            fftn(self.x)

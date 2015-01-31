@@ -1,5 +1,5 @@
 from __future__ import division, print_function, absolute_import
-from .common import Benchmark, measure
+from .common import Benchmark
 
 import time
 from collections import defaultdict
@@ -136,36 +136,44 @@ class _BenchOptimizers(object):
 
 class BenchSmoothUnbounded(Benchmark):
     """Benchmark the optimizers with smooth, unbounded, functions"""
-    results = {}
-    func_names = ['rosenbrock', 'rosenbrock_tight',
-                    'simple_quadratic', 'asymmetric_quadratic',
-                    'sin_1d', 'booth', 'beale', 'LJ']
-    method_names = ["COBYLA", 'Powell',
-                    'L-BFGS-B', 'BFGS', 'CG', 'TNC', 'SLSQP',
-                    "Newton-CG", 'dogleg', 'trust-ncg']
+    params = [
+        ['rosenbrock', 'rosenbrock_tight',
+         'simple_quadratic', 'asymmetric_quadratic',
+         'sin_1d', 'booth', 'beale', 'LJ'],
+        ["COBYLA", 'Powell',
+         'L-BFGS-B', 'BFGS', 'CG', 'TNC', 'SLSQP',
+         "Newton-CG", 'dogleg', 'trust-ncg'],
+        ["mean_nfev", "mean_time"]
+    ]
+    param_names = ["test function", "solver", "result type"]
+    timeout = 120
 
-    group_by = {
-        'gen_all': ['row', 'row', 'col']
-    }
+    def setup(self):
+        self.cache = {}
 
-    @classmethod
-    def gen_all(cls):
-        def track(self, func_name, method_name, ret_val):
-            method_name = method_name.replace('_', '-')
-            b = getattr(self, 'run_' + func_name)(methods=[method_name])
-            results = b.average_results()
-            for r in results:
-                if r.name == method_name:
-                    if ret_val == 'time':
-                        return r.mean_time
-                    elif ret_val == 'nfev':
-                        return r.mean_nfev
-            return np.nan
+    def run_cached(self, func_name):
+        key = func_name
+        if key in self.cache:
+            return self.cache[key]
 
-        for func_name in cls.func_names:
-            for method_name in cls.method_names:
-                for ret_val in ['nfev', 'time']:
-                    yield track, func_name, method_name.replace('-', '_'), ret_val
+        b = getattr(self, 'run_' + func_name)()
+        results = b.average_results()
+        self.cache[key] = results
+        return results
+
+    def setup_params(self, func_name, method_name, ret_val):
+        results = self.run_cached(func_name)
+        result = None
+        for r in results:
+            if r.name == method_name:
+                result = getattr(r, ret_val)
+                break
+        if result is None:
+            raise NotImplementedError()
+        self.result = result
+
+    def track_all(self, func_name, method_name, ret_val):
+        return self.result
 
     def run_rosenbrock(self, methods=None):
         b = _BenchOptimizers("Rosenbrock function",

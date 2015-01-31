@@ -1,195 +1,144 @@
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark, measure
+from .common import Benchmark
 
 import sys
 from scipy.spatial import cKDTree, KDTree
 import numpy as np
 
 
-class Basics(Benchmark):
-    @classmethod
-    def gen_build(cls):
-        def track_build(self, m, n, cls):
-            """
-              Constructing kd-tree
-            =======================
-             dim | # points |  time
-            """
-            cls = KDTree if cls == 'KDTree' else cKDTree
-            m = int(m)
-            n = int(n)
+class Build(Benchmark):
+    params = [
+        [(3,10000,1000), (8,10000,1000), (16,10000,1000)],
+        ['KDTree', 'cKDTree'],
+    ]
+    param_names = ['(m, n, r)', 'class']
+    goal_time = 0.5
 
-            data = np.concatenate((np.random.randn(n//2,m),
-                                   np.random.randn(n-n//2,m)+np.ones(m)))
+    def setup_params(self, mnr, cls_name):
+        self.cls = KDTree if cls_name == 'KDTree' else cKDTree
+        m, n, r = mnr
 
-            return measure('cls(data)')
+        np.random.seed(1234)
+        self.data = np.concatenate((np.random.randn(n//2,m),
+                                    np.random.randn(n-n//2,m)+np.ones(m)))
 
-        track_build.unit = "s"
+        self.queries = np.concatenate((np.random.randn(r//2,m),
+                                       np.random.randn(r-r//2,m)+np.ones(m)))
 
-        for (m, n, r) in [(3,10000,1000),
-                          (8,10000,1000),
-                          (16,10000,1000)]:
-            for cls in ('KDTree', 'cKDTree'):
-                yield track_build, str(m), str(n), cls
+    def setup_params_full(self, mnr, cls_name):
+        m, n, r = mnr
+        self.setup_params_build(mnr, cls_name)
 
-    @classmethod
-    def gen_query(cls):
-        def track_query(self, m, n, r, cls_str):
-            """
-            Querying kd-tree
-            dim | # points | # queries |  KDTree  | cKDTree | flat cKDTree
-            """
-            cls = KDTree if cls_str == 'KDTree' else cKDTree
-            m = int(m)
-            n = int(n)
-            r = int(r)
+        if cls_name == 'cKDTree_flat':
+            self.T = self.cls(self.data, leafsize=n)
+        else:
+            self.T = self.cls(self.data)
 
-            data = np.concatenate((np.random.randn(n//2,m),
-                                   np.random.randn(n-n//2,m)+np.ones(m)))
-            queries = np.concatenate((np.random.randn(r//2,m),
-                                      np.random.randn(r-r//2,m)+np.ones(m)))
-
-            if cls_str == 'cKDTree_flat':
-                T = cls(data, leafsize=n)
-            else:
-                T = cls(data)
-
-            return measure('T.query(queries)')
-
-        track_query.unit = "s"
-
-        for (m, n, r) in [(3,10000,1000),
-                          (8,10000,1000),
-                          (16,10000,1000)]:
-            for cls in ('KDTree', 'cKDTree', 'cKDTree_flat'):
-                yield track_query, str(m), str(n), str(r), cls
+    def time_build(self, mnr, cls_name):
+        """
+        Constructing kd-tree
+        =======================
+        dim | # points |  time
+        """
+        m, n, r = mnr
+        if cls_name == 'cKDTree_flat':
+            self.T = self.cls(self.data, leafsize=n)
+        else:
+            self.cls(self.data)
 
 
-    @classmethod
-    def gen_query_ball_point(cls):
-        def track_query_ball_point(self, m, n, r, probe_radius, cls_str):
-            """
-            Query ball point kd-tree
-            dim | # points | # queries | probe radius |  KDTree  | cKDTree | flat cKDTree
-            """
-            cls = KDTree if cls_str == 'KDTree' else cKDTree
-            m = int(m)
-            n = int(n)
-            r = int(r)
-            probe_radius = float(probe_radius.replace('p', '.'))
+class Query(Benchmark):
+    params = [
+        [(3,10000,1000), (8,10000,1000), (16,10000,1000)],
+        ['KDTree', 'cKDTree', 'cKDTree_flat'],
+    ]
+    param_names = ['(m, n, r)', 'class']
+    goal_time = 0.5
 
-            data = np.concatenate((np.random.randn(n//2,m),
-                                   np.random.randn(n-n//2,m)+np.ones(m)))
-            queries = np.concatenate((np.random.randn(r//2,m),
-                                      np.random.randn(r-r//2,m)+np.ones(m)))
+    @staticmethod
+    def do_setup_params(self, mnr, cls_name):
+        self.cls = KDTree if cls_name == 'KDTree' else cKDTree
+        m, n, r = mnr
 
-            if cls_str == 'cKDTree_flat':
-                T = cls(data, leafsize=n)
-            else:
-                T = cls(data)
+        np.random.seed(1234)
+        self.data = np.concatenate((np.random.randn(n//2,m),
+                                    np.random.randn(n-n//2,m)+np.ones(m)))
 
-            return measure('T.query_ball_point(queries, probe_radius)')
+        self.queries = np.concatenate((np.random.randn(r//2,m),
+                                       np.random.randn(r-r//2,m)+np.ones(m)))
 
-        track_query_ball_point.unit = "s"
+        if cls_name == 'cKDTree_flat':
+            self.T = self.cls(self.data, leafsize=n)
+        else:
+            self.T = self.cls(self.data)
 
-        for (m, n, r, repeat) in [(3,10000,1000,3)]:
-            for probe_radius in ('0p2', '0p5'):
-                for cls in ('KDTree', 'cKDTree', 'cKDTree_flat'):
-                    yield track_query_ball_point, str(m), str(n), str(r), probe_radius, cls
+    def setup_params(self, mnr, cls_name):
+        Query.do_setup_params(self, mnr, cls_name)
+
+    def time_query(self, mnr, cls_name):
+        """
+        Querying kd-tree
+        dim | # points | # queries |  KDTree  | cKDTree | flat cKDTree
+        """
+        self.T.query(self.queries)
 
 
-    @classmethod
-    def gen_query_pairs(cls):
-        def track_query_pairs(self, m, n, probe_radius, cls_str):
-            """
-            Query pairs kd-tree
-            dim | # points | probe radius |  KDTree  | cKDTree | flat cKDTree
-            """
-            cls = KDTree if cls_str == 'KDTree' else cKDTree
-            m = int(m)
-            n = int(n)
-            probe_radius = float(probe_radius.replace('p', '.'))
+class Radius(Benchmark):
+    params = [
+        [(3,10000,1000)],
+        [0.2, 0.5],
+        ['KDTree', 'cKDTree', 'cKDTree_flat'],
+    ]
+    param_names = ['(m, n, r)', 'probe radius', 'class']
+    goal_time = 0.5
 
-            data = np.concatenate((np.random.randn(n//2,m),
-                                   np.random.randn(n-n//2,m)+np.ones(m)))
+    def __init__(self):
+        self.time_query_pairs.__func__.params = list(self.params)
+        self.time_query_pairs.__func__.params[0] = [(3,1000,30),
+                                                    (8,1000,30),
+                                                    (16,1000,30)]
 
-            if cls_str == 'cKDTree_flat':
-                T = cls(data, leafsize=n)
-            else:
-                T = cls(data)
+    def setup_params(self, mnr, probe_radius, cls_name):
+        Query.do_setup_params(self, mnr, cls_name)
 
-            return measure('T.query_pairs(probe_radius)')
+    def time_query_ball_point(self, mnr, probe_radius, cls_name):
+        self.T.query_ball_point(self.queries, probe_radius)
 
-        for (m, n, repeat) in [(3,1000,30),
-                               (8,1000,30),
-                               (16,1000,30)]:
-            for probe_radius in ("0p2", "0p5"):
-                for cls in ('KDTree', 'cKDTree', 'cKDTree_flat'):
-                    yield track_query_pairs, str(m), str(n), probe_radius, cls
+    def time_query_pairs(self, mnr, probe_radius, cls_name):
+        self.T.query_pairs(probe_radius)
 
-    @classmethod
-    def gen_sparse_distance_matrix(self):
-        def track_sparse_distance_matrix(self, m, n1, n2, probe_radius, cls_str):
-            """
-            Sparse distance matrix kd-tree
-            dim | # points T1 | # points T2 | probe radius |  KDTree  | cKDTree
-            """
-            cls = KDTree if cls_str == 'KDTree' else cKDTree
-            m = int(m)
-            n1 = int(n1)
-            n2 = int(n2)
-            probe_radius = float(probe_radius.replace('p', '.'))
 
-            data1 = np.concatenate((np.random.randn(n1//2,m),
-                                    np.random.randn(n1-n1//2,m)+np.ones(m)))
-            data2 = np.concatenate((np.random.randn(n2//2,m),
-                                    np.random.randn(n2-n2//2,m)+np.ones(m)))
+class Neighbors(Benchmark):
+    params = [
+        [(3,1000,1000),
+         (8,1000,1000),
+         (16,1000,1000)],
+        [0.2, 0.5],
+        ['KDTree', 'cKDTree'],
+    ]
+    param_names = ['(m, n1, n2)', 'probe radius', 'class']
+    goal_time = 0.5
+    timeout = 120
 
-            T1 = cls(data1)
-            T2 = cls(data2)
+    def setup_params(self, mn1n2, probe_radius, cls_str):
+        m, n1, n2 = mn1n2
 
-            return measure('T1.sparse_distance_matrix(T2, probe_radius)')
+        cls = KDTree if cls_str == 'KDTree' else cKDTree
 
-        track_sparse_distance_matrix.unit = "s"
+        data1 = np.concatenate((np.random.randn(n1//2,m),
+                                np.random.randn(n1-n1//2,m)+np.ones(m)))
+        data2 = np.concatenate((np.random.randn(n2//2,m),
+                                np.random.randn(n2-n2//2,m)+np.ones(m)))
 
-        for (m, n1, n2, repeat) in [(3,1000,1000,30),
-                                    (8,1000,1000,30),
-                                    (16,1000,1000,30)]:
-            for probe_radius in ("0p2", "0p5"):
-                for cls in ('KDTree', 'cKDTree'):
-                    yield track_sparse_distance_matrix, str(m), str(n1), str(n2), probe_radius, cls
+        self.T1 = cls(data1)
+        self.T2 = cls(data2)
 
-    @classmethod
-    def gen_count_neighbors(self):
-        def track_count_neighbors(self, m, n1, n2, probe_radius, cls_str):
-            """
-            Count neighbors kd-tree
-            dim | # points T1 | # points T2 | probe radius |  KDTree  | cKDTree
-            """
+    def time_sparse_distance_matrix(self, mn1n2, probe_radius, cls_str):
+        self.T1.sparse_distance_matrix(self.T2, probe_radius)
 
-            cls = KDTree if cls_str == 'KDTree' else cKDTree
-            m = int(m)
-            n1 = int(n1)
-            n2 = int(n2)
-            probe_radius = float(probe_radius.replace('p', '.'))
-
-            data1 = np.concatenate((np.random.randn(n1//2,m),
-                                    np.random.randn(n1-n1//2,m)+np.ones(m)))
-            data2 = np.concatenate((np.random.randn(n2//2,m),
-                                    np.random.randn(n2-n2//2,m)+np.ones(m)))
-
-            T1 = KDTree(data1)
-            T2 = KDTree(data2)
-            cT1 = cKDTree(data1)
-            cT2 = cKDTree(data2)
-
-            return measure('T1.count_neighbors(T2, probe_radius)')
-
-        track_count_neighbors.unit = "s"
-
-        for (m, n1, n2, repeat) in [(3,1000,1000,30),
-                                    (8,1000,1000,30),
-                                    (16,1000,1000,30)]:
-            for probe_radius in ("0p2", "0p5"):
-                for cls in ('KDTree', 'cKDTree'):
-                    yield track_count_neighbors, str(m), str(n1), str(n2), probe_radius, cls
+    def time_count_neighbors(self, mn1n2, probe_radius, cls_str):
+        """
+        Count neighbors kd-tree
+        dim | # points T1 | # points T2 | probe radius |  KDTree  | cKDTree
+        """
+        self.T1.count_neighbors(self.T2, probe_radius)

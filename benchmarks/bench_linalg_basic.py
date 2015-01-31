@@ -1,5 +1,5 @@
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark, measure
+from .common import Benchmark
 
 import sys
 import numpy.linalg as nl
@@ -14,60 +14,54 @@ def random(size):
 
 
 class Bench(Benchmark):
-    group_by = {
-        'gen_solve': ['row', 'col', 'col'],
-        'gen_inv': ['row', 'col', 'col'],
-        'gen_det': ['row', 'col', 'col'],
-    }
+    params = [
+        [20, 100, 500, 1000],
+        ['contig', 'nocont'],
+        ['numpy', 'scipy']
+    ]
+    param_names = ['size', 'contiguous', 'module']
+    goal_time = 0.5
 
-    @classmethod
-    def _gen_generic(cls, name, call):
-        def track(self, size, contig, numpy_str):
-            numpy_f = getattr(nl, name)
-            scipy_f = getattr(sl, name)
-            size = int(size)
+    def setup_params(self, size, contig, module):
+        a = random([size,size])
+        # larger diagonal ensures non-singularity:
+        for i in range(size):
+            a[i,i] = 10*(.1+a[i,i])
+        b = random([size])
 
-            a = random([size,size])
-            # larger diagonal ensures non-singularity:
-            for i in range(size):
-                a[i,i] = 10*(.1+a[i,i])
-            b = random([size])
+        if contig != 'contig':
+            a = a[-1::-1,-1::-1]  # turn into a non-contiguous array
+            assert_(not a.flags['CONTIGUOUS'])
 
-            if contig != 'contig':
-                a = a[-1::-1,-1::-1]  # turn into a non-contiguous array
-                assert_(not a.flags['CONTIGUOUS'])
+        self.a = a
+        self.b = b
 
-            return measure(numpy_str + "_" + call)
+    def time_solve(self, size, contig, module):
+        if module == 'numpy':
+            nl.solve(self.a, self.b)
+        else:
+            sl.solve(self.a, self.b)
 
-        track.__name__ = "track_" + name
-        track.unit = "s"
+    def time_inv(self, size, contig, module):
+        if module == 'numpy':
+            nl.inv(self.a)
+        else:
+            sl.inv(self.a)
 
-        for size,repeat in [(20,1000),(100,150),(500,2),(1000,1)][:-1]:
-            for contig in ['contig', 'nocont']:
-                for numpy_str in ['numpy', 'scipy']:
-                    yield track, str(size), contig, numpy_str
+    def time_det(self, size, contig, module):
+        if module == 'numpy':
+            nl.det(self.a)
+        else:
+            sl.det(self.a)
 
-    @classmethod
-    def gen_solve(cls):
-        for func, a, b, c in cls._gen_generic('solve', 'f(a, b)'):
-            yield func, a, b, c
+    def time_eigvals(self, size, contig, module):
+        if module == 'numpy':
+            nl.eigvals(self.a)
+        else:
+            sl.eigvals(self.a)
 
-    @classmethod
-    def gen_inv(cls):
-        for func, a, b, c in cls._gen_generic('inv', 'f(a)'):
-            yield func, a, b, c
-
-    @classmethod
-    def gen_det(cls):
-        for func, a, b, c in cls._gen_generic('det', 'f(a)'):
-            yield func, a, b, c
-
-    @classmethod
-    def gen_eigvals(cls):
-        for func, a, b, c in cls._gen_generic('eigvals', 'f(a)'):
-            yield func, a, b, c
-
-    @classmethod
-    def gen_svd(cls):
-        for func, a, b, c in cls._gen_generic('svd', 'f(a)'):
-            yield func, a, b, c
+    def time_svd(self, size, contig, module):
+        if module == 'numpy':
+            nl.svd(self.a)
+        else:
+            sl.svd(self.a)

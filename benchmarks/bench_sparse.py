@@ -15,7 +15,7 @@ from scipy import sparse
 from scipy.sparse import (csr_matrix, coo_matrix, dia_matrix, lil_matrix,
                           dok_matrix, rand, SparseEfficiencyWarning)
 
-from .common import Benchmark, SimpleTimer
+from .common import Benchmark
 
 
 import scipy
@@ -54,63 +54,68 @@ def poisson2d(N,dtype='d',format=None):
 
 
 class Arithmetic(Benchmark):
+    param_names = ['format', 'XY', 'op']
+    params = [
+        ['csr'],
+        ['AA', 'AB', 'BA', 'BB'],
+        ['__add__', '__sub__', 'multiply', '__mul__']
+    ]
+    goal_time = 0.5
+
     def setup(self):
         self.matrices = {}
         # matrices.append( ('A','Identity', sparse.eye(500**2,format='csr')) )
         self.matrices['A'] = poisson2d(250,format='csr')
         self.matrices['B'] = poisson2d(250,format='csr')**2
 
-    @classmethod
-    def gen_arithmetic(cls):
-        def track(self, format, X, Y, op):
-            vars = dict([(var, mat.asformat(format)) 
-                         for (var, mat) in self.matrices.items()])
-            x,y = vars[X],vars[Y]
-            fn = getattr(x,op)
-            fn(y)  # warmup
+    def setup_params(self, format, XY, op):
+        X, Y = XY
+        vars = dict([(var, mat.asformat(format)) 
+                     for (var, mat) in self.matrices.items()])
+        self.x, self.y = vars[X], vars[Y]
+        self.fn = getattr(self.x, op)
+        self.fn(self.y)  # warmup
 
-            t = SimpleTimer()
-            for _ in t:
-                fn(y)
-            return t.timing
-
-        for format in ['csr']:
-            for X,Y in [('A','A'),('A','B'),('B','A'),('B','B')]:
-                for op in ['__add__','__sub__','multiply','__mul__']:
-                    yield track, format, X, Y, op
+    def time_arithmetic(self, format, XY, op):
+        self.fn(self.y)
 
 
 class Sort(Benchmark):
-    @classmethod
-    def gen_sort(cls):
-        """sort CSR column indices"""
+    params = ['Rand10', 'Rand25', 'Rand50', 'Rand100', 'Rand200']
+    param_names = ['matrix']
+    goal_time = 0.5
 
+    def setup(self):
         matrices = []
-        matrices.append(('Rand10', '1e4', '10'))
-        matrices.append(('Rand25', '1e4', '25'))
-        matrices.append(('Rand50', '1e4', '50'))
-        matrices.append(('Rand100', '1e4', '100'))
-        matrices.append(('Rand200', '1e4', '200'))
+        matrices.append(('Rand10', (1e4, 10)))
+        matrices.append(('Rand25', (1e4, 25)))
+        matrices.append(('Rand50', (1e4, 50)))
+        matrices.append(('Rand100', (1e4, 100)))
+        matrices.append(('Rand200', (1e4, 200)))
+        self.matrices = dict(matrices)
 
-        def track(self, name, N, K):
-            N = int(float(N))
-            K = int(float(K))
-            A = random_sparse(N,N,K)
+    def setup_params(self, matrix):
+        N, K = self.matrices[matrix]
+        N = int(float(N))
+        K = int(float(K))
+        self.A = random_sparse(N,N,K)
 
-            t = SimpleTimer()
-            for _ in t:
-                A.has_sorted_indices = False
-                A.indices[:2] = 2,1
-                A.sort_indices()
-            return t.timing
-
-        for name, N, K in matrices:
-            yield track, name, N, K
+    def time_sort(self, matrix):
+        """sort CSR column indices"""
+        self.A.has_sorted_indices = False
+        self.A.indices[:2] = 2,1
+        self.A.sort_indices()
 
 
 class Matvec(Benchmark):
-    @classmethod
-    def _get_matrices(cls):
+    param_names = ['matrix']
+    goal_time = 0.5
+
+    @property
+    def params(self):
+        return list(sorted(self._get_matrices().keys()))
+
+    def _get_matrices(self):
         matrices = collections.OrderedDict()
 
         matrices['Identity_dia'] = sparse.eye(10**4,format='dia')
@@ -133,21 +138,23 @@ class Matvec(Benchmark):
         return matrices
 
     def setup(self):
-        self.matrices = self.__class__._get_matrices()
+        self.matrices = self._get_matrices()
         self.x = ones(max(A.shape[1] for A in self.matrices.values()), 
                       dtype=float)
 
-    @classmethod
-    def gen_matvec(cls):
-        def time(self, name):
-            A = self.matrices[name]
-            x = self.x[:A.shape[1]]
-            y = A * x
-        for name in cls._get_matrices().keys():
-            yield time, name
+    def setup_params(self, matrix):
+        self.A = self.matrices[matrix]
+        self.x = ones(self.A.shape[1], dtype=float)
+
+    def time_matvec(self, matrix):
+        y = self.A * self.x
 
 
 class Matvecs(Benchmark):
+    params = ['dia', 'coo', 'csr', 'csc', 'bsr']
+    param_names = ["format"]
+    goal_time = 0.5
+
     def setup(self):
         self.matrices = {}
         self.matrices['dia'] = poisson2d(300,format='dia')
@@ -158,14 +165,9 @@ class Matvecs(Benchmark):
         A = self.matrices['dia']
         self.x = ones((A.shape[1], 10), dtype=A.dtype)
 
-    @classmethod
-    def gen_matvecs(cls):
-        def time(self, fmt):
-            A = self.matrices[fmt]
-            y = A*self.x
-
-        for fmt in ['dia', 'coo', 'csr', 'csc', 'bsr']:
-            yield time, fmt
+    def time_matvecs(self, fmt):
+        A = self.matrices[fmt]
+        y = A*self.x
 
 
 class Matmul(Benchmark):
@@ -192,6 +194,13 @@ class Matmul(Benchmark):
 
 
 class Construction(Benchmark):
+    params = [
+        ['Empty', 'Identity', 'Poisson5pt'],
+        ['lil', 'dok']
+    ]
+    param_names = ['matrix', 'format']
+    goal_time = 0.5
+
     def setup(self):
         self.matrices = {}
         self.matrices['Empty'] = csr_matrix((10000,10000))
@@ -199,130 +208,119 @@ class Construction(Benchmark):
         self.matrices['Poisson5pt'] = poisson2d(100)
         self.formats = {'lil': lil_matrix, 'dok': dok_matrix}
 
-    @classmethod
-    def gen_construction(cls):
-        """build matrices by inserting single values"""
+    def setup_params(self, name, format):
+        A = self.matrices[name]
+        self.cls = self.formats[format]
+        self.A = A.tocoo()
 
-        def track(self, name, format):
-            A = self.matrices[name]
-            cls = self.formats[format]
-
-            A = A.tocoo()
-
-            t = SimpleTimer()
-            for _ in t:
-                T = cls(A.shape)
-                for i,j,v in zip(A.row,A.col,A.data):
-                    T[i,j] = v
-            return t.timing
-
-        for mat in ['Empty', 'Identity', 'Poisson5pt']:
-            for format in ['lil', 'dok']:
-                yield track, mat, format
+    def time_construction(self, name, format):
+        T = self.cls(self.A.shape)
+        for i,j,v in zip(self.A.row,self.A.col,self.A.data):
+            T[i,j] = v
 
 
 class Conversion(Benchmark):
+    params = [
+        ['csr','csc','coo','dia','lil','dok'],
+        ['csr','csc','coo','dia','lil','dok'],
+    ]
+    param_names = ['from_format', 'to_format']
+    goal_time = 0.5
+
     def setup(self):
         self.A = poisson2d(100)
 
-    @classmethod
-    def gen_conversion(cls):
-        formats = ['csr','csc','coo','dia','lil','dok']
+    def setup_params(self, fromfmt, tofmt):
+        A = self.A
+        base = getattr(A,'to' + fromfmt)()
 
-        def track(self, fromfmt, tofmt):
-            A = self.A
-            base = getattr(A,'to' + fromfmt)()
+        result = np.nan
+        try:
+            self.fn = getattr(base, 'to' + tofmt)
+        except:
+            def fn():
+                raise RuntimeError()
+            self.fn = fn
 
-            result = np.nan
-            try:
-                fn = getattr(base,'to' + tofmt)
-            except:
-                pass
-            else:
-                x = fn()  # warmup
-                t = SimpleTimer()
-                for _ in t:
-                    x = fn()
-                return t.timing
-
-            return result
-
-        for fromfmt in formats:
-            for tofmt in formats:
-                yield track, fromfmt, tofmt
+    def time_conversion(self, fromfmt, tofmt):
+        x = self.fn()
 
 
 class Getset(Benchmark):
+    params = [
+        [1, 10, 100, 1000, 10000],
+        ['different', 'same'],
+        ['csr', 'csc', 'lil', 'dok']
+    ]
+    param_names = ['N', 'sparsity pattern', 'format']
+    goal_time = 0.5
+
     def setup(self):
         self.A = rand(1000, 1000, density=1e-5)
 
-    @classmethod
-    def _getset_bench(cls, kernel_name, kernel, formats):
-        def track(self, N, spat, fmt):
-            A = self.A
-            N = int(N)
-            spat = (spat != 'False')
+    def setup_params(self, N, sparsity_pattern, format):
+        A = self.A
+        N = int(N)
 
-            # indices to assign to
-            i, j = [], []
-            while len(i) < N:
-                n = N - len(i)
-                ip = numpy.random.randint(0, A.shape[0], size=n)
-                jp = numpy.random.randint(0, A.shape[1], size=n)
-                i = numpy.r_[i, ip]
-                j = numpy.r_[j, jp]
-            v = numpy.random.rand(n)
+        # indices to assign to
+        i, j = [], []
+        while len(i) < N:
+            n = N - len(i)
+            ip = numpy.random.randint(0, A.shape[0], size=n)
+            jp = numpy.random.randint(0, A.shape[1], size=n)
+            i = numpy.r_[i, ip]
+            j = numpy.r_[j, jp]
+        v = numpy.random.rand(n)
 
-            if N == 1:
-                i = int(i)
-                j = int(j)
-                v = float(v)
+        if N == 1:
+            i = int(i)
+            j = int(j)
+            v = float(v)
 
-            if fmt == 'dok' and N > 500:
-                return np.nan
+        base = A.asformat(format)
 
-            base = A.asformat(fmt)
+        self.m = base.copy()
+        self.i = i
+        self.j = j
+        self.v = v
 
-            m = base.copy()
-            if spat:
-                kernel(m, i, j, v)
+    def _timeit(self, kernel, recopy):
+        iter = 0
+        min_time = 1e99
+        if not recopy:
+            kernel(self.m, self.i, self.j, self.v)
+        start = time.clock()
+        while iter < 5000:
+            iter += 1
+            if recopy:
+                m = self.m.copy()
+            else:
+                m = self.m
+            a = time.clock()
+            kernel(m, self.i, self.j, self.v)
+            min_time = min(min_time, time.clock() - a)
+            if a - start > 0.5:
+                break
+        return min_time
 
-            with warnings.catch_warnings():
-                warnings.simplefilter('ignore', SparseEfficiencyWarning)
+    def track_fancy_setitem(self, N, sparsity_pattern, format):
+        if format == 'dok' and N > 500:
+            return np.nan
 
-                iter = 0
-                total_time = 0
-                while total_time < 0.2 and iter < 5000:
-                    if not spat:
-                        m = base.copy()
-                    a = time.clock()
-                    kernel(m, i, j, v)
-                    total_time += time.clock() - a
-                    iter += 1
-
-            result = total_time/float(iter)
-            return result
-
-        track.__name__ = "track_" + kernel_name
-
-        for N in [1, 10, 100, 1000, 10000]:
-            for spat in [False, True]:
-                for fmt in formats:
-                    yield track, str(N), str(spat), fmt
-
-    @classmethod
-    def gen_setitem(cls):
         def kernel(A, i, j, v):
             A[i, j] = v
 
-        for v in cls._getset_bench("fancy_setitem", kernel, 
-                                   ['csr', 'csc', 'lil', 'dok']):
-            yield v[0], v[1], v[2], v[3]
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', SparseEfficiencyWarning)
+            return self._timeit(kernel, sparsity_pattern=='different')
 
-    @classmethod
-    def gen_getitem(cls):
-        def kernel(A, i, j, v=None):
+    def track_fancy_getitem(self, N, sparsity_pattern, format):
+        if format == 'dok' and N > 500:
+            return np.nan
+
+        def kernel(A, i, j, v):
             A[i, j]
-        for v in cls._getset_bench("fancy_getitem", kernel,
-                                   ['csr', 'csc', 'lil']):
-            yield v[0], v[1], v[2], v[3]
+
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', SparseEfficiencyWarning)
+            return self._timeit(kernel, sparsity_pattern=='different')

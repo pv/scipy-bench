@@ -11,42 +11,32 @@ import scipy.sparse.linalg
 
 
 class BenchmarkOneNormEst(Benchmark):
-    group_by = {
-        'gen_onenormest': ['row', 'col'],
-    }
+    params = [
+        [2, 3, 5, 10, 30, 100, 300, 500, 1000],
+        ['exact', 'onenormest']
+    ]
+    param_names = ['n', 'solver']
+    goal_time = 0.5
+    timeout = 0.5*9*2*2
 
-    @classmethod
-    def gen_onenormest(cls):
-        def track(self, n, soltype):
-            n = int(n)
-            np.random.seed(1234)
-            nrepeats = 100
-            shape = (n, n)
+    def setup_params(self, n, solver):
+        np.random.seed(1234)
+        nrepeats = 100
+        shape = (n, n)
 
-            # Sample the matrices.
-            matrices = []
-            for i in range(nrepeats):
-                M = np.random.randn(*shape)
-                matrices.append(M)
+        # Sample the matrices.
+        self.matrices = []
+        for i in range(nrepeats):
+            M = np.random.randn(*shape)
+            self.matrices.append(M)
 
-            if soltype == 'exact':
-                # Get the exact values of one-norms of squares.
-                tm_start = time.clock()
-                for M in matrices:
-                    M2 = M.dot(M)
-                    scipy.sparse.linalg.matfuncs._onenorm(M)
-                tm_end = time.clock()
-                tm_exact = tm_end - tm_start
-                return tm_exact
-            elif soltype == 'estimate':
-                # Get the estimates of one-norms of squares.
-                tm_start = time.clock()
-                for M in matrices:
-                    scipy.sparse.linalg.matfuncs._onenormest_matrix_power(M, 2)
-                tm_end = time.clock()
-                tm_estimate = tm_end - tm_start
-                return tm_estimate
-
-        for n in (2, 3, 5, 10, 30, 100, 300, 500, 1000):
-            for soltype in ['exact', 'estimate']:
-                yield track, str(n), soltype
+    def time_onenormest(self, n, solver):
+        if solver == 'exact':
+            # Get the exact values of one-norms of squares.
+            for M in self.matrices:
+                M2 = M.dot(M)
+                scipy.sparse.linalg.matfuncs._onenorm(M)
+        elif solver == 'onenormest':
+            # Get the estimates of one-norms of squares.
+            for M in self.matrices:
+                scipy.sparse.linalg.matfuncs._onenormest_matrix_power(M, 2)

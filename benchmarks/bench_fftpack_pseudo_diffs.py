@@ -1,7 +1,7 @@
 """ Benchmark functions for fftpack.pseudo_diffs module
 """
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark, measure
+from .common import Benchmark
 
 import sys
 
@@ -59,70 +59,46 @@ def direct_shift(x,a,period=None):
 
 
 class Bench(Benchmark):
-    group_by = {
-        'gen_diff': ['row', 'col'],
-        'gen_tilbert': ['row', 'col'],
-        'gen_hilbert': ['row', 'col'],
-        'gen_shift': ['row', 'col'],
-    }
+    params = [
+        [100, 256, 512, 1000, 1024, 2048, 2048*2, 2048*4],
+        ['fft', 'direct'],
+    ]
+    param_names = ['size', 'type']
+    goal_time = 0.5
 
-    @classmethod
-    def _gen_random(cls, name, call, direct_call):
-        def track(self, size, direct):
-            size = int(size)
+    def setup_params(self, size, type):
+        size = int(size)
 
-            x = arange(size)*2*pi/size
-            a = 1
-            if size < 2000:
-                f = sin(x)*cos(4*x)+exp(sin(3*x))
-                sf = sin(x+a)*cos(4*(x+a))+exp(sin(3*(x+a)))
-            else:
-                f = sin(x)*cos(4*x)
-                sf = sin(x+a)*cos(4*(x+a))
+        x = arange(size)*2*pi/size
+        a = 1
+        self.a = a
+        if size < 2000:
+            self.f = sin(x)*cos(4*x)+exp(sin(3*x))
+            self.sf = sin(x+a)*cos(4*(x+a))+exp(sin(3*(x+a)))
+        else:
+            self.f = sin(x)*cos(4*x)
+            self.sf = sin(x+a)*cos(4*(x+a))
 
-            if direct == 'direct':
-                return measure(direct_call)
-            else:
-                return measure(call)
+    def time_diff(self, size, soltype):
+        if soltype == 'fft':
+            diff(self.f, 3)
+        else:
+            direct_diff(self.f,3)
 
-        track.__name__ = "track_" + name
-        track.unit = "s"
+    def time_tilbert(self, size, soltype):
+        if soltype == 'fft':
+            tilbert(self.f, 1)
+        else:
+            direct_tilbert(self.f, 1)
 
-        for size,repeat in [(100,1500),(1000,300),
-                            (256,1500),
-                            (512,1000),
-                            (1024,500),
-                            (2048,200),
-                            (2048*2,100),
-                            (2048*4,50),
-                            ]:
-            yield track, str(size), "direct"
-            yield track, str(size), "fft"
+    def time_hilbert(self, size, soltype):
+        if soltype == 'fft':
+            hilbert(self.f)
+        else:
+            direct_hilbert(self.f)
 
-    @classmethod
-    def gen_diff(cls):
-        for func, size, direct in cls._gen_random("diff",
-                                                  "diff(f,3)",
-                                                  "direct_diff(f,3)"):
-            yield func, size, direct
-
-    @classmethod
-    def gen_tilbert(cls):
-        for func, size, direct in cls._gen_random("tilbert",
-                                                  "tilbert(f,1)",
-                                                  "direct_tilbert(f,1)"):
-            yield func, size, direct
-
-    @classmethod
-    def gen_hilbert(cls):
-        for func, size, direct in cls._gen_random("hilbert",
-                                                  "hilbert(f)",
-                                                  "direct_hilbert(f)"):
-            yield func, size, direct
-
-    @classmethod
-    def gen_shift(cls):
-        for func, size, direct in cls._gen_random("shift",
-                                                  "shift(f,a)",
-                                                  "direct_shift(f,a)"):
-            yield func, size, direct
+    def time_shift(self, size, soltype):
+        if soltype == 'fft':
+            shift(self.f, self.a)
+        else:
+            direct_shift(self.f, self.a)
