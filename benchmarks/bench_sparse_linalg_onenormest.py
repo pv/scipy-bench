@@ -17,7 +17,6 @@ class BenchmarkOneNormEst(Benchmark):
     ]
     param_names = ['n', 'solver']
     goal_time = 0.5
-    timeout = 0.5*9*2*2
 
     def setup_params(self, n, solver):
         np.random.seed(1234)
