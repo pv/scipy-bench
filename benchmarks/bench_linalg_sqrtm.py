@@ -18,7 +18,7 @@ class Sqrtm(Benchmark):
     param_names = ['dtype', 'n', 'blocksize']
     goal_time = 0.5
 
-    def setup_params(self, dtype, n, blocksize):
+    def setup(self, dtype, n, blocksize):
         n = int(n)
         dtype = np.dtype(dtype)
         blocksize = int(blocksize)

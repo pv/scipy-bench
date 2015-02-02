@@ -16,7 +16,7 @@ class Zeros(Benchmark):
     param_names = ['test function', 'solver']
     goal_time = 0.5
 
-    def setup_params(self, func, meth):
+    def setup(self, func, meth):
         self.a = .5
         self.b = sqrt(3)
         repeat = 2000

@@ -14,7 +14,7 @@ class Build(Benchmark):
     param_names = ['(m, n, r)', 'class']
     goal_time = 0.5
 
-    def setup_params(self, mnr, cls_name):
+    def setup(self, mnr, cls_name):
         self.cls = KDTree if cls_name == 'KDTree' else cKDTree
         m, n, r = mnr
 
@@ -24,15 +24,6 @@ class Build(Benchmark):
 
         self.queries = np.concatenate((np.random.randn(r//2,m),
                                        np.random.randn(r-r//2,m)+np.ones(m)))
-
-    def setup_params_full(self, mnr, cls_name):
-        m, n, r = mnr
-        self.setup_params_build(mnr, cls_name)
-
-        if cls_name == 'cKDTree_flat':
-            self.T = self.cls(self.data, leafsize=n)
-        else:
-            self.T = self.cls(self.data)
 
     def time_build(self, mnr, cls_name):
         """
@@ -56,7 +47,7 @@ class Query(Benchmark):
     goal_time = 0.5
 
     @staticmethod
-    def do_setup_params(self, mnr, cls_name):
+    def do_setup(self, mnr, cls_name):
         self.cls = KDTree if cls_name == 'KDTree' else cKDTree
         m, n, r = mnr
 
@@ -72,8 +63,8 @@ class Query(Benchmark):
         else:
             self.T = self.cls(self.data)
 
-    def setup_params(self, mnr, cls_name):
-        Query.do_setup_params(self, mnr, cls_name)
+    def setup(self, mnr, cls_name):
+        Query.do_setup(self, mnr, cls_name)
 
     def time_query(self, mnr, cls_name):
         """
@@ -98,8 +89,8 @@ class Radius(Benchmark):
                                                     (8,1000,30),
                                                     (16,1000,30)]
 
-    def setup_params(self, mnr, probe_radius, cls_name):
-        Query.do_setup_params(self, mnr, cls_name)
+    def setup(self, mnr, probe_radius, cls_name):
+        Query.do_setup(self, mnr, cls_name)
 
     def time_query_ball_point(self, mnr, probe_radius, cls_name):
         self.T.query_ball_point(self.queries, probe_radius)
@@ -120,7 +111,7 @@ class Neighbors(Benchmark):
     goal_time = 0.5
     timeout = 120
 
-    def setup_params(self, mn1n2, probe_radius, cls_str):
+    def setup(self, mn1n2, probe_radius, cls_str):
         m, n1, n2 = mn1n2
 
         cls = KDTree if cls_str == 'KDTree' else cKDTree

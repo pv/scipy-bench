@@ -22,7 +22,7 @@ class Bench(Benchmark):
     param_names = ['size', 'contiguous', 'module']
     goal_time = 0.5
 
-    def setup_params(self, size, contig, module):
+    def setup(self, size, contig, module):
         a = random([size,size])
         # larger diagonal ensures non-singularity:
         for i in range(size):

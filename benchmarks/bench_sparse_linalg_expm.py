@@ -37,7 +37,7 @@ class ExpmMultiply(Benchmark):
     param_names = ['run format']
     goal_time = 0.5
 
-    def setup(self):
+    def setup(self, *args):
         self.n = 2000
         self.i = 100
         self.j = 200
@@ -67,7 +67,7 @@ class Expm(Benchmark):
     param_names = ['n', 'format']
     goal_time = 0.5
 
-    def setup_params(self, n, format):
+    def setup(self, n, format):
         np.random.seed(1234)
 
         # Let the number of nonzero entries per row

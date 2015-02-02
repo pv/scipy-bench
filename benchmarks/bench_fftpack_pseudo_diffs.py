@@ -66,7 +66,7 @@ class Bench(Benchmark):
     param_names = ['size', 'type']
     goal_time = 0.5
 
-    def setup_params(self, size, type):
+    def setup(self, size, type):
         size = int(size)
 
         x = arange(size)*2*pi/size

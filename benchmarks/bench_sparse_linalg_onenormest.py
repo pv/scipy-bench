@@ -18,7 +18,7 @@ class BenchmarkOneNormEst(Benchmark):
     param_names = ['n', 'solver']
     goal_time = 0.5
 
-    def setup_params(self, n, solver):
+    def setup(self, n, solver):
         np.random.seed(1234)
         nrepeats = 100
         shape = (n, n)

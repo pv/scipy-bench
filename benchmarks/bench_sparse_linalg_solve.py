@@ -36,7 +36,7 @@ class Bench(Benchmark):
     param_names = ['(n,n)', 'solver']
     goal_time = 0.5
 
-    def setup_params(self, n, solver):
+    def setup(self, n, solver):
         dense_is_active = (n**2 < 600)
         sparse_is_active = (n**2 < 20000)
 

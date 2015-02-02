@@ -148,21 +148,9 @@ class BenchSmoothUnbounded(Benchmark):
     param_names = ["test function", "solver", "result type"]
     timeout = 120
 
-    def setup(self):
-        self.cache = {}
-
-    def run_cached(self, func_name):
-        key = func_name
-        if key in self.cache:
-            return self.cache[key]
-
-        b = getattr(self, 'run_' + func_name)()
+    def setup(self, func_name, method_name, ret_val):
+        b = getattr(self, 'run_' + func_name)(methods=[method_name])
         results = b.average_results()
-        self.cache[key] = results
-        return results
-
-    def setup_params(self, func_name, method_name, ret_val):
-        results = self.run_cached(func_name)
         result = None
         for r in results:
             if r.name == method_name:

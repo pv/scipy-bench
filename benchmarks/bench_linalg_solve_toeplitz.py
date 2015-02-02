@@ -18,7 +18,7 @@ class SolveToeplitz(Benchmark):
     goal_time = 0.5
     timeout = 120
 
-    def setup_params(self, dtype, n, soltype):
+    def setup(self, dtype, n, soltype):
         random = np.random.RandomState(1234)
 
         dtype = np.dtype(dtype)

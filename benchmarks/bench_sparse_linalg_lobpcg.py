@@ -68,17 +68,17 @@ class Bench(object):
     def __init__(self):
         self.time_mikota.__func__.params = list(self.params)
         self.time_mikota.__func__.params[0] = [128, 256, 512, 1024, 2048]
-        self.time_mikota.__func__.setup_params = self.setup_params_mikota
+        self.time_mikota.__func__.setup = self.setup_mikota
 
         self.time_sakurai.__func__.params = list(self.params)
         self.time_sakurai.__func__.params[0] = [50, 400, 2400]
-        self.time_sakurai.__func__.setup_params = self.setup_params_sakurai
+        self.time_sakurai.__func__.setup = self.setup_sakurai
 
-    def setup_params_mikota(self, n, solver):
+    def setup_mikota(self, n, solver):
         self.shape = (n, n)
         self.A, self.B = _mikota_pair(n)
 
-    def setup_params_sakurai(self, n, solver):
+    def setup_sakurai(self, n, solver):
         self.shape = (n, n)
         self.A, self.B, all_eigenvalues = _sakurai(n)
         self.A_dense = self.A.A

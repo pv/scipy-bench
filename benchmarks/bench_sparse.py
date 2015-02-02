@@ -62,13 +62,12 @@ class Arithmetic(Benchmark):
     ]
     goal_time = 0.5
 
-    def setup(self):
+    def setup(self, format, XY, op):
         self.matrices = {}
         # matrices.append( ('A','Identity', sparse.eye(500**2,format='csr')) )
         self.matrices['A'] = poisson2d(250,format='csr')
         self.matrices['B'] = poisson2d(250,format='csr')**2
 
-    def setup_params(self, format, XY, op):
         X, Y = XY
         vars = dict([(var, mat.asformat(format)) 
                      for (var, mat) in self.matrices.items()])
@@ -85,7 +84,7 @@ class Sort(Benchmark):
     param_names = ['matrix']
     goal_time = 0.5
 
-    def setup(self):
+    def setup(self, matrix):
         matrices = []
         matrices.append(('Rand10', (1e4, 10)))
         matrices.append(('Rand25', (1e4, 25)))
@@ -94,7 +93,6 @@ class Sort(Benchmark):
         matrices.append(('Rand200', (1e4, 200)))
         self.matrices = dict(matrices)
 
-    def setup_params(self, matrix):
         N, K = self.matrices[matrix]
         N = int(float(N))
         K = int(float(K))
@@ -137,12 +135,11 @@ class Matvec(Benchmark):
         matrices['Block3x3_bsr'] = A
         return matrices
 
-    def setup(self):
+    def setup(self, matrix):
         self.matrices = self._get_matrices()
         self.x = ones(max(A.shape[1] for A in self.matrices.values()), 
                       dtype=float)
 
-    def setup_params(self, matrix):
         self.A = self.matrices[matrix]
         self.x = ones(self.A.shape[1], dtype=float)
 
@@ -155,7 +152,7 @@ class Matvecs(Benchmark):
     param_names = ["format"]
     goal_time = 0.5
 
-    def setup(self):
+    def setup(self, *args):
         self.matrices = {}
         self.matrices['dia'] = poisson2d(300,format='dia')
         self.matrices['coo'] = poisson2d(300,format='coo')
@@ -201,14 +198,13 @@ class Construction(Benchmark):
     param_names = ['matrix', 'format']
     goal_time = 0.5
 
-    def setup(self):
+    def setup(self, name, format):
         self.matrices = {}
         self.matrices['Empty'] = csr_matrix((10000,10000))
         self.matrices['Identity'] = sparse.eye(10000)
         self.matrices['Poisson5pt'] = poisson2d(100)
         self.formats = {'lil': lil_matrix, 'dok': dok_matrix}
 
-    def setup_params(self, name, format):
         A = self.matrices[name]
         self.cls = self.formats[format]
         self.A = A.tocoo()
@@ -227,10 +223,9 @@ class Conversion(Benchmark):
     param_names = ['from_format', 'to_format']
     goal_time = 0.5
 
-    def setup(self):
+    def setup(self, fromfmt, tofmt):
         self.A = poisson2d(100)
 
-    def setup_params(self, fromfmt, tofmt):
         A = self.A
         base = getattr(A,'to' + fromfmt)()
 
@@ -255,10 +250,9 @@ class Getset(Benchmark):
     param_names = ['N', 'sparsity pattern', 'format']
     goal_time = 0.5
 
-    def setup(self):
+    def setup(self, N, sparsity_pattern, format):
         self.A = rand(1000, 1000, density=1e-5)
 
-    def setup_params(self, N, sparsity_pattern, format):
         A = self.A
         N = int(N)
 

@@ -34,7 +34,7 @@ class MemUsage(Benchmark):
         ])
         return sizes
 
-    def setup(self):
+    def setup(self, *args):
         set_mem_rlimit()
         self.sizes = self._get_sizes()
 
@@ -108,7 +108,7 @@ class StructArr(Benchmark):
             var_dict[vname] = s_arrs
         return var_dict
 
-    def setup_params(self, nvfs, compression):
+    def setup(self, nvfs, compression):
         n_vars, n_fields, n_structs = nvfs
 
         self.var_dict = StructArr.make_structarr(n_vars, n_fields, n_structs)

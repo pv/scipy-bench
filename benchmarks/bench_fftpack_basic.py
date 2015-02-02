@@ -47,7 +47,7 @@ class Fft(Benchmark):
     param_names = ['size', 'type', 'module']
     goal_time = 0.5
 
-    def setup_params(self, size, cmplx, module):
+    def setup(self, size, cmplx, module):
         if cmplx == 'cmplx':
             self.x = random([size]).astype(cdouble)+random([size]).astype(cdouble)*1j
         else:
@@ -74,7 +74,7 @@ class RFft(Benchmark):
     param_names = ['size', 'module']
     goal_time = 0.5
 
-    def setup_params(self, size, module):
+    def setup(self, size, module):
         self.x = random([size]).astype(double)
 
     def time_rfft(self, size, module):
@@ -99,7 +99,7 @@ class Fftn(Benchmark):
     param_names = ['size', 'type', 'module']
     goal_time = 0.5
 
-    def setup_params(self, size, cmplx, module):
+    def setup(self, size, cmplx, module):
         size = map(int, size.split("x"))
 
         if cmplx != 'cmplx':
