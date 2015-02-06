@@ -167,7 +167,6 @@ class BenchSmoothUnbounded(object):
                              fun=rosen, der=rosen_der, hess=rosen_hess)
         for i in range(10):
             b.bench_run(np.random.uniform(-3,3,3), methods=methods)
-        b.print_results()
         return b
 
     def run_rosenbrock_tight(self, methods=None):
@@ -176,7 +175,6 @@ class BenchSmoothUnbounded(object):
                              tol=1e-8)
         for i in range(10):
             b.bench_run(np.random.uniform(-3,3,3), methods=methods)
-        b.print_results()
         return b
 
     def run_simple_quadratic(self, methods=None):
@@ -186,7 +184,6 @@ class BenchSmoothUnbounded(object):
                              fun=s.fun, der=s.der, hess=s.hess)
         for i in range(10):
             b.bench_run(np.random.uniform(-2,2,3), methods=methods)
-        b.print_results()
         return b
 
     def run_asymmetric_quadratic(self, methods=None):
@@ -196,7 +193,6 @@ class BenchSmoothUnbounded(object):
                              fun=s.fun, der=s.der, hess=s.hess)
         for i in range(10):
             b.bench_run(np.random.uniform(-2,2,3), methods=methods)
-        b.print_results()
         return b
 
     def run_sin_1d(self, methods=None):
@@ -206,7 +202,6 @@ class BenchSmoothUnbounded(object):
                              fun=fun, der=der, hess=None)
         for i in range(10):
             b.bench_run(np.random.uniform(-2,2,1), methods=methods)
-        b.print_results()
         return b
 
     def run_booth(self, methods=None):
@@ -216,7 +211,6 @@ class BenchSmoothUnbounded(object):
                              fun=s.fun, der=s.der, hess=None)
         for i in range(10):
             b.bench_run(np.random.uniform(0,10,2), methods=methods)
-        b.print_results()
         return b
 
     def run_beale(self, methods=None):
@@ -226,7 +220,6 @@ class BenchSmoothUnbounded(object):
                              fun=s.fun, der=s.der, hess=None)
         for i in range(10):
             b.bench_run(np.random.uniform(0,10,2), methods=methods)
-        b.print_results()
         return b
 
     def run_LJ(self, methods=None):
@@ -237,5 +230,4 @@ class BenchSmoothUnbounded(object):
                              fun=s.fun, der=s.der, hess=None)
         for i in range(10):
             b.bench_run(np.random.uniform(-2,2,natoms*3), methods=methods)
-        b.print_results()
         return b
