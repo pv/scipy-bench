@@ -134,7 +134,7 @@ class _BenchOptimizers(object):
                 self.add_result(res, t1-t0, method)
 
 
-class BenchSmoothUnbounded(Benchmark):
+class BenchSmoothUnbounded(object):
     """Benchmark the optimizers with smooth, unbounded, functions"""
     params = [
         ['rosenbrock', 'rosenbrock_tight',

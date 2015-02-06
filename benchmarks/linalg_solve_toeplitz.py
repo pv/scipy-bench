@@ -8,7 +8,7 @@ from numpy.testing import assert_array_almost_equal
 import scipy.linalg
 
 
-class SolveToeplitz(Benchmark):
+class SolveToeplitz(object):
     params = (
         ('float64', 'complex128'),
         (100, 300, 1000),

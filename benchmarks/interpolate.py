@@ -4,7 +4,7 @@ from .common import Benchmark, run_monitored, set_mem_rlimit
 from scipy.stats import spearmanr
 
 
-class Leaks(Benchmark):
+class Leaks(object):
     def track_leaks(self):
         set_mem_rlimit()
 

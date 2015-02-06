@@ -58,7 +58,7 @@ def direct_shift(x,a,period=None):
     return ifft(fft(x)*exp(k*a)).real
 
 
-class Bench(Benchmark):
+class Bench(object):
     params = [
         [100, 256, 512, 1000, 1024, 2048, 2048*2, 2048*4],
         ['fft', 'direct'],

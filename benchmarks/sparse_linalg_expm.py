@@ -32,7 +32,7 @@ def random_sparse_csc(m, n, nnz_per_row):
     return M.tocsc()
 
 
-class ExpmMultiply(Benchmark):
+class ExpmMultiply(object):
     params = [['full', 'sparse']]
     param_names = ['run format']
     goal_time = 0.5
@@ -59,7 +59,7 @@ class ExpmMultiply(Benchmark):
             expm_col_entry = A_expm_col_j[self.i]
 
 
-class Expm(Benchmark):
+class Expm(object):
     params = [
         [30, 100, 300],
         ['sparse', 'dense']

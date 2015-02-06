@@ -7,7 +7,7 @@ import numpy as np
 from scipy.signal import convolve2d, correlate2d
 
 
-class Convolve2D(Benchmark):
+class Convolve2D(object):
     def setup(self):
         np.random.seed(1234)
 

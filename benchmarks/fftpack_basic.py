@@ -38,7 +38,7 @@ def direct_idft(x):
     return y
 
 
-class Fft(Benchmark):
+class Fft(object):
     params = [
         [100, 256, 512, 1000,  1024, 2048, 2048*2, 2048*4],
         ['real', 'cmplx'],
@@ -66,7 +66,7 @@ class Fft(Benchmark):
             ifft(self.x)
 
 
-class RFft(Benchmark):
+class RFft(object):
     params = [
         [100, 256, 512, 1000,  1024, 2048, 2048*2, 2048*4],
         ['scipy', 'numpy']
@@ -90,7 +90,7 @@ class RFft(Benchmark):
             irfft(self.x)
 
 
-class Fftn(Benchmark):
+class Fftn(object):
     params = [
         ["100x100", "1000x100", "256x256", "512x512"],
         ['real', 'cmplx'],

@@ -6,7 +6,7 @@ from scipy.spatial import cKDTree, KDTree
 import numpy as np
 
 
-class Build(Benchmark):
+class Build(object):
     params = [
         [(3,10000,1000), (8,10000,1000), (16,10000,1000)],
         ['KDTree', 'cKDTree'],
@@ -38,7 +38,7 @@ class Build(Benchmark):
             self.cls(self.data)
 
 
-class Query(Benchmark):
+class Query(object):
     params = [
         [(3,10000,1000), (8,10000,1000), (16,10000,1000)],
         ['KDTree', 'cKDTree', 'cKDTree_flat'],
@@ -74,7 +74,7 @@ class Query(Benchmark):
         self.T.query(self.queries)
 
 
-class Radius(Benchmark):
+class Radius(object):
     params = [
         [(3,10000,1000)],
         [0.2, 0.5],
@@ -99,7 +99,7 @@ class Radius(Benchmark):
         self.T.query_pairs(probe_radius)
 
 
-class Neighbors(Benchmark):
+class Neighbors(object):
     params = [
         [(3,1000,1000),
          (8,1000,1000),

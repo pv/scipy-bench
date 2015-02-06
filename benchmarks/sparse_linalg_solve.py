@@ -28,7 +28,7 @@ def _create_sparse_poisson2d(n):
     return P2d
 
 
-class Bench(Benchmark):
+class Bench(object):
     params = [
         [4, 6, 10, 16, 25, 40, 64, 100, 160, 250, 400, 640, 1000, 1600],
         ['dense', 'sparse']

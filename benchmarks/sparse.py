@@ -15,9 +15,6 @@ from scipy import sparse
 from scipy.sparse import (csr_matrix, coo_matrix, dia_matrix, lil_matrix,
                           dok_matrix, rand, SparseEfficiencyWarning)
 
-from .common import Benchmark
-
-
 import scipy
 import sys
 
@@ -53,7 +50,7 @@ def poisson2d(N,dtype='d',format=None):
     return dia_matrix((diags,offsets),shape=(N**2,N**2)).asformat(format)
 
 
-class Arithmetic(Benchmark):
+class Arithmetic(object):
     param_names = ['format', 'XY', 'op']
     params = [
         ['csr'],
@@ -79,7 +76,7 @@ class Arithmetic(Benchmark):
         self.fn(self.y)
 
 
-class Sort(Benchmark):
+class Sort(object):
     params = ['Rand10', 'Rand25', 'Rand50', 'Rand100', 'Rand200']
     param_names = ['matrix']
     goal_time = 0.5
@@ -105,7 +102,7 @@ class Sort(Benchmark):
         self.A.sort_indices()
 
 
-class Matvec(Benchmark):
+class Matvec(object):
     param_names = ['matrix']
     goal_time = 0.5
 
@@ -147,7 +144,7 @@ class Matvec(Benchmark):
         y = self.A * self.x
 
 
-class Matvecs(Benchmark):
+class Matvecs(object):
     params = ['dia', 'coo', 'csr', 'csc', 'bsr']
     param_names = ["format"]
     goal_time = 0.5
@@ -167,7 +164,7 @@ class Matvecs(Benchmark):
         y = A*self.x
 
 
-class Matmul(Benchmark):
+class Matmul(object):
     def setup(self):
         H1, W1 = 1, 100000
         H2, W2 = W1, 1000
@@ -190,7 +187,7 @@ class Matmul(Benchmark):
             matrix3 = self.matrix1 * self.matrix2
 
 
-class Construction(Benchmark):
+class Construction(object):
     params = [
         ['Empty', 'Identity', 'Poisson5pt'],
         ['lil', 'dok']
@@ -215,7 +212,7 @@ class Construction(Benchmark):
             T[i,j] = v
 
 
-class Conversion(Benchmark):
+class Conversion(object):
     params = [
         ['csr','csc','coo','dia','lil','dok'],
         ['csr','csc','coo','dia','lil','dok'],
@@ -241,7 +238,7 @@ class Conversion(Benchmark):
         x = self.fn()
 
 
-class Getset(Benchmark):
+class Getset(object):
     params = [
         [1, 10, 100, 1000, 10000],
         ['different', 'same'],

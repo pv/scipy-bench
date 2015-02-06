@@ -8,7 +8,7 @@ from scipy.optimize._tstutils import (methods, mstrings, functions,
      fstrings, description)
 
 
-class Zeros(Benchmark):
+class Zeros(object):
     params = [
         fstrings,
         mstrings

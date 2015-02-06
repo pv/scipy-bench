@@ -15,7 +15,7 @@ import numpy as np
 from scipy.io import savemat, loadmat
 
 
-class MemUsage(Benchmark):
+class MemUsage(object):
     param_names = ['size', 'compressed']
     timeout = 4*60
 
@@ -90,7 +90,7 @@ class MemUsage(Benchmark):
         return peak_mem / size
 
 
-class StructArr(Benchmark):
+class StructArr(object):
     params = [
         [(10, 10, 20), (20, 20, 40), (30, 30, 50)],
         [False, True]

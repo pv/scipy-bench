@@ -10,7 +10,7 @@ import numpy as np
 import scipy.sparse.linalg
 
 
-class BenchmarkOneNormEst(Benchmark):
+class BenchmarkOneNormEst(object):
     params = [
         [2, 3, 5, 10, 30, 100, 300, 500, 1000],
         ['exact', 'onenormest']

@@ -7,35 +7,7 @@ import sys
 import re
 import time
 import textwrap
-import tempfile
 import subprocess
-import inspect
-import collections
-import itertools
-
-from six import with_metaclass
-
-
-class BenchmarkMetaclass(type):
-    """
-    Metaclass that just checks there are no methods with names
-    starting with bench_
-    """
-
-    def __new__(mcls, cls_name, bases, dct):
-        cls = super(BenchmarkMetaclass, mcls).__new__(mcls, cls_name, bases, dct)
-
-        # Enforce ASV style
-        for name, obj in list(dct.items()):
-            if name.startswith('bench_') or name.startswith('test_'):
-                raise ValueError("%s.%s starts with bench_ or test_, which is not allowed; "
-                                 "test should be written to be ASV compatible" % (cls_name, name))
-
-        return cls
-
-
-class Benchmark(with_metaclass(BenchmarkMetaclass, object)):
-    pass
 
 
 def run_monitored(code):

@@ -9,7 +9,7 @@ from numpy.testing import assert_allclose
 import scipy.linalg
 
 
-class Sqrtm(Benchmark):
+class Sqrtm(object):
     params = [
         ['float64', 'complex128'],
         [64, 256],

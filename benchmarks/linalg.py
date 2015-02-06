@@ -13,7 +13,7 @@ def random(size):
     return rand(*size)
 
 
-class Bench(Benchmark):
+class Bench(object):
     params = [
         [20, 100, 500, 1000],
         ['contig', 'nocont'],
