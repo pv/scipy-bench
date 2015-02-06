@@ -30,7 +30,7 @@ def _create_sparse_poisson2d(n):
 class Bench(object):
     params = [
         [4, 6, 10, 16, 25, 40, 64, 100, 160, 250, 400, 640, 1000, 1600],
-        ['dense', 'sparse']
+        ['sparse', 'dense']
     ]
     param_names = ['(n,n)', 'solver']
     goal_time = 0.5

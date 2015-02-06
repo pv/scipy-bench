@@ -35,7 +35,7 @@ def random_sparse_csc(m, n, nnz_per_row):
 
 
 class ExpmMultiply(object):
-    params = [['full', 'sparse']]
+    params = [['sparse', 'full']]
     param_names = ['run format']
     goal_time = 0.5
 
