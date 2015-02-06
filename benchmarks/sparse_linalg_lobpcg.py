@@ -63,6 +63,7 @@ class Bench(object):
     ]
     param_names = ['n', 'solver']
     goal_time = 0.5
+    timeout = 120
 
     def __init__(self):
         self.time_mikota.__func__.params = list(self.params)
