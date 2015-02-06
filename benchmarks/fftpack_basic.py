@@ -1,7 +1,6 @@
 """ Test functions for fftpack.basic module
 """
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark
 
 import sys
 from scipy.fftpack import ifft, fft, fftn, irfft, rfft

@@ -1,7 +1,6 @@
 """Benchmark the solve_toeplitz solver (Levinson recursion)
 """
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark
 
 import numpy as np
 from numpy.testing import assert_array_almost_equal

@@ -1,7 +1,6 @@
 """Compare the speed of exact one-norm calculation vs. its estimation.
 """
 from __future__ import division, print_function, absolute_import
-from .common import Benchmark
 
 import time
 

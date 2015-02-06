@@ -2,7 +2,6 @@
 
 """
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark
 
 import numpy as np
 from numpy.testing import assert_allclose

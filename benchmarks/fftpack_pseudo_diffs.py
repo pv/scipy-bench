@@ -1,7 +1,6 @@
 """ Benchmark functions for fftpack.pseudo_diffs module
 """
 from __future__ import division, absolute_import, print_function
-from .common import Benchmark
 
 import sys
 

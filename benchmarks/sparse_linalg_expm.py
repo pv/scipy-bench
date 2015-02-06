@@ -1,6 +1,5 @@
 """benchmarks for the scipy.sparse.linalg._expm_multiply module"""
 from __future__ import division, print_function, absolute_import
-from .common import Benchmark
 
 import time
 import math
@@ -9,7 +8,10 @@ import numpy as np
 from numpy.testing import assert_allclose
 
 import scipy.linalg
-from scipy.sparse.linalg import expm_multiply
+try:
+    from scipy.sparse.linalg import expm_multiply
+except ImportError:
+    pass
 
 
 def random_sparse_csr(m, n, nnz_per_row):
