@@ -113,8 +113,8 @@ class Matvec(object):
     def _get_matrices(self):
         matrices = collections.OrderedDict()
 
-        matrices['Identity_dia'] = sparse.eye(10**4,format='dia')
-        matrices['Identity_csr'] = sparse.eye(10**4,format='csr')
+        matrices['Identity_dia'] = sparse.eye(10**4,10**4,format='dia')
+        matrices['Identity_csr'] = sparse.eye(10**4,10**4,format='csr')
         matrices['Poisson5pt_lil'] = poisson2d(300,format='lil')
         matrices['Poisson5pt_dok'] = poisson2d(300,format='dok')
         matrices['Poisson5pt_dia'] = poisson2d(300,format='dia')
