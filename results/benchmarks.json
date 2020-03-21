@@ -5141,6 +5141,29 @@
         "version": "64fda6560789a5a6261b84ec4eaa9f416b469f162f374ee0bfda0ecff981f12a",
         "warmup_time": -1
     },
+    "spatial.GeometricSlerpBench.time_geometric_slerp_3d": {
+        "code": "class GeometricSlerpBench:\n    def time_geometric_slerp_3d(self, num_points):\n        # time geometric_slerp() for 3D interpolation\n        geometric_slerp(start=self.start,\n                        end=self.end,\n                        t=self.t)\n\n    def setup(self, num_points):\n        points = generate_spherical_points(50)\n        # any two points from the random spherical points\n        # will suffice for the interpolation bounds:\n        self.start = points[0]\n        self.end = points[-1]\n        self.t = np.linspace(0, 1, num_points)",
+        "min_run_count": 2,
+        "name": "spatial.GeometricSlerpBench.time_geometric_slerp_3d",
+        "number": 0,
+        "param_names": [
+            "num_points"
+        ],
+        "params": [
+            [
+                "10",
+                "1000",
+                "10000"
+            ]
+        ],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "24e5a4b637081cea96f06a0e1ad72ac25282b6954c01f6bf387635de0ffe28ec",
+        "warmup_time": -1
+    },
     "spatial.Hausdorff.time_directed_hausdorff": {
         "code": "class Hausdorff:\n    def time_directed_hausdorff(self, num_points):\n        # time directed_hausdorff code in 3 D\n        distance.directed_hausdorff(self.points1, self.points2)\n\n    def setup(self, num_points):\n        np.random.seed(123)\n        self.points1 = np.random.random_sample((num_points, 3))\n        np.random.seed(71890)\n        self.points2 = np.random.random_sample((num_points, 3))",
         "min_run_count": 2,
