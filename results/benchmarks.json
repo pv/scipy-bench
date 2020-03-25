@@ -5050,6 +5050,39 @@
         "version": "4ba4812dbaf8d690c45fa276a5f1b3b65d132471009316c8554e20445e8c7924",
         "warmup_time": -1
     },
+    "spatial.BuildUnbalanced.time_build": {
+        "code": "class BuildUnbalanced:\n    def time_build(self, mnr, balanced, order):\n        cKDTree(self.data.get(order), balanced_tree=balanced)\n\n    def setup(self, *args):\n        super().setup(*args, None)",
+        "min_run_count": 2,
+        "name": "spatial.BuildUnbalanced.time_build",
+        "number": 0,
+        "param_names": [
+            "(m, n, r)",
+            "balanced",
+            "order"
+        ],
+        "params": [
+            [
+                "(3, 10000, 1000)",
+                "(8, 10000, 1000)",
+                "(16, 10000, 1000)"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "'random'",
+                "'sorted'"
+            ]
+        ],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "b3f85876bde4578b41fe30a91936b5b252967ef1f73ab7022d1cde83f0b13fc4",
+        "warmup_time": -1
+    },
     "spatial.CNeighbors.time_count_neighbors_deep": {
         "code": "class CNeighbors:\n    def time_count_neighbors_deep(self, mn1n2, Nr):\n        \"\"\"\n        Count neighbors for a very deep kd-tree\n        dim | # points T1 | # points T2 | Nr\n        \"\"\"\n        self.T1d.count_neighbors(self.T2d, self.r)\n\n    def setup(self, mn1n2, Nr):\n        m, n1, n2 = mn1n2\n    \n        data1 = np.random.uniform(size=(n1, m))\n        data2 = np.random.uniform(size=(n2, m))\n        self.w1 = np.ones(len(data1))\n        self.w2 = np.ones(len(data2))\n    \n        self.T1d = cKDTree(data1, leafsize=1)\n        self.T2d = cKDTree(data2, leafsize=1)\n        self.T1s = cKDTree(data1, leafsize=8)\n        self.T2s = cKDTree(data2, leafsize=8)\n        self.r = np.linspace(0, 0.5, Nr)",
         "min_run_count": 2,
@@ -5327,6 +5360,39 @@
         "version": "327bc0627d5387347e9cdcf4c52a550c813bb80a859eeb0f3e5bfe6650a8a1db",
         "warmup_time": -1
     },
+    "spatial.QueryUnbalanced.time_query": {
+        "code": "class QueryUnbalanced:\n    def time_query(self, mnr, balanced, order):\n        self.T.query(self.queries)\n\n    def setup(self, *args):\n        super().setup(*args, None)",
+        "min_run_count": 2,
+        "name": "spatial.QueryUnbalanced.time_query",
+        "number": 0,
+        "param_names": [
+            "(m, n, r)",
+            "balanced",
+            "order"
+        ],
+        "params": [
+            [
+                "(3, 10000, 1000)",
+                "(8, 10000, 1000)",
+                "(16, 10000, 1000)"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "'random'",
+                "'sorted'"
+            ]
+        ],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "a9d431feadb762330179e442072bf26158cb5969d79b1beae251b28526278f1b",
+        "warmup_time": -1
+    },
     "spatial.Radius.time_query_ball_point": {
         "code": "class Radius:\n    def time_query_ball_point(self, mnr, p, probe_radius, boxsize, leafsize):\n        self.T.query_ball_point(self.queries, probe_radius, p=p)\n\n    def setup(self, *args):\n        pass\n\n    def setup_query_ball_point(self, mnr, p, probe_radius, boxsize, leafsize):\n        LimitedParamBenchmark.setup(self, mnr, p, probe_radius, boxsize, leafsize,\n                                    param_seed=3)\n        Query.do_setup(self, mnr, p, boxsize, leafsize)",
         "min_run_count": 2,
@@ -5456,6 +5522,80 @@
         "type": "time",
         "unit": "seconds",
         "version": "cf669f7d619e81e4a09b28bb3fceaefbdd316d30faf01524ab33d41661a53f56",
+        "warmup_time": -1
+    },
+    "spatial.RadiusUnbalanced.time_query_ball_point": {
+        "code": "class RadiusUnbalanced:\n    def time_query_ball_point(self, mnr, balanced, order, radius):\n        self.T.query_ball_point(self.queries, radius)\n\nclass PresortedDataSetup:\n    def setup(self, mnr, balanced, order, radius):\n        m, n, r = mnr\n    \n        np.random.seed(1234)\n        self.data = {\n            'random': np.random.uniform(size=(n, m)),\n            'sorted': np.repeat(np.arange(n, 0, -1)[:, np.newaxis],\n                                m,\n                                axis=1) / n\n        }\n    \n        self.queries = np.random.uniform(size=(r, m))\n        self.T = cKDTree(self.data.get(order), balanced_tree=balanced)",
+        "min_run_count": 2,
+        "name": "spatial.RadiusUnbalanced.time_query_ball_point",
+        "number": 0,
+        "param_names": [
+            "(m, n, r)",
+            "balanced",
+            "order",
+            "radius"
+        ],
+        "params": [
+            [
+                "(3, 1000, 30)",
+                "(8, 1000, 30)",
+                "(16, 1000, 30)"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "'random'",
+                "'sorted'"
+            ],
+            [
+                "0.5"
+            ]
+        ],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "da28f9379cb1b682fd9c936b07b975e58228704248cadc7c80c8fe28684bb15e",
+        "warmup_time": -1
+    },
+    "spatial.RadiusUnbalanced.time_query_pairs": {
+        "code": "class RadiusUnbalanced:\n    def time_query_pairs(self, mnr, balanced, order, radius):\n        self.T.query_pairs(radius)\n\nclass PresortedDataSetup:\n    def setup(self, mnr, balanced, order, radius):\n        m, n, r = mnr\n    \n        np.random.seed(1234)\n        self.data = {\n            'random': np.random.uniform(size=(n, m)),\n            'sorted': np.repeat(np.arange(n, 0, -1)[:, np.newaxis],\n                                m,\n                                axis=1) / n\n        }\n    \n        self.queries = np.random.uniform(size=(r, m))\n        self.T = cKDTree(self.data.get(order), balanced_tree=balanced)",
+        "min_run_count": 2,
+        "name": "spatial.RadiusUnbalanced.time_query_pairs",
+        "number": 0,
+        "param_names": [
+            "(m, n, r)",
+            "balanced",
+            "order",
+            "radius"
+        ],
+        "params": [
+            [
+                "(3, 1000, 30)",
+                "(8, 1000, 30)",
+                "(16, 1000, 30)"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "'random'",
+                "'sorted'"
+            ],
+            [
+                "0.5"
+            ]
+        ],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "a1412769a2db340629a8514a5a4a62f8172a727ef44ad268aaa8fc5d75df0b1b",
         "warmup_time": -1
     },
     "spatial.SphericalVor.time_spherical_voronoi_calculation": {
