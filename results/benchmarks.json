@@ -3169,6 +3169,81 @@
         "unit": "unit",
         "version": "f06ec4ce8c1c3b52e9d3f268b22e5a3eed9bb0a393cc17a4499befba008509c8"
     },
+    "optimize_linprog.Netlib_infeasible.time_netlib_infeasible": {
+        "code": "class Netlib_infeasible:\n    def time_netlib_infeasible(self, meth, prob):\n        method, options = meth\n        res = linprog(c=self.c,\n                      A_ub=self.A_ub,\n                      b_ub=self.b_ub,\n                      A_eq=self.A_eq,\n                      b_eq=self.b_eq,\n                      bounds=self.bounds,\n                      method=method,\n                      options=options)\n        self.status = res.status\n\n    def setup(self, meth, prob):\n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                \"infeasible\", prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n        self.c = data[\"c\"]\n        self.A_eq = data[\"A_eq\"]\n        self.A_ub = data[\"A_ub\"]\n        self.b_ub = data[\"b_ub\"]\n        self.b_eq = data[\"b_eq\"]\n        self.bounds = np.squeeze(data[\"bounds\"])\n        self.status = None",
+        "min_run_count": 2,
+        "name": "optimize_linprog.Netlib_infeasible.time_netlib_infeasible",
+        "number": 0,
+        "param_names": [
+            "method",
+            "problems"
+        ],
+        "params": [
+            [
+                "('interior-point', {'sparse': True})",
+                "('interior-point', {'sparse': False})",
+                "('revised simplex', {})"
+            ],
+            [
+                "'bgdbg1'",
+                "'bgprtr'",
+                "'box1'",
+                "'chemcom'",
+                "'cplex2'",
+                "'ex72a'",
+                "'ex73a'",
+                "'forest6'",
+                "'galenet'",
+                "'itest2'",
+                "'itest6'",
+                "'klein1'",
+                "'refinery'",
+                "'woodinfe'"
+            ]
+        ],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "503fbbf3434ea5cfda96db79547b31365a9d3c8143cc7ccd30fb9035a058b4d2",
+        "warmup_time": -1
+    },
+    "optimize_linprog.Netlib_infeasible.track_netlib_infeasible": {
+        "code": "class Netlib_infeasible:\n    def track_netlib_infeasible(self, meth, prob):\n        if self.status is None:\n            self.time_netlib_infeasible(meth, prob)\n        return self.status\n\n    def setup(self, meth, prob):\n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                \"infeasible\", prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n        self.c = data[\"c\"]\n        self.A_eq = data[\"A_eq\"]\n        self.A_ub = data[\"A_ub\"]\n        self.b_ub = data[\"b_ub\"]\n        self.b_eq = data[\"b_eq\"]\n        self.bounds = np.squeeze(data[\"bounds\"])\n        self.status = None",
+        "name": "optimize_linprog.Netlib_infeasible.track_netlib_infeasible",
+        "param_names": [
+            "method",
+            "problems"
+        ],
+        "params": [
+            [
+                "('interior-point', {'sparse': True})",
+                "('interior-point', {'sparse': False})",
+                "('revised simplex', {})"
+            ],
+            [
+                "'bgdbg1'",
+                "'bgprtr'",
+                "'box1'",
+                "'chemcom'",
+                "'cplex2'",
+                "'ex72a'",
+                "'ex73a'",
+                "'forest6'",
+                "'galenet'",
+                "'itest2'",
+                "'itest6'",
+                "'klein1'",
+                "'refinery'",
+                "'woodinfe'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit",
+        "version": "dcbcf08aed77b5b49459a6ab5c07a817089a40d7778911eeeafbc4cf34b53cd8"
+    },
     "optimize_linprog.Netlib_presolve.time_netlib_presolve": {
         "code": "class Netlib_presolve:\n    def time_netlib_presolve(self, meth, prob):\n        _presolve(self.lp_cleaned, rr=False, tol=1e-9)\n\n    def setup(self, meth, prob):\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n    \n        c, A_eq, A_ub, b_ub, b_eq = (data[\"c\"], data[\"A_eq\"], data[\"A_ub\"],\n                                     data[\"b_ub\"], data[\"b_eq\"])\n        bounds = np.squeeze(data[\"bounds\"])\n        x0 = np.zeros(c.shape)\n    \n        if meth == \"sparse\":\n            A_eq = csr_matrix(A_eq)\n            A_ub = csr_matrix(A_ub)\n    \n        lp = _LPProblem(c, A_ub, b_ub, A_eq, b_eq, bounds, x0)\n        self.lp_cleaned = _clean_inputs(lp)",
         "min_run_count": 2,
