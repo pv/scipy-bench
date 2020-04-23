@@ -5698,6 +5698,31 @@
         "version": "108f4b104274b35e6ca904743fa9210c9aa3d2ca795577921ed22ab709f57684",
         "warmup_time": -1
     },
+    "spatial.SphericalVorAreas.time_spherical_polygon_area_calculation": {
+        "code": "class SphericalVorAreas:\n    def time_spherical_polygon_area_calculation(self, num_points):\n        \"\"\"Time the area calculation in the Spherical Voronoi code.\"\"\"\n        self.sv.calculate_areas()\n\n    def setup(self, num_points):\n        self.points = generate_spherical_points(num_points)\n        self.sv = SphericalVoronoi(self.points, radius=1,\n                                   center=np.zeros(3))",
+        "min_run_count": 2,
+        "name": "spatial.SphericalVorAreas.time_spherical_polygon_area_calculation",
+        "number": 0,
+        "param_names": [
+            "num_points"
+        ],
+        "params": [
+            [
+                "10",
+                "100",
+                "1000",
+                "5000",
+                "10000"
+            ]
+        ],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "88caac659e86b94c166b03a7f78598dcd94d06f476f1f551f098a82095dc12e2",
+        "warmup_time": -1
+    },
     "spatial.SphericalVorSort.time_spherical_polygon_vertex_sorting": {
         "code": "class SphericalVorSort:\n    def time_spherical_polygon_vertex_sorting(self, num_points):\n        \"\"\"Time the vertex sorting operation in the Spherical Voronoi\n        code.\n        \"\"\"\n        self.sv.sort_vertices_of_regions()\n\n    def setup(self, num_points):\n        self.points = generate_spherical_points(num_points)\n        self.sv = SphericalVoronoi(self.points, radius=1,\n                                   center=np.zeros(3))",
         "min_run_count": 2,
