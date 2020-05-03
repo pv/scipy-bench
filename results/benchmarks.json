@@ -94,19 +94,25 @@
         "version": "62d888a0d1080159d649bb8fd1de0cfe8b8b1f892bbeeb7f60de3bf620d20ffb",
         "warmup_time": -1
     },
-    "cluster.KMeans.time_kmeans2": {
-        "code": "class KMeans:\n    def time_kmeans2(self, k):\n        kmeans2(self.obs, k, iter=10)",
+    "cluster.KMeans2.time_kmeans2": {
+        "code": "class KMeans2:\n    def time_kmeans2(self, k, init):\n        with suppress_warnings() as sup:\n            sup.filter(UserWarning,\n                       \"One of the clusters is empty. Re-run kmeans with a \"\n                       \"different initialization\")\n            kmeans2(self.obs, k, minit=init, iter=10)",
         "min_run_count": 2,
-        "name": "cluster.KMeans.time_kmeans2",
+        "name": "cluster.KMeans2.time_kmeans2",
         "number": 0,
         "param_names": [
-            "k"
+            "k",
+            "init"
         ],
         "params": [
             [
                 "2",
                 "10",
                 "50"
+            ],
+            [
+                "'random'",
+                "'points'",
+                "'++'"
             ]
         ],
         "processes": 1,
@@ -114,7 +120,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "c81461b97a6926a305c065d4fca0e3b548bedcd26b8d4ba8e9af249b44b1a8bc",
+        "version": "c31b9cbce459810759ed0885ce6ceb752574888dda15e6d1ca13e71eed225442",
         "warmup_time": -1
     },
     "cluster.VQ.time_vq": {
