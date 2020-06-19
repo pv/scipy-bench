@@ -4810,7 +4810,7 @@
         "warmup_time": -1
     },
     "sparse_csgraph_djisktra.Dijkstra.time_dijkstra_multi": {
-        "code": "class Dijkstra:\n    def time_dijkstra_multi(self, n, min_only):\n        dijkstra(self.data,\n                 directed=False,\n                 indices=self.indices,\n                 min_only=min_only)\n\n    def setup(self, n, min_only):\n        np.random.seed(1234)\n        # make a random connectivity matrix\n        data = scipy.sparse.rand(n, n, density=0.2, format='csc',\n                                 random_state=42, dtype=np.bool)\n        data.setdiag(np.zeros(n, dtype=np.bool))\n        self.data = data\n        # choose some random vertices\n        v = np.arange(n)\n        np.random.shuffle(v)\n        self.indices = v[:int(n*.1)]",
+        "code": "class Dijkstra:\n    def time_dijkstra_multi(self, n, min_only):\n        dijkstra(self.data,\n                 directed=False,\n                 indices=self.indices,\n                 min_only=min_only)\n\n    def setup(self, n, min_only):\n        np.random.seed(1234)\n        # make a random connectivity matrix\n        data = scipy.sparse.rand(n, n, density=0.2, format='csc',\n                                 random_state=42, dtype=np.bool_)\n        data.setdiag(np.zeros(n, dtype=np.bool_))\n        self.data = data\n        # choose some random vertices\n        v = np.arange(n)\n        np.random.shuffle(v)\n        self.indices = v[:int(n*.1)]",
         "min_run_count": 2,
         "name": "sparse_csgraph_djisktra.Dijkstra.time_dijkstra_multi",
         "number": 0,
@@ -4834,7 +4834,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "2e50d9ba6dc6f5209de7bff1606bc9b57ee02a8275d8dd02e77fba057d714ba1",
+        "version": "ab81d663c1daaefb5d54aa8576a74ed64b3171460f71a3ec86353fc15fa142e7",
         "warmup_time": -1
     },
     "sparse_csgraph_matching.MaximumBipartiteMatching.time_maximum_bipartite_matching": {
@@ -6020,6 +6020,36 @@
         "type": "time",
         "unit": "seconds",
         "version": "339fc253c3add6deadbc1edc1112cf1b1fff85f70f57aeb9dd81e0ea23de9384",
+        "warmup_time": -1
+    },
+    "stats.BinnedStatistic.time_binned_statistic_dd_std": {
+        "code": "class BinnedStatistic:\n    def time_binned_statistic_dd_std(self):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            bins=[self.subbin_x_edges, self.subbin_y_edges])\n\n    def setup(self):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
+        "min_run_count": 2,
+        "name": "stats.BinnedStatistic.time_binned_statistic_dd_std",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "1ea0eb89bd1e5f3b5c6ec0928c6c1fefb93e639c2e4cd0215122b0c9c8635ecf",
+        "warmup_time": -1
+    },
+    "stats.BinnedStatistic.time_binned_statistic_dd_std_reuse_bin": {
+        "code": "class BinnedStatistic:\n    def time_binned_statistic_dd_std_reuse_bin(self):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            binned_statistic_result=self.ret)\n\n    def setup(self):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
+        "min_run_count": 2,
+        "name": "stats.BinnedStatistic.time_binned_statistic_dd_std_reuse_bin",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "processes": 1,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "32db78e5df8196d738a6f7cf7fd91493b864a64f6624296aef0f174aa2c23e45",
         "warmup_time": -1
     },
     "stats.CorrelationFunctions.time_fisher_exact": {
