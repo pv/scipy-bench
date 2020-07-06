@@ -2697,6 +2697,39 @@
         "version": "d05516db154b58d2f451d73de93d7796248136f0ca2000c3ad0e85943dca37ff",
         "warmup_time": -1
     },
+    "linalg_logm.Logm.time_logm": {
+        "code": "class Logm:\n    def time_logm(self, dtype, n, structure):\n        scipy.linalg.logm(self.A, disp=False)\n\n    def setup(self, dtype, n, structure):\n        n = int(n)\n        dtype = np.dtype(dtype)\n    \n        A = np.random.rand(n, n)\n        if dtype == np.complex128:\n            A = A + 1j*np.random.rand(n, n)\n    \n        if structure == 'pos':\n            A = A @ A.T.conj()\n        elif structure == 'her':\n            A = A + A.T.conj()\n    \n        self.A = A",
+        "min_run_count": 2,
+        "name": "linalg_logm.Logm.time_logm",
+        "number": 0,
+        "param_names": [
+            "dtype",
+            "n",
+            "structure"
+        ],
+        "params": [
+            [
+                "'float64'",
+                "'complex128'"
+            ],
+            [
+                "64",
+                "256"
+            ],
+            [
+                "'gen'",
+                "'her'",
+                "'pos'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "6e9f69e2e3cd7003ba0cf66bf2706a2be2c80f065d0f48427d3c7bda668a2058",
+        "warmup_time": -1
+    },
     "linalg_solve_toeplitz.SolveToeplitz.time_solve_toeplitz": {
         "code": "class SolveToeplitz:\n    def time_solve_toeplitz(self, dtype, n, soltype):\n        if soltype == 'toeplitz':\n            scipy.linalg.solve_toeplitz((self.c, self.r), self.y)\n        else:\n            scipy.linalg.solve(self.T, self.y)\n\n    def setup(self, dtype, n, soltype):\n        random = np.random.RandomState(1234)\n    \n        dtype = np.dtype(dtype)\n    \n        # Sample a random Toeplitz matrix representation and rhs.\n        c = random.randn(n)\n        r = random.randn(n)\n        y = random.randn(n)\n        if dtype == np.complex128:\n            c = c + 1j*random.rand(n)\n            r = r + 1j*random.rand(n)\n            y = y + 1j*random.rand(n)\n    \n        self.c = c\n        self.r = r\n        self.y = y\n        self.T = scipy.linalg.toeplitz(c, r=r)",
         "min_run_count": 2,
@@ -6118,34 +6151,60 @@
         "version": "339fc253c3add6deadbc1edc1112cf1b1fff85f70f57aeb9dd81e0ea23de9384",
         "warmup_time": -1
     },
-    "stats.BinnedStatistic.time_binned_statistic_dd_std": {
-        "code": "class BinnedStatistic:\n    def time_binned_statistic_dd_std(self):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            bins=[self.subbin_x_edges, self.subbin_y_edges])\n\n    def setup(self):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
+    "stats.BinnedStatisticDD.time_binned_statistic_dd": {
+        "code": "class BinnedStatisticDD:\n    def time_binned_statistic_dd(self, statistic):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])\n\n    def setup(self, statistic):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
         "min_run_count": 2,
-        "name": "stats.BinnedStatistic.time_binned_statistic_dd_std",
+        "name": "stats.BinnedStatisticDD.time_binned_statistic_dd",
         "number": 0,
-        "param_names": [],
-        "params": [],
+        "param_names": [
+            "param1"
+        ],
+        "params": [
+            [
+                "'count'",
+                "'sum'",
+                "'mean'",
+                "'min'",
+                "'max'",
+                "'median'",
+                "'std'",
+                "<function std>"
+            ]
+        ],
         "rounds": 2,
         "sample_time": 0.01,
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "1ea0eb89bd1e5f3b5c6ec0928c6c1fefb93e639c2e4cd0215122b0c9c8635ecf",
+        "version": "508fc7144f1106311d19bb4521c02150c5dbf081379349da5a53c8258fde4505",
         "warmup_time": -1
     },
-    "stats.BinnedStatistic.time_binned_statistic_dd_std_reuse_bin": {
-        "code": "class BinnedStatistic:\n    def time_binned_statistic_dd_std_reuse_bin(self):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            binned_statistic_result=self.ret)\n\n    def setup(self):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=\"std\",\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
+    "stats.BinnedStatisticDD.time_binned_statistic_dd_reuse_bin": {
+        "code": "class BinnedStatisticDD:\n    def time_binned_statistic_dd_reuse_bin(self, statistic):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            binned_statistic_result=self.ret)\n\n    def setup(self, statistic):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
         "min_run_count": 2,
-        "name": "stats.BinnedStatistic.time_binned_statistic_dd_std_reuse_bin",
+        "name": "stats.BinnedStatisticDD.time_binned_statistic_dd_reuse_bin",
         "number": 0,
-        "param_names": [],
-        "params": [],
+        "param_names": [
+            "param1"
+        ],
+        "params": [
+            [
+                "'count'",
+                "'sum'",
+                "'mean'",
+                "'min'",
+                "'max'",
+                "'median'",
+                "'std'",
+                "<function std>"
+            ]
+        ],
         "rounds": 2,
         "sample_time": 0.01,
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "32db78e5df8196d738a6f7cf7fd91493b864a64f6624296aef0f174aa2c23e45",
+        "version": "155a7d0aa43d42f6338e8078e753af03fd6e71246897babe3e3dfea6950ef95d",
         "warmup_time": -1
     },
     "stats.CorrelationFunctions.time_fisher_exact": {
