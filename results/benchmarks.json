@@ -4174,6 +4174,56 @@
         "version": "83450868d03ffee8f8a2ee6f9f4232ba297f343516d53597fa4b8d544e8700ab",
         "warmup_time": -1
     },
+    "sparse.BlockDiagDenseConstruction.time_block_diag": {
+        "code": "class BlockDiagDenseConstruction:\n    def time_block_diag(self, num_matrices):\n        sparse.block_diag(self.matrices)\n\n    def setup(self, num_matrices):\n        self.matrices = []\n        for i in range(num_matrices):\n            rows = np.random.randint(1, 4)\n            columns = np.random.randint(1, 4)\n            mat = np.random.randint(0, 10, (rows, columns))\n            self.matrices.append(mat)",
+        "min_run_count": 2,
+        "name": "sparse.BlockDiagDenseConstruction.time_block_diag",
+        "number": 0,
+        "param_names": [
+            "num_matrices"
+        ],
+        "params": [
+            [
+                "1000",
+                "5000",
+                "10000",
+                "15000",
+                "20000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "7d89c60d3f9a3f896db0a137cec267e26b32073fb884c7286d8ccb64ac4cf2cc",
+        "warmup_time": -1
+    },
+    "sparse.BlockDiagSparseConstruction.time_block_diag": {
+        "code": "class BlockDiagSparseConstruction:\n    def time_block_diag(self, num_matrices):\n        sparse.block_diag(self.matrices)\n\n    def setup(self, num_matrices):\n        self.matrices = []\n        for i in range(num_matrices):\n            rows = np.random.randint(1, 20)\n            columns = np.random.randint(1, 20)\n            mat = np.random.randint(0, 10, (rows, columns))\n            self.matrices.append(mat)",
+        "min_run_count": 2,
+        "name": "sparse.BlockDiagSparseConstruction.time_block_diag",
+        "number": 0,
+        "param_names": [
+            "num_matrices"
+        ],
+        "params": [
+            [
+                "100",
+                "500",
+                "1000",
+                "1500",
+                "2000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "4a1e400ac75879f27f5430484625271ce5c67ad81ca2d26ce753d2c0e690d14d",
+        "warmup_time": -1
+    },
     "sparse.Construction.time_construction": {
         "code": "class Construction:\n    def time_construction(self, name, format):\n        T = self.cls(self.A.shape)\n        for i, j, v in zip(self.A.row, self.A.col, self.A.data):\n            T[i, j] = v\n\n    def setup(self, name, format):\n        if name == 'Empty':\n            self.A = coo_matrix((10000, 10000))\n        elif name == 'Identity':\n            self.A = sparse.eye(10000, format='coo')\n        else:\n            self.A = poisson2d(100, format='coo')\n    \n        formats = {'lil': lil_matrix, 'dok': dok_matrix}\n        self.cls = formats[format]",
         "min_run_count": 2,
@@ -4496,7 +4546,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:310",
+        "setup_cache_key": "sparse:342",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -4526,7 +4576,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:310",
+        "setup_cache_key": "sparse:342",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -4556,7 +4606,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:310",
+        "setup_cache_key": "sparse:342",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -4586,7 +4636,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:310",
+        "setup_cache_key": "sparse:342",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -4616,7 +4666,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:310",
+        "setup_cache_key": "sparse:342",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -4646,7 +4696,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:310",
+        "setup_cache_key": "sparse:342",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
