@@ -6257,6 +6257,55 @@
         "version": "155a7d0aa43d42f6338e8078e753af03fd6e71246897babe3e3dfea6950ef95d",
         "warmup_time": -1
     },
+    "stats.ContinuousFitAnalyticalMLEOverride.time_fit": {
+        "code": "class ContinuousFitAnalyticalMLEOverride:\n    def time_fit(self, dist_name, loc_fixed, scale_fixed, shape1_fixed,\n                 shape2_fixed, shape3_fixed):\n        self.distn.fit(self.data, **self.fixed)\n\n    def setup(self, dist_name, loc_fixed, scale_fixed, shape1_fixed,\n              shape2_fixed, shape3_fixed):\n        self.distn = eval(\"stats.\" + dist_name)\n    \n        # default `loc` and `scale` are .834 and 4.342, and shapes are from\n        # `_distr_params.py`\n        default_shapes = self.distcont[dist_name]\n        param_values = self.custom_input.get(dist_name, [.834, 4.342,\n                                                         *default_shapes])\n        # separate relevant and non-relevant parameters for this distribution\n        # based on the number of shapes\n        nparam = len(param_values)\n        all_parameters = [loc_fixed, scale_fixed, shape1_fixed, shape2_fixed,\n                          shape3_fixed]\n        relevant_parameters = all_parameters[:nparam]\n        nonrelevant_parameters = all_parameters[nparam:]\n    \n        # skip if all parameters are fixed or if non relevant parameters are\n        # not all false\n        if True in nonrelevant_parameters or False not in relevant_parameters:\n            raise NotImplementedError(\"skip non-relevant case\")\n    \n        # add fixed values if fixed in relevant_parameters to self.fixed\n        # with keys from self.fnames and values from parameter_values\n        self.fixed = dict(zip(compress(self.fnames, relevant_parameters),\n                          compress(param_values, relevant_parameters)))\n        self.data = self.distn.rvs(*param_values, size=1000)",
+        "min_run_count": 2,
+        "name": "stats.ContinuousFitAnalyticalMLEOverride.time_fit",
+        "number": 0,
+        "param_names": [
+            "distribution",
+            "loc_fixed",
+            "scale_fixed",
+            "shape1_fixed",
+            "shape2_fixed",
+            "shape3_fixed"
+        ],
+        "params": [
+            [
+                "'pareto'",
+                "'laplace'",
+                "'rayleigh'",
+                "'invgauss'"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "True",
+                "False"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "00ab390e8376de544acfcdfc3079f96a3d213a37c576fa752ffdd93d6711bc75",
+        "warmup_time": -1
+    },
     "stats.CorrelationFunctions.time_fisher_exact": {
         "code": "class CorrelationFunctions:\n    def time_fisher_exact(self, alternative):\n        oddsratio, pvalue = stats.fisher_exact(self.a, alternative=alternative)\n\n    def setup(self, mode):\n        a = np.random.rand(2,2) * 10\n        self.a = a",
         "min_run_count": 2,
