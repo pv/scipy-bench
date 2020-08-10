@@ -4085,7 +4085,7 @@
         "warmup_time": -1
     },
     "signal_filtering.ParallelSosfilt.time_sosfilt": {
-        "code": "class ParallelSosfilt:\n    def time_sosfilt(self, n_samples, threads):\n        pool = ThreadPoolExecutor(max_workers=threads)\n        futures = []\n        for i in range(threads):\n            futures.append(pool.submit(sosfilt, self.filt, self.chunks[i]))\n    \n        wait(futures)\n\n    def setup(self, n_samples, threads):\n        self.filt = butter(8, 8e-6, \"lowpass\", output=\"sos\")\n        self.data = np.arange(int(n_samples) * 3000).reshape(int(n_samples), 3000)\n        self.chunks = np.array_split(self.data, threads)",
+        "code": "class ParallelSosfilt:\n    def time_sosfilt(self, n_samples, threads):\n        with ThreadPoolExecutor(max_workers=threads) as pool:\n            futures = []\n            for i in range(threads):\n                futures.append(pool.submit(sosfilt, self.filt, self.chunks[i]))\n    \n            wait(futures)\n\n    def setup(self, n_samples, threads):\n        self.filt = butter(8, 8e-6, \"lowpass\", output=\"sos\")\n        self.data = np.arange(int(n_samples) * 3000).reshape(int(n_samples), 3000)\n        self.chunks = np.array_split(self.data, threads)",
         "min_run_count": 2,
         "name": "signal_filtering.ParallelSosfilt.time_sosfilt",
         "number": 0,
@@ -4109,7 +4109,7 @@
         "timeout": 100,
         "type": "time",
         "unit": "seconds",
-        "version": "47da5e38352436fbd61289f3e058d8b8e6cf07647b80451edd1616f2a10f3889",
+        "version": "f13929d19d7ccbc2e5176b5f1a89c329dcd83713060a4b13b2953e15f49036ee",
         "warmup_time": -1
     },
     "signal_filtering.Sosfilt.time_sosfilt_basic": {
@@ -5964,7 +5964,7 @@
         "warmup_time": -1
     },
     "spatial.Xdist.time_cdist": {
-        "code": "class Xdist:\n    def time_cdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.cdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.cdist(self.points, self.points, metric, w=self.w)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        # use an equal weight vector to satisfy those metrics\n        # that require weights\n        if metric == 'wminkowski':\n            self.w = np.ones(3)\n        else:\n            self.w = None",
+        "code": "class Xdist:\n    def time_cdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.cdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.cdist(self.points, self.points, self.metric, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        elif metric == 'wminkowski':\n            # use an equal weight vector since weights are required\n            self.kwargs = {'w': np.ones(3)}\n        else:\n            self.kwargs = {}",
         "min_run_count": 2,
         "name": "spatial.Xdist.time_cdist",
         "number": 0,
@@ -6000,7 +6000,8 @@
                 "'russellrao'",
                 "'sokalmichener'",
                 "'sokalsneath'",
-                "'wminkowski'"
+                "'wminkowski'",
+                "'minkowski-P3'"
             ]
         ],
         "rounds": 2,
@@ -6008,11 +6009,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "7bf441cb8e7f9b0220911e204111cdd4956eb074372fde25a45f20036d014bd6",
+        "version": "95b5ad291484978e2ab873dda35a7e2168e0380554d8e427997c9c2dbf3a31e4",
         "warmup_time": -1
     },
     "spatial.Xdist.time_pdist": {
-        "code": "class Xdist:\n    def time_pdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.pdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.pdist(self.points, metric, w=self.w)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        # use an equal weight vector to satisfy those metrics\n        # that require weights\n        if metric == 'wminkowski':\n            self.w = np.ones(3)\n        else:\n            self.w = None",
+        "code": "class Xdist:\n    def time_pdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.pdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.pdist(self.points, self.metric, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        elif metric == 'wminkowski':\n            # use an equal weight vector since weights are required\n            self.kwargs = {'w': np.ones(3)}\n        else:\n            self.kwargs = {}",
         "min_run_count": 2,
         "name": "spatial.Xdist.time_pdist",
         "number": 0,
@@ -6048,7 +6049,8 @@
                 "'russellrao'",
                 "'sokalmichener'",
                 "'sokalsneath'",
-                "'wminkowski'"
+                "'wminkowski'",
+                "'minkowski-P3'"
             ]
         ],
         "rounds": 2,
@@ -6056,7 +6058,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "1394e1a468e397ac147be25c326b7fead116b774cae18c11ff8063fb00a3f1b6",
+        "version": "d24e650df51666111bf1500a4f410bd98412634afdc8096e9a85006c6dbfe4b8",
         "warmup_time": -1
     },
     "special.Airy.time_ai_zeros": {
