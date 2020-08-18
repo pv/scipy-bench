@@ -5810,6 +5810,30 @@
         "version": "ebb37912ff93ea6b2dfa4dd3e8da6585adcb19a26384b0d88b4d7b0bd6da9738",
         "warmup_time": -1
     },
+    "spatial.RotationBench.time_mrp_conversion": {
+        "code": "class RotationBench:\n    def time_mrp_conversion(self, num_rotations):\n        '''Time converting rotation from and to Modified Rodrigues Parameters'''\n        Rotation.from_mrp(self.rotations.as_mrp())\n\n    def setup(self, num_rotations):\n        np.random.seed(1234)\n        self.rotations = Rotation.random(num_rotations)",
+        "min_run_count": 2,
+        "name": "spatial.RotationBench.time_mrp_conversion",
+        "number": 0,
+        "param_names": [
+            "num_rotations"
+        ],
+        "params": [
+            [
+                "1",
+                "10",
+                "1000",
+                "10000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "1351f3f2284b2e53067f0f7c39d47f59f91cc79745a128fe6e6b13a2d236a6c8",
+        "warmup_time": -1
+    },
     "spatial.RotationBench.time_mul_inv": {
         "code": "class RotationBench:\n    def time_mul_inv(self, num_rotations):\n        '''Time multiplication and inverse of rotations'''\n        self.rotations * self.rotations.inv()\n\n    def setup(self, num_rotations):\n        np.random.seed(1234)\n        self.rotations = Rotation.random(num_rotations)",
         "min_run_count": 2,
