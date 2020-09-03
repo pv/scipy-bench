@@ -2796,6 +2796,292 @@
         "version": "359ff21f2b4f63f08772e0e19eef1758190d58abd549c8b5b6d8b784100b9cb0",
         "warmup_time": -1
     },
+    "ndimage_interpolation.NdimageInterpolation.peakmem_rotate": {
+        "code": "class NdimageInterpolation:\n    def peakmem_rotate(self, shape, order, mode):\n        rotate(self.x, 15, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "name": "ndimage_interpolation.NdimageInterpolation.peakmem_rotate",
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "6f1ea489a0714868c9f52c013d563cda0604c90c44d49df51afe4c5c362a8331"
+    },
+    "ndimage_interpolation.NdimageInterpolation.peakmem_shift": {
+        "code": "class NdimageInterpolation:\n    def peakmem_shift(self, shape, order, mode):\n        shift(self.x, 3, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "name": "ndimage_interpolation.NdimageInterpolation.peakmem_shift",
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "c0431a339d0b5e59a56534e533fc4236ebe6fc1086c437410c900ab9005e4dd7"
+    },
+    "ndimage_interpolation.NdimageInterpolation.time_affine_transform": {
+        "code": "class NdimageInterpolation:\n    def time_affine_transform(self, shape, order, mode):\n        if self.x.ndim == 2:\n            matrix = self.matrix_2d\n        else:\n            matrix = self.matrix_3d\n        affine_transform(self.x, matrix, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "min_run_count": 2,
+        "name": "ndimage_interpolation.NdimageInterpolation.time_affine_transform",
+        "number": 0,
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "87ae4c3be4b670d5403bc0cecc52f5b360269fe4b6d91bce0cc65359bbb45888",
+        "warmup_time": -1
+    },
+    "ndimage_interpolation.NdimageInterpolation.time_geometric_transform_mapping": {
+        "code": "class NdimageInterpolation:\n    def time_geometric_transform_mapping(self, shape, order, mode):\n        if self.x.ndim == 2:\n            mapping = shift_func_2d\n        if self.x.ndim == 3:\n            mapping = shift_func_3d\n        geometric_transform(self.x, mapping, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "min_run_count": 2,
+        "name": "ndimage_interpolation.NdimageInterpolation.time_geometric_transform_mapping",
+        "number": 0,
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "7d3fc4986820607551da357e66e28639b5182b2b75c35dbc7c979748b11042a1",
+        "warmup_time": -1
+    },
+    "ndimage_interpolation.NdimageInterpolation.time_map_coordinates": {
+        "code": "class NdimageInterpolation:\n    def time_map_coordinates(self, shape, order, mode):\n        coords = np.meshgrid(*[np.arange(0, s, 2) + 0.3 for s in self.x.shape])\n        map_coordinates(self.x, coords, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "min_run_count": 2,
+        "name": "ndimage_interpolation.NdimageInterpolation.time_map_coordinates",
+        "number": 0,
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "12262655b132fab6113eccbf4e5c74a7683219f463ba745394a95c0eb0e02053",
+        "warmup_time": -1
+    },
+    "ndimage_interpolation.NdimageInterpolation.time_rotate": {
+        "code": "class NdimageInterpolation:\n    def time_rotate(self, shape, order, mode):\n        rotate(self.x, 15, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "min_run_count": 2,
+        "name": "ndimage_interpolation.NdimageInterpolation.time_rotate",
+        "number": 0,
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "c346329372eb7abaaedd1f78c642ae55fff9d5991644b9608ab3ed4380d00d0c",
+        "warmup_time": -1
+    },
+    "ndimage_interpolation.NdimageInterpolation.time_shift": {
+        "code": "class NdimageInterpolation:\n    def time_shift(self, shape, order, mode):\n        shift(self.x, (-2.5,) * self.x.ndim, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "min_run_count": 2,
+        "name": "ndimage_interpolation.NdimageInterpolation.time_shift",
+        "number": 0,
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "136f315880a230d6e7dd105c0bbefde19261fab1b85e40d0d6124dbf51359c04",
+        "warmup_time": -1
+    },
+    "ndimage_interpolation.NdimageInterpolation.time_zoom": {
+        "code": "class NdimageInterpolation:\n    def time_zoom(self, shape, order, mode):\n        zoom(self.x, (1.3,) * self.x.ndim, order=order, mode=mode)\n\n    def setup(self, shape, order, mode):\n        rstate = np.random.RandomState(5)\n        self.x = rstate.standard_normal(shape)\n        self.matrix_2d = np.asarray([[0.8, 0, 1.5],\n                                     [0, 1.2, -5.]])\n        self.matrix_3d = np.asarray([[0.8, 0, 0, 1.5],\n                                     [0, 1.2, 0, -5.],\n                                     [0, 0, 1, 0]])",
+        "min_run_count": 2,
+        "name": "ndimage_interpolation.NdimageInterpolation.time_zoom",
+        "number": 0,
+        "param_names": [
+            "shape",
+            "order",
+            "mode"
+        ],
+        "params": [
+            [
+                "(64, 64)",
+                "(512, 512)",
+                "(2048, 2048)",
+                "(16, 16, 16)",
+                "(128, 128, 128)"
+            ],
+            [
+                "0",
+                "1",
+                "3",
+                "5"
+            ],
+            [
+                "'mirror'",
+                "'constant'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "986a39adec187cc3b9b3ad42a883d5fa054683bbc38fa75ff3a5c64d9d1fb14d",
+        "warmup_time": -1
+    },
     "optimize.BenchGlobal.track_all": {
         "code": "class BenchGlobal:\n    def track_all(self, name, ret_value, solver):\n        if name in self.results and solver in self.results[name]:\n            # have we done the function, and done the solver?\n            # if so, then just return the ret_value\n            av_results = self.results[name]\n            if ret_value == 'success%':\n                return 100 * av_results[solver]['nsuccess'] / av_results[solver]['ntrials']\n            elif ret_value == '<nfev>':\n                return av_results[solver]['mean_nfev']\n            else:\n                raise ValueError()\n    \n        klass = self._functions[name]\n        f = klass()\n        try:\n            b = _BenchOptimizers.from_funcobj(name, f)\n            with np.errstate(all='ignore'):\n                b.bench_run_global(methods=[solver],\n                                   numtrials=self.numtrials)\n    \n            av_results = b.average_results()\n    \n            if name not in self.results:\n                self.results[name] = {}\n            self.results[name][solver] = av_results[solver]\n    \n            if ret_value == 'success%':\n                return 100 * av_results[solver]['nsuccess'] / av_results[solver]['ntrials']\n            elif ret_value == '<nfev>':\n                return av_results[solver]['mean_nfev']\n            else:\n                raise ValueError()\n        except Exception:\n            print(\"\".join(traceback.format_exc()))\n            self.results[name] = \"\".join(traceback.format_exc())\n\n    def setup(self, name, ret_value, solver):\n        if not self.enabled:\n            print(\"BenchGlobal.track_all not enabled --- export SCIPY_XSLOW=1 to enable.\\n\"\n                  \"Set also e.g. SCIPY_GLOBAL_BENCH_NUMTRIALS=10 to specify how many iterations\\n\"\n                  \"of each benchmark will be run (default 100).\\n\"\n                  \"Note that it can take several hours to run; intermediate output\\n\"\n                  \"can be found under benchmarks/global-bench-results.json\\n\"\n                  \"You can specify functions to benchmark via SCIPY_GLOBAL_BENCH=AMGM,Adjiman,...\")\n            raise NotImplementedError()\n    \n        if name not in self._enabled_functions:\n            raise NotImplementedError(\"skipped\")\n    \n        # load json backing file\n        with open(self.dump_fn, 'r') as f:\n            self.results = json.load(f)\n\n    def setup_cache(self):\n        if not self.enabled:\n            return\n    \n        # create the logfile to start with\n        with open(self.dump_fn, 'w') as f:\n            json.dump({}, f, indent=2)",
         "name": "optimize.BenchGlobal.track_all",
