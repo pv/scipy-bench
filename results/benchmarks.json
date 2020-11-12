@@ -3221,7 +3221,7 @@
         "warmup_time": -1
     },
     "optimize.BenchGlobal.track_all": {
-        "code": "class BenchGlobal:\n    def track_all(self, name, ret_value, solver):\n        if name in self.results and solver in self.results[name]:\n            # have we done the function, and done the solver?\n            # if so, then just return the ret_value\n            av_results = self.results[name]\n            if ret_value == 'success%':\n                return 100 * av_results[solver]['nsuccess'] / av_results[solver]['ntrials']\n            elif ret_value == '<nfev>':\n                return av_results[solver]['mean_nfev']\n            else:\n                raise ValueError()\n    \n        klass = self._functions[name]\n        f = klass()\n        try:\n            b = _BenchOptimizers.from_funcobj(name, f)\n            with np.errstate(all='ignore'):\n                b.bench_run_global(methods=[solver],\n                                   numtrials=self.numtrials)\n    \n            av_results = b.average_results()\n    \n            if name not in self.results:\n                self.results[name] = {}\n            self.results[name][solver] = av_results[solver]\n    \n            if ret_value == 'success%':\n                return 100 * av_results[solver]['nsuccess'] / av_results[solver]['ntrials']\n            elif ret_value == '<nfev>':\n                return av_results[solver]['mean_nfev']\n            else:\n                raise ValueError()\n        except Exception:\n            print(\"\".join(traceback.format_exc()))\n            self.results[name] = \"\".join(traceback.format_exc())\n\n    def setup(self, name, ret_value, solver):\n        if not self.enabled:\n            print(\"BenchGlobal.track_all not enabled --- export SCIPY_XSLOW=1 to enable.\\n\"\n                  \"Set also e.g. SCIPY_GLOBAL_BENCH_NUMTRIALS=10 to specify how many iterations\\n\"\n                  \"of each benchmark will be run (default 100).\\n\"\n                  \"Note that it can take several hours to run; intermediate output\\n\"\n                  \"can be found under benchmarks/global-bench-results.json\\n\"\n                  \"You can specify functions to benchmark via SCIPY_GLOBAL_BENCH=AMGM,Adjiman,...\")\n            raise NotImplementedError()\n    \n        if name not in self._enabled_functions:\n            raise NotImplementedError(\"skipped\")\n    \n        # load json backing file\n        with open(self.dump_fn, 'r') as f:\n            self.results = json.load(f)\n\n    def setup_cache(self):\n        if not self.enabled:\n            return\n    \n        # create the logfile to start with\n        with open(self.dump_fn, 'w') as f:\n            json.dump({}, f, indent=2)",
+        "code": "class BenchGlobal:\n    def track_all(self, name, ret_value, solver):\n        if name in self.results and solver in self.results[name]:\n            # have we done the function, and done the solver?\n            # if so, then just return the ret_value\n            av_results = self.results[name]\n            if ret_value == 'success%':\n                return 100 * av_results[solver]['nsuccess'] / av_results[solver]['ntrials']\n            elif ret_value == '<nfev>':\n                return av_results[solver]['mean_nfev']\n            else:\n                raise ValueError()\n    \n        klass = self._functions[name]\n        f = klass()\n        try:\n            b = _BenchOptimizers.from_funcobj(name, f)\n            with np.errstate(all='ignore'):\n                b.bench_run_global(methods=[solver],\n                                   numtrials=self.numtrials)\n    \n            av_results = b.average_results()\n    \n            if name not in self.results:\n                self.results[name] = {}\n            self.results[name][solver] = av_results[solver]\n    \n            if ret_value == 'success%':\n                return 100 * av_results[solver]['nsuccess'] / av_results[solver]['ntrials']\n            elif ret_value == '<nfev>':\n                return av_results[solver]['mean_nfev']\n            else:\n                raise ValueError()\n        except Exception:\n            print(\"\".join(traceback.format_exc()))\n            self.results[name] = \"\".join(traceback.format_exc())\n\n    def setup(self, name, ret_value, solver):\n        if name not in self._enabled_functions:\n            raise NotImplementedError(\"skipped\")\n    \n        # load json backing file\n        with open(self.dump_fn, 'r') as f:\n            self.results = json.load(f)\n\n    def setup_cache(self):\n        if not self.enabled:\n            return\n    \n        # create the logfile to start with\n        with open(self.dump_fn, 'w') as f:\n            json.dump({}, f, indent=2)",
         "name": "optimize.BenchGlobal.track_all",
         "param_names": [
             "test function",
@@ -3436,11 +3436,11 @@
                 "'DA'"
             ]
         ],
-        "setup_cache_key": "optimize:522",
+        "setup_cache_key": "optimize:519",
         "timeout": 300,
         "type": "track",
         "unit": "unit",
-        "version": "f292a5a60000069df921859d10a67ba9102e85541b6677e3a73a166fec4c0bb1"
+        "version": "054a3246db40d00bd06bdd153e16fba533aa32a939b0cc5a9d4ad3425afdd4d5"
     },
     "optimize.BenchLeastSquares.track_all": {
         "code": "class BenchLeastSquares:\n    def track_all(self, problem_name, result_type):\n        problem = self.problems[problem_name]\n    \n        if problem.lb is not None or problem.ub is not None:\n            raise NotImplementedError\n    \n        ftol = 1e-5\n    \n        if result_type == 'average time':\n            n_runs = 10\n            t0 = time.time()\n            for _ in range(n_runs):\n                leastsq(problem.fun, problem.x0, Dfun=problem.jac, ftol=ftol,\n                        full_output=True)\n            return (time.time() - t0) / n_runs\n    \n        x, cov_x, info, message, ier = leastsq(\n            problem.fun, problem.x0, Dfun=problem.jac,\n            ftol=ftol, full_output=True\n        )\n        if result_type == 'nfev':\n            return info['nfev']\n        elif result_type == 'success':\n            return int(problem.check_answer(x, ftol))\n        else:\n            raise NotImplementedError",
@@ -5713,7 +5713,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:342",
+        "setup_cache_key": "sparse:340",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5743,7 +5743,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:342",
+        "setup_cache_key": "sparse:340",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5773,7 +5773,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:342",
+        "setup_cache_key": "sparse:340",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5803,7 +5803,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:342",
+        "setup_cache_key": "sparse:340",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5833,7 +5833,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:342",
+        "setup_cache_key": "sparse:340",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5863,7 +5863,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:342",
+        "setup_cache_key": "sparse:340",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
