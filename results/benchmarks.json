@@ -3916,10 +3916,10 @@
         ],
         "params": [
             [
-                "None (0)",
-                "None (1)",
-                "None (2)",
-                "None (3)"
+                "<function _remove_redundancy_svd>",
+                "<function _remove_redundancy_pivot_sparse>",
+                "<function _remove_redundancy_pivot_dense>",
+                "<function _remove_redundancy_id>"
             ],
             [
                 "'AFIRO'",
@@ -3959,10 +3959,10 @@
         ],
         "params": [
             [
-                "None (0)",
-                "None (1)",
-                "None (2)",
-                "None (3)"
+                "<function _remove_redundancy_svd>",
+                "<function _remove_redundancy_pivot_sparse>",
+                "<function _remove_redundancy_pivot_dense>",
+                "<function _remove_redundancy_id>"
             ],
             [
                 "'AFIRO'",
