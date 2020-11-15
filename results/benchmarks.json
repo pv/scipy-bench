@@ -3906,7 +3906,7 @@
         "version": "befe1a7a33447935ad3d650fd130dc2fc23eb5db0f4181621556a468b07bec42"
     },
     "optimize_linprog.Netlib_RR.time_netlib_rr": {
-        "code": "class Netlib_RR:\n    def time_netlib_rr(self, meth, prob):\n        self.rr_A, b, status, message = meth(self.A_eq, self.b_eq)\n\n    def setup(self, meth, prob):\n        if prob not in enabled_rr_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        if (meth.__name__, prob) in self.known_fails:\n            raise NotImplementedError(\"Known issues with these benchmarks.\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n    \n        c, A_eq, A_ub, b_ub, b_eq = (data[\"c\"], data[\"A_eq\"], data[\"A_ub\"],\n                                     data[\"b_ub\"], data[\"b_eq\"])\n        bounds = np.squeeze(data[\"bounds\"])\n        x0 = np.zeros(c.shape)\n    \n        lp = _LPProblem(c, A_ub, b_ub, A_eq, b_eq, bounds, x0)\n        lp_cleaned = _clean_inputs(lp)\n        res = _presolve(lp_cleaned, rr=False, tol=1e-9)[0]\n    \n        self.A_eq, self.b_eq = res.A_eq, res.b_eq\n        self.true_rank = np.linalg.matrix_rank(self.A_eq)\n        if meth == _remove_redundancy_sparse:\n            self.A_eq = csc_matrix(self.A_eq)\n        self.rr_A = None",
+        "code": "class Netlib_RR:\n    def time_netlib_rr(self, meth, prob):\n        self.rr_A, b, status, message = meth(self.A_eq, self.b_eq)\n\n    def setup(self, meth, prob):\n        if prob not in enabled_rr_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        if (meth.__name__, prob) in self.known_fails:\n            raise NotImplementedError(\"Known issues with these benchmarks.\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n    \n        c, A_eq, A_ub, b_ub, b_eq = (data[\"c\"], data[\"A_eq\"], data[\"A_ub\"],\n                                     data[\"b_ub\"], data[\"b_eq\"])\n        bounds = np.squeeze(data[\"bounds\"])\n        x0 = np.zeros(c.shape)\n    \n        lp = _LPProblem(c, A_ub, b_ub, A_eq, b_eq, bounds, x0)\n        lp_cleaned = _clean_inputs(lp)\n        # rr_method is None here because we're not using RR\n        res = _presolve(lp_cleaned, rr=False, rr_method=None, tol=1e-9)[0]\n    \n        self.A_eq, self.b_eq = res.A_eq, res.b_eq\n        self.true_rank = np.linalg.matrix_rank(self.A_eq)\n        if meth == _remove_redundancy_pivot_sparse:\n            self.A_eq = csc_matrix(self.A_eq)\n        self.rr_A = None",
         "min_run_count": 2,
         "name": "optimize_linprog.Netlib_RR.time_netlib_rr",
         "number": 0,
@@ -3916,9 +3916,10 @@
         ],
         "params": [
             [
-                "<function _remove_redundancy>",
-                "<function _remove_redundancy_dense>",
-                "<function _remove_redundancy_sparse>"
+                "None (0)",
+                "None (1)",
+                "None (2)",
+                "None (3)"
             ],
             [
                 "'AFIRO'",
@@ -3946,11 +3947,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "ea4ab02f0e26feba61f625dcc0b19a71498c5823761fc1c10b1f56b4352bc4f8",
+        "version": "c87adf63784901c870c29475cf493f74ee16fe26b47f4c90d8ca1a961c91a494",
         "warmup_time": -1
     },
     "optimize_linprog.Netlib_RR.track_netlib_rr": {
-        "code": "class Netlib_RR:\n    def track_netlib_rr(self, meth, prob):\n        if self.rr_A is None:\n            self.time_netlib_rr(meth, prob)\n    \n        if meth == _remove_redundancy_sparse:\n            self.rr_A = self.rr_A.todense()\n    \n        rr_rank = np.linalg.matrix_rank(self.rr_A)\n        rr_rows = self.rr_A.shape[0]\n    \n        self.error1 = rr_rank - self.true_rank\n        self.error2 = rr_rows - self.true_rank\n    \n        if abs(self.error1) > abs(self.error2):\n            return float(self.error1)\n        else:\n            return float(self.error2)\n\n    def setup(self, meth, prob):\n        if prob not in enabled_rr_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        if (meth.__name__, prob) in self.known_fails:\n            raise NotImplementedError(\"Known issues with these benchmarks.\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n    \n        c, A_eq, A_ub, b_ub, b_eq = (data[\"c\"], data[\"A_eq\"], data[\"A_ub\"],\n                                     data[\"b_ub\"], data[\"b_eq\"])\n        bounds = np.squeeze(data[\"bounds\"])\n        x0 = np.zeros(c.shape)\n    \n        lp = _LPProblem(c, A_ub, b_ub, A_eq, b_eq, bounds, x0)\n        lp_cleaned = _clean_inputs(lp)\n        res = _presolve(lp_cleaned, rr=False, tol=1e-9)[0]\n    \n        self.A_eq, self.b_eq = res.A_eq, res.b_eq\n        self.true_rank = np.linalg.matrix_rank(self.A_eq)\n        if meth == _remove_redundancy_sparse:\n            self.A_eq = csc_matrix(self.A_eq)\n        self.rr_A = None",
+        "code": "class Netlib_RR:\n    def track_netlib_rr(self, meth, prob):\n        if self.rr_A is None:\n            self.time_netlib_rr(meth, prob)\n    \n        if meth == _remove_redundancy_pivot_sparse:\n            self.rr_A = self.rr_A.todense()\n    \n        rr_rank = np.linalg.matrix_rank(self.rr_A)\n        rr_rows = self.rr_A.shape[0]\n    \n        self.error1 = rr_rank - self.true_rank\n        self.error2 = rr_rows - self.true_rank\n    \n        if abs(self.error1) > abs(self.error2):\n            return float(self.error1)\n        else:\n            return float(self.error2)\n\n    def setup(self, meth, prob):\n        if prob not in enabled_rr_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        if (meth.__name__, prob) in self.known_fails:\n            raise NotImplementedError(\"Known issues with these benchmarks.\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n    \n        c, A_eq, A_ub, b_ub, b_eq = (data[\"c\"], data[\"A_eq\"], data[\"A_ub\"],\n                                     data[\"b_ub\"], data[\"b_eq\"])\n        bounds = np.squeeze(data[\"bounds\"])\n        x0 = np.zeros(c.shape)\n    \n        lp = _LPProblem(c, A_ub, b_ub, A_eq, b_eq, bounds, x0)\n        lp_cleaned = _clean_inputs(lp)\n        # rr_method is None here because we're not using RR\n        res = _presolve(lp_cleaned, rr=False, rr_method=None, tol=1e-9)[0]\n    \n        self.A_eq, self.b_eq = res.A_eq, res.b_eq\n        self.true_rank = np.linalg.matrix_rank(self.A_eq)\n        if meth == _remove_redundancy_pivot_sparse:\n            self.A_eq = csc_matrix(self.A_eq)\n        self.rr_A = None",
         "name": "optimize_linprog.Netlib_RR.track_netlib_rr",
         "param_names": [
             "method",
@@ -3958,9 +3959,10 @@
         ],
         "params": [
             [
-                "<function _remove_redundancy>",
-                "<function _remove_redundancy_dense>",
-                "<function _remove_redundancy_sparse>"
+                "None (0)",
+                "None (1)",
+                "None (2)",
+                "None (3)"
             ],
             [
                 "'AFIRO'",
@@ -3986,7 +3988,7 @@
         "timeout": 60.0,
         "type": "track",
         "unit": "unit",
-        "version": "3e2546f1011e68748b00e42152988d8cefc0292f1673abea383bf5466d9c6da5"
+        "version": "62f43547ea7e9269c363d5756792f8073574bdb0ef12dd544562f1409cf47068"
     },
     "optimize_linprog.Netlib_infeasible.time_netlib_infeasible": {
         "code": "class Netlib_infeasible:\n    def time_netlib_infeasible(self, meth, prob):\n        method, options = meth\n        res = linprog(c=self.c,\n                      A_ub=self.A_ub,\n                      b_ub=self.b_ub,\n                      A_eq=self.A_eq,\n                      b_eq=self.b_eq,\n                      bounds=self.bounds,\n                      method=method,\n                      options=options)\n        self.status = res.status\n\n    def setup(self, meth, prob):\n        if prob not in enabled_infeasible_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                \"infeasible\", prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n        self.c = data[\"c\"]\n        self.A_eq = data[\"A_eq\"]\n        self.A_ub = data[\"A_ub\"]\n        self.b_ub = data[\"b_ub\"]\n        self.b_eq = data[\"b_eq\"]\n        self.bounds = np.squeeze(data[\"bounds\"])\n        self.status = None",
@@ -4092,7 +4094,7 @@
         "version": "e850b6f6e316fd1bf5294dabbb3b89686f0bd67a92e7c4b77f898c8170cba67d"
     },
     "optimize_linprog.Netlib_presolve.time_netlib_presolve": {
-        "code": "class Netlib_presolve:\n    def time_netlib_presolve(self, meth, prob):\n        _presolve(self.lp_cleaned, rr=False, tol=1e-9)\n\n    def setup(self, meth, prob):\n        if prob not in enabled_presolve_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n    \n        c, A_eq, A_ub, b_ub, b_eq = (data[\"c\"], data[\"A_eq\"], data[\"A_ub\"],\n                                     data[\"b_ub\"], data[\"b_eq\"])\n        bounds = np.squeeze(data[\"bounds\"])\n        x0 = np.zeros(c.shape)\n    \n        if meth == \"sparse\":\n            A_eq = csr_matrix(A_eq)\n            A_ub = csr_matrix(A_ub)\n    \n        lp = _LPProblem(c, A_ub, b_ub, A_eq, b_eq, bounds, x0)\n        self.lp_cleaned = _clean_inputs(lp)",
+        "code": "class Netlib_presolve:\n    def time_netlib_presolve(self, meth, prob):\n        _presolve(self.lp_cleaned, rr=False, rr_method=None, tol=1e-9)\n\n    def setup(self, meth, prob):\n        if prob not in enabled_presolve_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n    \n        c, A_eq, A_ub, b_ub, b_eq = (data[\"c\"], data[\"A_eq\"], data[\"A_ub\"],\n                                     data[\"b_ub\"], data[\"b_eq\"])\n        bounds = np.squeeze(data[\"bounds\"])\n        x0 = np.zeros(c.shape)\n    \n        if meth == \"sparse\":\n            A_eq = csr_matrix(A_eq)\n            A_ub = csr_matrix(A_ub)\n    \n        lp = _LPProblem(c, A_ub, b_ub, A_eq, b_eq, bounds, x0)\n        self.lp_cleaned = _clean_inputs(lp)",
         "min_run_count": 2,
         "name": "optimize_linprog.Netlib_presolve.time_netlib_presolve",
         "number": 0,
@@ -4193,7 +4195,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "9c898a6967754866cd5a4820df9847d41c6f5e9a6ca4e64c79d15e241336f282",
+        "version": "e3df19f052a14a4d995b4e18626172b62ff058b87b1975c3846c810a0124844e",
         "warmup_time": -1
     },
     "optimize_qap.QuadraticAssignment.time_evaluation": {
