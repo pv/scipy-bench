@@ -6136,6 +6136,43 @@
         "version": "0788007ee6966be5e5b57ec419c15b566b95cd90fa1075382a88397b9fd1a7d5",
         "warmup_time": -1
     },
+    "sparse_csgraph_matching.MinWeightFullBipartiteMatching.time_evaluation": {
+        "code": "class MinWeightFullBipartiteMatching:\n    def time_evaluation(self, *args):\n        min_weight_full_bipartite_matching(self.biadjacency_matrix)\n\n    def setup(self, shape, input_type):\n        np.random.seed(42)\n        input_func = {'random_uniform': random_uniform,\n                      'random_uniform_sparse': random_uniform_sparse,\n                      'random_uniform_integer': random_uniform_integer,\n                      'random_geometric': random_geometric,\n                      'random_two_cost': random_two_cost,\n                      'machol_wien': machol_wien}[input_type]\n    \n        self.biadjacency_matrix = input_func(shape)",
+        "min_run_count": 2,
+        "name": "sparse_csgraph_matching.MinWeightFullBipartiteMatching.time_evaluation",
+        "number": 0,
+        "param_names": [
+            "shapes",
+            "input_type"
+        ],
+        "params": [
+            [
+                "(100, 100)",
+                "(200, 200)",
+                "(300, 300)",
+                "(400, 400)",
+                "(100, 200)",
+                "(200, 400)",
+                "(300, 600)",
+                "(400, 800)"
+            ],
+            [
+                "'random_uniform'",
+                "'random_uniform_sparse'",
+                "'random_uniform_integer'",
+                "'random_geometric'",
+                "'random_two_cost'",
+                "'machol_wien'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "630730e566726d7e16025f85f46f439cf8c66b5fafe68c8d9189d82a667e8df3",
+        "warmup_time": -1
+    },
     "sparse_csgraph_maxflow.MaximumFlow.time_maximum_flow": {
         "code": "class MaximumFlow:\n    def time_maximum_flow(self, n, density):\n        maximum_flow(self.data, 0, n - 1)\n\n    def setup(self, n, density):\n        # Create random matrices whose values are integers between 0 and 100.\n        data = (scipy.sparse.rand(n, n, density=density, format='lil',\n                                  random_state=42)*100).astype(np.int32)\n        data.setdiag(np.zeros(n, dtype=np.int32))\n        self.data = scipy.sparse.csr_matrix(data)",
         "min_run_count": 2,
