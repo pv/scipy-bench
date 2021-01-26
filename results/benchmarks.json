@@ -7451,6 +7451,106 @@
         "version": "339fc253c3add6deadbc1edc1112cf1b1fff85f70f57aeb9dd81e0ea23de9384",
         "warmup_time": -1
     },
+    "stats.BenchMoment.time_moment": {
+        "code": "class BenchMoment:\n    def time_moment(self, order, size):\n        stats.moment(self.x, order)\n\n    def setup(self, order, size):\n        np.random.random(1234)\n        self.x = np.random.random(size)",
+        "min_run_count": 2,
+        "name": "stats.BenchMoment.time_moment",
+        "number": 0,
+        "param_names": [
+            "order",
+            "size"
+        ],
+        "params": [
+            [
+                "1",
+                "2",
+                "3",
+                "8"
+            ],
+            [
+                "100",
+                "1000",
+                "10000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "10b78316c2b4c34d35f14269b05b4a47ecc2cb83dd5c864d6d19ea7d660fe3ea",
+        "warmup_time": -1
+    },
+    "stats.BenchSkewKurtosis.time_kurtosis": {
+        "code": "class BenchSkewKurtosis:\n    def time_kurtosis(self, order, size, bias):\n        stats.kurtosis(self.x, bias=bias)\n\n    def setup(self, order, size, bias):\n        np.random.random(1234)\n        self.x = np.random.random(size)",
+        "min_run_count": 2,
+        "name": "stats.BenchSkewKurtosis.time_kurtosis",
+        "number": 0,
+        "param_names": [
+            "order",
+            "size",
+            "bias"
+        ],
+        "params": [
+            [
+                "1",
+                "2",
+                "3",
+                "8"
+            ],
+            [
+                "100",
+                "1000",
+                "10000"
+            ],
+            [
+                "False",
+                "True"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "404e2f215122985b9853a3c8c9d11a8b7e2299624fc7ae4542663780f2fbacca",
+        "warmup_time": -1
+    },
+    "stats.BenchSkewKurtosis.time_skew": {
+        "code": "class BenchSkewKurtosis:\n    def time_skew(self, order, size, bias):\n        stats.skew(self.x, bias=bias)\n\n    def setup(self, order, size, bias):\n        np.random.random(1234)\n        self.x = np.random.random(size)",
+        "min_run_count": 2,
+        "name": "stats.BenchSkewKurtosis.time_skew",
+        "number": 0,
+        "param_names": [
+            "order",
+            "size",
+            "bias"
+        ],
+        "params": [
+            [
+                "1",
+                "2",
+                "3",
+                "8"
+            ],
+            [
+                "100",
+                "1000",
+                "10000"
+            ],
+            [
+                "False",
+                "True"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "7ba4ed309da2b86678985696e2619be245f9c103916d1a9bd457cafc7ed9b3e9",
+        "warmup_time": -1
+    },
     "stats.BinnedStatisticDD.time_binned_statistic_dd": {
         "code": "class BinnedStatisticDD:\n    def time_binned_statistic_dd(self, statistic):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])\n\n    def setup(self, statistic):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
         "min_run_count": 2,
