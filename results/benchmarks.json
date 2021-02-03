@@ -7860,7 +7860,8 @@
                 "'weibull_min'",
                 "'wrapcauchy'",
                 "'yulesimon'",
-                "'zipf'"
+                "'zipf'",
+                "'zipfian'"
             ],
             [
                 "'pdf/pmf'",
