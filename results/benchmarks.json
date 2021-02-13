@@ -3568,7 +3568,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "3",
@@ -3597,7 +3597,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "3",
@@ -3626,7 +3626,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "20",
@@ -3664,7 +3664,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "(3, 1.7305505947214375)",
@@ -3694,7 +3694,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "(3, 1.7305505947214375)",
@@ -3723,7 +3723,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "'25FV47'",
@@ -3829,7 +3829,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "'25FV47'",
@@ -4019,7 +4019,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "'bgdbg1'",
@@ -4073,7 +4073,7 @@
                 "('interior-point', {'sparse': False})",
                 "('revised simplex', {})",
                 "('highs-ipm', {})",
-                "('highs-simplex', {})"
+                "('highs-ds', {})"
             ],
             [
                 "'bgdbg1'",
