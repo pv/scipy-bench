@@ -7631,6 +7631,8 @@
                 "'nakagami'",
                 "'nbinom'",
                 "'ncf'",
+                "'nchypergeom_fisher'",
+                "'nchypergeom_wallenius'",
                 "'nct'",
                 "'ncx2'",
                 "'nhypergeom'",
