@@ -7465,6 +7465,29 @@
         "version": "00ab390e8376de544acfcdfc3079f96a3d213a37c576fa752ffdd93d6711bc75",
         "warmup_time": -1
     },
+    "stats.CorrelationFunctions.time_barnard_exact": {
+        "code": "class CorrelationFunctions:\n    def time_barnard_exact(self, alternative):\n        resBarnard = stats.barnard_exact(self.a, alternative=alternative)\n\n    def setup(self, mode):\n        a = np.random.rand(2,2) * 10\n        self.a = a",
+        "min_run_count": 2,
+        "name": "stats.CorrelationFunctions.time_barnard_exact",
+        "number": 0,
+        "param_names": [
+            "alternative"
+        ],
+        "params": [
+            [
+                "'two-sided'",
+                "'less'",
+                "'greater'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "8bfd6a8e8c9d0499c4e863e7fbe337dc69ecf2d0f4cc46f2c8ec2da49a01693c",
+        "warmup_time": -1
+    },
     "stats.CorrelationFunctions.time_fisher_exact": {
         "code": "class CorrelationFunctions:\n    def time_fisher_exact(self, alternative):\n        oddsratio, pvalue = stats.fisher_exact(self.a, alternative=alternative)\n\n    def setup(self, mode):\n        a = np.random.rand(2,2) * 10\n        self.a = a",
         "min_run_count": 2,
