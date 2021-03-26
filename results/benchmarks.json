@@ -7855,5 +7855,39 @@
         "version": "462d2cc05dd76e27f79702bef4899c50a49040a7355fb2872e64decfe9e5f1ec",
         "warmup_time": -1
     },
+    "stats.Kendalltau.time_kendalltau": {
+        "code": "class Kendalltau:\n    def time_kendalltau(self, nan_policy, method, variant):\n        tau, p_value = stats.kendalltau(self.a, self.b, nan_policy=nan_policy, method=method, variant=variant)\n\n    def setup(self, nan_policy, method, variant):\n        np.random.seed(12345678)\n        a = np.arange(200)\n        np.random.shuffle(a)\n        b = np.arange(200)\n        np.random.shuffle(b)\n        self.a = a\n        self.b = b",
+        "min_run_count": 2,
+        "name": "stats.Kendalltau.time_kendalltau",
+        "number": 0,
+        "param_names": [
+            "nan_policy",
+            "method",
+            "variant"
+        ],
+        "params": [
+            [
+                "'propagate'",
+                "'raise'",
+                "'omit'"
+            ],
+            [
+                "'auto'",
+                "'asymptotic'",
+                "'exact'"
+            ],
+            [
+                "'b'",
+                "'c'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "127e9378d41c5eb26027f153752cd6bacb3e083918b55a1e8c4dce8329fedbe6",
+        "warmup_time": -1
+    },
     "version": 2
 }
