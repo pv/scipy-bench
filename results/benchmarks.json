@@ -7116,6 +7116,96 @@
         "version": "d24e650df51666111bf1500a4f410bd98412634afdc8096e9a85006c6dbfe4b8",
         "warmup_time": -1
     },
+    "spatial.XdistWeighted.time_cdist": {
+        "code": "class XdistWeighted:\n    def time_cdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.cdist for weighted distance metrics.\"\"\"\n        distance.cdist(self.points, self.points, self.metric, w=self.weights,\n                       **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        else:\n            self.kwargs = {}\n        self.weights = np.ones(3)",
+        "min_run_count": 2,
+        "name": "spatial.XdistWeighted.time_cdist",
+        "number": 0,
+        "param_names": [
+            "num_points",
+            "metric"
+        ],
+        "params": [
+            [
+                "10",
+                "20",
+                "100"
+            ],
+            [
+                "'euclidean'",
+                "'minkowski'",
+                "'cityblock'",
+                "'sqeuclidean'",
+                "'cosine'",
+                "'correlation'",
+                "'hamming'",
+                "'jaccard'",
+                "'chebyshev'",
+                "'canberra'",
+                "'braycurtis'",
+                "'yule'",
+                "'dice'",
+                "'kulsinski'",
+                "'rogerstanimoto'",
+                "'russellrao'",
+                "'sokalmichener'",
+                "'sokalsneath'",
+                "'minkowski-P3'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "f7f4fdf9bf006826f7c45b90c61e0b28c25ec9f7d1bde27eebc07e549e15fe05",
+        "warmup_time": -1
+    },
+    "spatial.XdistWeighted.time_pdist": {
+        "code": "class XdistWeighted:\n    def time_pdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.pdist for weighted distance metrics.\"\"\"\n        distance.pdist(self.points, self.metric, w=self.weights, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        else:\n            self.kwargs = {}\n        self.weights = np.ones(3)",
+        "min_run_count": 2,
+        "name": "spatial.XdistWeighted.time_pdist",
+        "number": 0,
+        "param_names": [
+            "num_points",
+            "metric"
+        ],
+        "params": [
+            [
+                "10",
+                "20",
+                "100"
+            ],
+            [
+                "'euclidean'",
+                "'minkowski'",
+                "'cityblock'",
+                "'sqeuclidean'",
+                "'cosine'",
+                "'correlation'",
+                "'hamming'",
+                "'jaccard'",
+                "'chebyshev'",
+                "'canberra'",
+                "'braycurtis'",
+                "'yule'",
+                "'dice'",
+                "'kulsinski'",
+                "'rogerstanimoto'",
+                "'russellrao'",
+                "'sokalmichener'",
+                "'sokalsneath'",
+                "'minkowski-P3'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "58c4158224dc6b16f09b66905db84b25ccf489c1706f048dbb2aa98de601b9c7",
+        "warmup_time": -1
+    },
     "special.Airy.time_ai_zeros": {
         "code": "class Airy:\n    def time_ai_zeros(self):\n        ai_zeros(100000)",
         "min_run_count": 2,
