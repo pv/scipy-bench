@@ -7378,6 +7378,30 @@
         "version": "10b78316c2b4c34d35f14269b05b4a47ecc2cb83dd5c864d6d19ea7d660fe3ea",
         "warmup_time": -1
     },
+    "stats.BenchQMCDiscrepancy.time_discrepancy": {
+        "code": "class BenchQMCDiscrepancy:\n    def time_discrepancy(self, method):\n        disc = stats.qmc.discrepancy(self.sample, method=method)\n\n    def setup(self, method):\n        np.random.seed(1234)\n        sample = np.random.random_sample((1000, 10))\n        self.sample = sample",
+        "min_run_count": 2,
+        "name": "stats.BenchQMCDiscrepancy.time_discrepancy",
+        "number": 0,
+        "param_names": [
+            "method"
+        ],
+        "params": [
+            [
+                "'CD'",
+                "'WD'",
+                "'MD'",
+                "'L2-star'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "8cb7bdfdf1a15abab7c4dc762b0de68377f24c45e8e4a2ac2b1e5f16c85b10d4",
+        "warmup_time": -1
+    },
     "stats.BenchSkewKurtosis.time_kurtosis": {
         "code": "class BenchSkewKurtosis:\n    def time_kurtosis(self, order, size, bias):\n        stats.kurtosis(self.x, bias=bias)\n\n    def setup(self, order, size, bias):\n        np.random.random(1234)\n        self.x = np.random.random(size)",
         "min_run_count": 2,
