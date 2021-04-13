@@ -5078,6 +5078,47 @@
         "version": "d30c400692d02cd1bbe665e3146724b8d0c3ba0b274d9816d543808508aecd6e",
         "warmup_time": -1
     },
+    "signal_filtering.MedFilt2D.peakmem_medfilt2d": {
+        "code": "class MedFilt2D:\n    def peakmem_medfilt2d(self, threads):\n        self._medfilt2d(threads)\n\n    def setup(self, threads):\n        np.random.seed(8176)\n        self.chunks = np.array_split(np.random.randn(250, 349), threads)",
+        "name": "signal_filtering.MedFilt2D.peakmem_medfilt2d",
+        "param_names": [
+            "threads"
+        ],
+        "params": [
+            [
+                "1",
+                "2",
+                "4"
+            ]
+        ],
+        "timeout": 60.0,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "6b344fcc0b5bb9e118364792e1482bd7d9b9bd59d0bb3522f3746f9f58c770bf"
+    },
+    "signal_filtering.MedFilt2D.time_medfilt2d": {
+        "code": "class MedFilt2D:\n    def time_medfilt2d(self, threads):\n        self._medfilt2d(threads)\n\n    def setup(self, threads):\n        np.random.seed(8176)\n        self.chunks = np.array_split(np.random.randn(250, 349), threads)",
+        "min_run_count": 2,
+        "name": "signal_filtering.MedFilt2D.time_medfilt2d",
+        "number": 0,
+        "param_names": [
+            "threads"
+        ],
+        "params": [
+            [
+                "1",
+                "2",
+                "4"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "edcdb08ab698cf85a32652afb24dd6805eaf34ea02c9407cbd3e546e0a1b2a15",
+        "warmup_time": -1
+    },
     "signal_filtering.ParallelSosfilt.time_sosfilt": {
         "code": "class ParallelSosfilt:\n    def time_sosfilt(self, n_samples, threads):\n        with ThreadPoolExecutor(max_workers=threads) as pool:\n            futures = []\n            for i in range(threads):\n                futures.append(pool.submit(sosfilt, self.filt, self.chunks[i]))\n    \n            wait(futures)\n\n    def setup(self, n_samples, threads):\n        self.filt = butter(8, 8e-6, \"lowpass\", output=\"sos\")\n        self.data = np.arange(int(n_samples) * 3000).reshape(int(n_samples), 3000)\n        self.chunks = np.array_split(self.data, threads)",
         "min_run_count": 2,
