@@ -7381,6 +7381,21 @@
         "version": "fc273c10f60175c84fce376754825356457225e1b78d83e3beabbf886352585a",
         "warmup_time": -1
     },
+    "stats.ANOVAFunction.time_f_oneway": {
+        "code": "class ANOVAFunction:\n    def time_f_oneway(self):\n        statistic, pvalue = stats.f_oneway(self.a, self.b, self.c)\n        statistic, pvalue = stats.f_oneway(self.a, self.b, self.c, axis=1)\n\n    def setup(self):\n        rng = np.random.default_rng(12345678)\n        self.a = rng.random((6,3)) * 10\n        self.b = rng.random((6,3)) * 10\n        self.c = rng.random((6,3)) * 10",
+        "min_run_count": 2,
+        "name": "stats.ANOVAFunction.time_f_oneway",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "cef34d59506cffae002ae1bc160af2e5d0663aee6610a49d1a1226fd29279fb4",
+        "warmup_time": -1
+    },
     "stats.Anderson_KSamp.time_anderson_ksamp": {
         "code": "class Anderson_KSamp:\n    def time_anderson_ksamp(self):\n        with warnings.catch_warnings():\n            warnings.simplefilter('ignore', UserWarning)\n            stats.anderson_ksamp(self.rand)\n\n    def setup(self, *args):\n        self.rand = [np.random.normal(loc=i, size=1000) for i in range(3)]",
         "min_run_count": 2,
@@ -8018,7 +8033,7 @@
         "warmup_time": -1
     },
     "stats.Kendalltau.time_kendalltau": {
-        "code": "class Kendalltau:\n    def time_kendalltau(self, nan_policy, method, variant):\n        tau, p_value = stats.kendalltau(self.a, self.b, nan_policy=nan_policy, method=method, variant=variant)\n\n    def setup(self, nan_policy, method, variant):\n        np.random.seed(12345678)\n        a = np.arange(200)\n        np.random.shuffle(a)\n        b = np.arange(200)\n        np.random.shuffle(b)\n        self.a = a\n        self.b = b",
+        "code": "class Kendalltau:\n    def time_kendalltau(self, nan_policy, method, variant):\n        tau, p_value = stats.kendalltau(self.a, self.b, nan_policy=nan_policy, method=method, variant=variant)\n\n    def setup(self, nan_policy, method, variant):\n        rng = np.random.default_rng(12345678)\n        a = np.arange(200)\n        rng.shuffle(a)\n        b = np.arange(200)\n        rng.shuffle(b)\n        self.a = a\n        self.b = b",
         "min_run_count": 2,
         "name": "stats.Kendalltau.time_kendalltau",
         "number": 0,
@@ -8048,7 +8063,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "127e9378d41c5eb26027f153752cd6bacb3e083918b55a1e8c4dce8329fedbe6",
+        "version": "c00078c6a394cdf973cc5f691a60ec42f46fc15895952f8d0143fb5c3e2b1711",
         "warmup_time": -1
     },
     "version": 2
