@@ -7772,6 +7772,50 @@
         "version": "41bd0acf96a81da25d1dedf655e86fe988a6a5943f04e5e2103aa2b36d427338",
         "warmup_time": -1
     },
+    "stats.DistanceFunctions.time_energy_distance": {
+        "code": "class DistanceFunctions:\n    def time_energy_distance(self, n_size):\n        distance = stats.energy_distance(\n                 self.u_values, self.v_values,\n                 self.u_weights, self.v_weights)\n\n    def setup(self, n_size):\n        rng = np.random.default_rng(12345678)\n        self.u_values= rng.random(n_size) * 10\n        self.u_weights = rng.random(n_size) * 10\n        self.v_values = rng.random(n_size // 2) * 10\n        self.v_weights = rng.random(n_size // 2) * 10",
+        "min_run_count": 2,
+        "name": "stats.DistanceFunctions.time_energy_distance",
+        "number": 0,
+        "param_names": [
+            "n_size"
+        ],
+        "params": [
+            [
+                "10",
+                "4000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "3a571298f38e10836a7b96183f9f45ea210e03dc74d7e170d5f0d7a3b8a0da76",
+        "warmup_time": -1
+    },
+    "stats.DistanceFunctions.time_wasserstein_distance": {
+        "code": "class DistanceFunctions:\n    def time_wasserstein_distance(self, n_size):\n        distance = stats.wasserstein_distance(\n                 self.u_values, self.v_values,\n                 self.u_weights, self.v_weights)\n\n    def setup(self, n_size):\n        rng = np.random.default_rng(12345678)\n        self.u_values= rng.random(n_size) * 10\n        self.u_weights = rng.random(n_size) * 10\n        self.v_values = rng.random(n_size // 2) * 10\n        self.v_weights = rng.random(n_size // 2) * 10",
+        "min_run_count": 2,
+        "name": "stats.DistanceFunctions.time_wasserstein_distance",
+        "number": 0,
+        "param_names": [
+            "n_size"
+        ],
+        "params": [
+            [
+                "10",
+                "4000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "1385c333d64bba17144276ffc76dbf3ab7f9a7694d918f668ddcd0e6c554bce6",
+        "warmup_time": -1
+    },
     "stats.Distribution.time_distribution": {
         "code": "class Distribution:\n    def time_distribution(self, distribution, properties):\n        if distribution == 'gamma':\n            if properties == 'pdf':\n                stats.gamma.pdf(self.x, a=5, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.gamma.cdf(self.x, a=5, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.gamma.rvs(size=1000, a=5, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.gamma.fit(self.x, loc=4, scale=10)\n        elif distribution == 'cauchy':\n            if properties == 'pdf':\n                stats.cauchy.pdf(self.x, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.cauchy.cdf(self.x, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.cauchy.rvs(size=1000, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.cauchy.fit(self.x, loc=4, scale=10)\n        elif distribution == 'beta':\n            if properties == 'pdf':\n                stats.beta.pdf(self.x, a=5, b=3, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.beta.cdf(self.x, a=5, b=3, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.beta.rvs(size=1000, a=5, b=3, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.beta.fit(self.x, loc=4, scale=10)\n\n    def setup(self, distribution, properties):\n        np.random.seed(12345678)\n        self.x = np.random.rand(100)",
         "min_run_count": 2,
