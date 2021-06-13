@@ -1694,7 +1694,7 @@
         "warmup_time": -1
     },
     "interpolate.BenchPPoly.time_evaluation": {
-        "code": "class BenchPPoly:\n    def time_evaluation(self):\n        self.pp(self.xp)\n\n    def setup(self):\n        np.random.seed(1234)\n        m, k = 55, 3\n        x = np.sort(np.random.random(m+1))\n        c = np.random.random((3, m))\n        self.pp = interpolate.PPoly(c, x)\n    \n        npts = 100\n        self.xp = np.linspace(0, 1, npts)",
+        "code": "class BenchPPoly:\n    def time_evaluation(self):\n        self.pp(self.xp)\n\n    def setup(self):\n        rng = np.random.default_rng(1234)\n        m, k = 55, 3\n        x = np.sort(rng.random(m+1))\n        c = rng.random((3, m))\n        self.pp = interpolate.PPoly(c, x)\n    \n        npts = 100\n        self.xp = np.linspace(0, 1, npts)",
         "min_run_count": 2,
         "name": "interpolate.BenchPPoly.time_evaluation",
         "number": 0,
@@ -1705,7 +1705,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "7b3c30a7aae410ff669a6194881961262f69b80709978c3720fbaa41a48e0ffa",
+        "version": "f7706e0503a428d30fb6a3b0e63d628728cf26042f9e4d8bfabd47dbee2abdb9",
         "warmup_time": -1
     },
     "interpolate.BivariateSpline.time_lsq_bivariate_spline": {
@@ -2405,7 +2405,7 @@
         "warmup_time": -1
     },
     "linalg.Lstsq.time_lstsq": {
-        "code": "class Lstsq:\n    def time_lstsq(self, dtype, size, lapack_driver):\n        if lapack_driver == 'numpy':\n            np.linalg.lstsq(self.A, self.b,\n                            rcond=np.finfo(self.A.dtype).eps * 100)\n        else:\n            sl.lstsq(self.A, self.b, cond=None, overwrite_a=False,\n                     overwrite_b=False, check_finite=False,\n                     lapack_driver=lapack_driver)\n\n    def setup(self, dtype, size, lapack_driver):\n        if lapack_driver == 'numpy' and size >= 200:\n            # skip: slow, and not useful to benchmark numpy\n            raise NotImplementedError()\n    \n        np.random.seed(1234)\n        n = math.ceil(2./3. * size)\n        k = math.ceil(1./2. * size)\n        m = size\n    \n        if dtype is np.complex128:\n            A = ((10 * np.random.rand(m,k) - 5) +\n                 1j*(10 * np.random.rand(m,k) - 5))\n            temp = ((10 * np.random.rand(k,n) - 5) +\n                    1j*(10 * np.random.rand(k,n) - 5))\n            b = ((10 * np.random.rand(m,1) - 5) +\n                 1j*(10 * np.random.rand(m,1) - 5))\n        else:\n            A = (10 * np.random.rand(m,k) - 5)\n            temp = 10 * np.random.rand(k,n) - 5\n            b = 10 * np.random.rand(m,1) - 5\n    \n        self.A = A.dot(temp)\n        self.b = b",
+        "code": "class Lstsq:\n    def time_lstsq(self, dtype, size, lapack_driver):\n        if lapack_driver == 'numpy':\n            np.linalg.lstsq(self.A, self.b,\n                            rcond=np.finfo(self.A.dtype).eps * 100)\n        else:\n            sl.lstsq(self.A, self.b, cond=None, overwrite_a=False,\n                     overwrite_b=False, check_finite=False,\n                     lapack_driver=lapack_driver)\n\n    def setup(self, dtype, size, lapack_driver):\n        if lapack_driver == 'numpy' and size >= 200:\n            # skip: slow, and not useful to benchmark numpy\n            raise NotImplementedError()\n    \n        rng = np.random.default_rng(1234)\n        n = math.ceil(2./3. * size)\n        k = math.ceil(1./2. * size)\n        m = size\n    \n        if dtype is np.complex128:\n            A = ((10 * rng.random((m,k)) - 5) +\n                 1j*(10 * rng.random((m,k)) - 5))\n            temp = ((10 * rng.random((k,n)) - 5) +\n                    1j*(10 * rng.random((k,n)) - 5))\n            b = ((10 * rng.random((m,1)) - 5) +\n                 1j*(10 * rng.random((m,1)) - 5))\n        else:\n            A = (10 * rng.random((m,k)) - 5)\n            temp = 10 * rng.random((k,n)) - 5\n            b = 10 * rng.random((m,1)) - 5\n    \n        self.A = A.dot(temp)\n        self.b = b",
         "min_run_count": 2,
         "name": "linalg.Lstsq.time_lstsq",
         "number": 0,
@@ -4519,7 +4519,7 @@
         "warmup_time": -1
     },
     "signal.CalculateWindowedFFT.time_coherence": {
-        "code": "class CalculateWindowedFFT:\n    def time_coherence(self):\n        signal.coherence(self.x, self.y)\n\n    def setup(self):\n        np.random.seed(5678)\n        # Create some long arrays for computation\n        x = np.random.randn(2**20)\n        y = np.random.randn(2**20)\n        self.x = x\n        self.y = y",
+        "code": "class CalculateWindowedFFT:\n    def time_coherence(self):\n        signal.coherence(self.x, self.y)\n\n    def setup(self):\n        rng = np.random.default_rng(5678)\n        # Create some long arrays for computation\n        x = rng.standard_normal(2**20)\n        y = rng.standard_normal(2**20)\n        self.x = x\n        self.y = y",
         "min_run_count": 2,
         "name": "signal.CalculateWindowedFFT.time_coherence",
         "number": 0,
@@ -4530,11 +4530,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "264b03ada7f4710c1fac42e5f704c83e4456ffe9d30fd2a23be1511df8115022",
+        "version": "b5b89dc302836518ac4ab690b2537988209532d2d9d0670fe0adbdcd4a02f2cd",
         "warmup_time": -1
     },
     "signal.CalculateWindowedFFT.time_csd": {
-        "code": "class CalculateWindowedFFT:\n    def time_csd(self):\n        signal.csd(self.x, self.y)\n\n    def setup(self):\n        np.random.seed(5678)\n        # Create some long arrays for computation\n        x = np.random.randn(2**20)\n        y = np.random.randn(2**20)\n        self.x = x\n        self.y = y",
+        "code": "class CalculateWindowedFFT:\n    def time_csd(self):\n        signal.csd(self.x, self.y)\n\n    def setup(self):\n        rng = np.random.default_rng(5678)\n        # Create some long arrays for computation\n        x = rng.standard_normal(2**20)\n        y = rng.standard_normal(2**20)\n        self.x = x\n        self.y = y",
         "min_run_count": 2,
         "name": "signal.CalculateWindowedFFT.time_csd",
         "number": 0,
@@ -4545,11 +4545,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "aec73d92d2e6342b381c748a3af200838c3b8d2916207ffe20c42b322c6dada8",
+        "version": "c89e5cd1dd045c07ac9bbd03f78625d781b370388aab969e273032813a67b784",
         "warmup_time": -1
     },
     "signal.CalculateWindowedFFT.time_periodogram": {
-        "code": "class CalculateWindowedFFT:\n    def time_periodogram(self):\n        signal.periodogram(self.x)\n\n    def setup(self):\n        np.random.seed(5678)\n        # Create some long arrays for computation\n        x = np.random.randn(2**20)\n        y = np.random.randn(2**20)\n        self.x = x\n        self.y = y",
+        "code": "class CalculateWindowedFFT:\n    def time_periodogram(self):\n        signal.periodogram(self.x)\n\n    def setup(self):\n        rng = np.random.default_rng(5678)\n        # Create some long arrays for computation\n        x = rng.standard_normal(2**20)\n        y = rng.standard_normal(2**20)\n        self.x = x\n        self.y = y",
         "min_run_count": 2,
         "name": "signal.CalculateWindowedFFT.time_periodogram",
         "number": 0,
@@ -4560,11 +4560,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "e9722853e1c16a747daaa48d2f6f5d92ab20479788cec7957a4842cb0ff65c3c",
+        "version": "3d3c1c1a17488e62907d9f29b770dce85ab631891f83e4e9bd99a94abdd51391",
         "warmup_time": -1
     },
     "signal.CalculateWindowedFFT.time_spectrogram": {
-        "code": "class CalculateWindowedFFT:\n    def time_spectrogram(self):\n        signal.spectrogram(self.x)\n\n    def setup(self):\n        np.random.seed(5678)\n        # Create some long arrays for computation\n        x = np.random.randn(2**20)\n        y = np.random.randn(2**20)\n        self.x = x\n        self.y = y",
+        "code": "class CalculateWindowedFFT:\n    def time_spectrogram(self):\n        signal.spectrogram(self.x)\n\n    def setup(self):\n        rng = np.random.default_rng(5678)\n        # Create some long arrays for computation\n        x = rng.standard_normal(2**20)\n        y = rng.standard_normal(2**20)\n        self.x = x\n        self.y = y",
         "min_run_count": 2,
         "name": "signal.CalculateWindowedFFT.time_spectrogram",
         "number": 0,
@@ -4575,11 +4575,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "ad8b14343bc83e0ac6baabb34c10edf2b8ff25adbf2c5f0b54365f8223ab35ca",
+        "version": "d0a62671bdf6e28a932f7bd15a42819cbe20774845e94ffc750713b2a28e09a3",
         "warmup_time": -1
     },
     "signal.CalculateWindowedFFT.time_welch": {
-        "code": "class CalculateWindowedFFT:\n    def time_welch(self):\n        signal.welch(self.x)\n\n    def setup(self):\n        np.random.seed(5678)\n        # Create some long arrays for computation\n        x = np.random.randn(2**20)\n        y = np.random.randn(2**20)\n        self.x = x\n        self.y = y",
+        "code": "class CalculateWindowedFFT:\n    def time_welch(self):\n        signal.welch(self.x)\n\n    def setup(self):\n        rng = np.random.default_rng(5678)\n        # Create some long arrays for computation\n        x = rng.standard_normal(2**20)\n        y = rng.standard_normal(2**20)\n        self.x = x\n        self.y = y",
         "min_run_count": 2,
         "name": "signal.CalculateWindowedFFT.time_welch",
         "number": 0,
@@ -4590,11 +4590,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "a250d739676f9ee24c1c85850424941a65cbac0c01d89b9d08942043e805b679",
+        "version": "daa91143320a4233ad72fdca42b389e83e691a2fef5218936e4a0ac290f09d9b",
         "warmup_time": -1
     },
     "signal.Convolve.time_convolve": {
-        "code": "class Convolve:\n    def time_convolve(self, mode):\n        for a, b in self.pairs['1d']:\n            if b.shape[0] > a.shape[0]:\n                continue\n            signal.convolve(a, b, mode=mode)\n\n    def setup(self, mode):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = np.random.randn(ma)\n            b = np.random.randn(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = np.random.randn(n_image, n_image)\n                h = np.random.randn(n_kernel, n_kernel)\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
+        "code": "class Convolve:\n    def time_convolve(self, mode):\n        for a, b in self.pairs['1d']:\n            if b.shape[0] > a.shape[0]:\n                continue\n            signal.convolve(a, b, mode=mode)\n\n    def setup(self, mode):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = rng.standard_normal(ma)\n            b = rng.standard_normal(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = rng.standard_normal((n_image, n_image))\n                h = rng.standard_normal((n_kernel, n_kernel))\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Convolve.time_convolve",
         "number": 0,
@@ -4613,11 +4613,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "6e5205b096de1044d197896439360edbe41af5ac786a3667214b8cd0ffddc9fd",
+        "version": "9a604ce6bb1a6efab49ac946799ae0eb0144c464b1fac826c5818eeff8536f60",
         "warmup_time": -1
     },
     "signal.Convolve.time_convolve2d": {
-        "code": "class Convolve:\n    def time_convolve2d(self, mode):\n        for a, b in self.pairs['2d']:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.convolve(a, b, mode=mode)\n\n    def setup(self, mode):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = np.random.randn(ma)\n            b = np.random.randn(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = np.random.randn(n_image, n_image)\n                h = np.random.randn(n_kernel, n_kernel)\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
+        "code": "class Convolve:\n    def time_convolve2d(self, mode):\n        for a, b in self.pairs['2d']:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.convolve(a, b, mode=mode)\n\n    def setup(self, mode):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = rng.standard_normal(ma)\n            b = rng.standard_normal(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = rng.standard_normal((n_image, n_image))\n                h = rng.standard_normal((n_kernel, n_kernel))\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Convolve.time_convolve2d",
         "number": 0,
@@ -4636,11 +4636,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "13f7c2529a3fabd672ef5be73b2a9db45e7f3d6906fba6639979bd063fe396d9",
+        "version": "5e0849552506b05a43ec95654bd3cea40a9df558c08442ea37e3b4804f7229d7",
         "warmup_time": -1
     },
     "signal.Convolve.time_correlate": {
-        "code": "class Convolve:\n    def time_correlate(self, mode):\n        for a, b in self.pairs['1d']:\n            if b.shape[0] > a.shape[0]:\n                continue\n            signal.correlate(a, b, mode=mode)\n\n    def setup(self, mode):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = np.random.randn(ma)\n            b = np.random.randn(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = np.random.randn(n_image, n_image)\n                h = np.random.randn(n_kernel, n_kernel)\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
+        "code": "class Convolve:\n    def time_correlate(self, mode):\n        for a, b in self.pairs['1d']:\n            if b.shape[0] > a.shape[0]:\n                continue\n            signal.correlate(a, b, mode=mode)\n\n    def setup(self, mode):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = rng.standard_normal(ma)\n            b = rng.standard_normal(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = rng.standard_normal((n_image, n_image))\n                h = rng.standard_normal((n_kernel, n_kernel))\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Convolve.time_correlate",
         "number": 0,
@@ -4659,11 +4659,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "7db23a1a5078e3931011fdab6e15fccb1278a268d90c2426709d1ec7292c80d2",
+        "version": "5d9c0895dde23c8e886d1820debeedc5dde5992ce2d91544fc9caecc8b6a4aac",
         "warmup_time": -1
     },
     "signal.Convolve.time_correlate2d": {
-        "code": "class Convolve:\n    def time_correlate2d(self, mode):\n        for a, b in self.pairs['2d']:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.correlate(a, b, mode=mode)\n\n    def setup(self, mode):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = np.random.randn(ma)\n            b = np.random.randn(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = np.random.randn(n_image, n_image)\n                h = np.random.randn(n_kernel, n_kernel)\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
+        "code": "class Convolve:\n    def time_correlate2d(self, mode):\n        for a, b in self.pairs['2d']:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.correlate(a, b, mode=mode)\n\n    def setup(self, mode):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = {'1d': [], '2d': []}\n        for ma, nb in product((1, 2, 8, 13, 30, 36, 50, 75), repeat=2):\n            a = rng.standard_normal(ma)\n            b = rng.standard_normal(nb)\n            pairs['1d'].append((a, b))\n    \n        for n_image in [256, 512, 1024]:\n            for n_kernel in [3, 5, 7]:\n                x = rng.standard_normal((n_image, n_image))\n                h = rng.standard_normal((n_kernel, n_kernel))\n                pairs['2d'].append((x, h))\n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Convolve.time_correlate2d",
         "number": 0,
@@ -4682,11 +4682,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "d18f8d1fd5ee4ab7bd4fa3144ede0e0fa647bfe95f9eb5fcd5a7a7d7ac7fee7d",
+        "version": "717039ec5b96390dfae03a686bda830089363bcdb077443097fb948ae853718c",
         "warmup_time": -1
     },
     "signal.Convolve2D.time_convolve2d": {
-        "code": "class Convolve2D:\n    def time_convolve2d(self, mode, boundary):\n        for a, b in self.pairs:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.convolve2d(a, b, mode=mode, boundary=boundary)\n\n    def setup(self, mode, boundary):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for ma, na, mb, nb in product((8, 13, 30, 36), repeat=4):\n            a = np.random.randn(ma, na)\n            b = np.random.randn(mb, nb)\n            pairs.append((a, b))\n        self.pairs = pairs",
+        "code": "class Convolve2D:\n    def time_convolve2d(self, mode, boundary):\n        for a, b in self.pairs:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.convolve2d(a, b, mode=mode, boundary=boundary)\n\n    def setup(self, mode, boundary):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for ma, na, mb, nb in product((8, 13, 30, 36), repeat=4):\n            a = rng.standard_normal((ma, na))\n            b = rng.standard_normal((mb, nb))\n            pairs.append((a, b))\n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Convolve2D.time_convolve2d",
         "number": 0,
@@ -4711,11 +4711,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "83b0d2a83005c6faf9c15d7244ad60c642a8c81e35ad28d9db69b900fcf0d497",
+        "version": "c5e519d911faf6683f81120d12e6e8eef18fe251024f30fe9ba8b162b9dbee13",
         "warmup_time": -1
     },
     "signal.Convolve2D.time_correlate2d": {
-        "code": "class Convolve2D:\n    def time_correlate2d(self, mode, boundary):\n        for a, b in self.pairs:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.correlate2d(a, b, mode=mode, boundary=boundary)\n\n    def setup(self, mode, boundary):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for ma, na, mb, nb in product((8, 13, 30, 36), repeat=4):\n            a = np.random.randn(ma, na)\n            b = np.random.randn(mb, nb)\n            pairs.append((a, b))\n        self.pairs = pairs",
+        "code": "class Convolve2D:\n    def time_correlate2d(self, mode, boundary):\n        for a, b in self.pairs:\n            if mode == 'valid':\n                if b.shape[0] > a.shape[0] or b.shape[1] > a.shape[1]:\n                    continue\n            signal.correlate2d(a, b, mode=mode, boundary=boundary)\n\n    def setup(self, mode, boundary):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for ma, na, mb, nb in product((8, 13, 30, 36), repeat=4):\n            a = rng.standard_normal((ma, na))\n            b = rng.standard_normal((mb, nb))\n            pairs.append((a, b))\n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Convolve2D.time_correlate2d",
         "number": 0,
@@ -4740,11 +4740,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "5054b95a37d5aa88f61b0f3b779a37c3e398b1236b69015fe0e27075cea2acca",
+        "version": "39438d7ee277f5ffcc5a9a72f76648fc570ee59cb4395f9717f74c3df3a19feb",
         "warmup_time": -1
     },
     "signal.FFTConvolve.time_convolve2d": {
-        "code": "class FFTConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.fftconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        self.a = np.random.randn(size[0])\n        self.b = np.random.randn(size[1])",
+        "code": "class FFTConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.fftconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        self.a = rng.standard_normal(size[0])\n        self.b = rng.standard_normal(size[1])",
         "min_run_count": 2,
         "name": "signal.FFTConvolve.time_convolve2d",
         "number": 0,
@@ -4802,7 +4802,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "4b766e1835e4c0d127f12d845e7e743520a027ce660830a7c68d345ee617e27d",
+        "version": "531415b126bbcc413e07d1969593c94c4ebc23624900baed890225ad58e30820",
         "warmup_time": -1
     },
     "signal.FIRLS.time_firls": {
@@ -4910,7 +4910,7 @@
         "warmup_time": -1
     },
     "signal.OAConvolve.time_convolve2d": {
-        "code": "class OAConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.oaconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        self.a = np.random.randn(size[0])\n        self.b = np.random.randn(size[1])",
+        "code": "class OAConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.oaconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        self.a = rng.standard_normal(size[0])\n        self.b = rng.standard_normal(size[1])",
         "min_run_count": 2,
         "name": "signal.OAConvolve.time_convolve2d",
         "number": 0,
@@ -4935,7 +4935,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "c3f173cb4145f5a080236def2cc63422a9d7ba6c1d062b9614ccaf6cba977a5c",
+        "version": "6b9acd5ef48c215bddb63e3356d7157391808d895dad161e6e5e0930feccfc24",
         "warmup_time": -1
     },
     "signal.Resample.time_complex": {
@@ -5001,7 +5001,7 @@
         "warmup_time": -1
     },
     "signal.Upfirdn1D.time_upfirdn1d": {
-        "code": "class Upfirdn1D:\n    def time_upfirdn1d(self, up, down):\n        for h, x in self.pairs:\n            signal.upfirdn(h, x, up=up, down=down)\n\n    def setup(self, up, down):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for nfilt in [8, ]:\n            for n in [32, 128, 512, 2048]:\n                h = np.random.randn(nfilt)\n                x = np.random.randn(n)\n                pairs.append((h, x))\n    \n        self.pairs = pairs",
+        "code": "class Upfirdn1D:\n    def time_upfirdn1d(self, up, down):\n        for h, x in self.pairs:\n            signal.upfirdn(h, x, up=up, down=down)\n\n    def setup(self, up, down):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for nfilt in [8, ]:\n            for n in [32, 128, 512, 2048]:\n                h = rng.standard_normal(nfilt)\n                x = rng.standard_normal(n)\n                pairs.append((h, x))\n    \n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Upfirdn1D.time_upfirdn1d",
         "number": 0,
@@ -5024,11 +5024,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "c00030e1ba6fc22727cfb6ebd267b73fab61f120c4ba6b02c62f000713d7b816",
+        "version": "88d172db21725ae48f928235856cf9f60ea0dd66229e358cd5dcb0de723350da",
         "warmup_time": -1
     },
     "signal.Upfirdn2D.time_upfirdn2d": {
-        "code": "class Upfirdn2D:\n    def time_upfirdn2d(self, up, down, axis):\n        for h, x in self.pairs:\n            signal.upfirdn(h, x, up=up, down=down, axis=axis)\n\n    def setup(self, up, down, axis):\n        np.random.seed(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for nfilt in [8, ]:\n            for n in [32, 128, 512]:\n                h = np.random.randn(nfilt)\n                x = np.random.randn(n, n)\n                pairs.append((h, x))\n    \n        self.pairs = pairs",
+        "code": "class Upfirdn2D:\n    def time_upfirdn2d(self, up, down, axis):\n        for h, x in self.pairs:\n            signal.upfirdn(h, x, up=up, down=down, axis=axis)\n\n    def setup(self, up, down, axis):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        for nfilt in [8, ]:\n            for n in [32, 128, 512]:\n                h = rng.standard_normal(nfilt)\n                x = rng.standard_normal((n, n))\n                pairs.append((h, x))\n    \n        self.pairs = pairs",
         "min_run_count": 2,
         "name": "signal.Upfirdn2D.time_upfirdn2d",
         "number": 0,
@@ -5056,7 +5056,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "7a2c0609a0663adcfa60a84963455d890e488216a74e9250a43d2f116f92860f",
+        "version": "022a682b56e4d9ed03b3a000b20464bf483e08daf36fd4dc1e0d786d74e63a0e",
         "warmup_time": -1
     },
     "signal_filtering.Decimate.time_decimate": {
@@ -5122,7 +5122,7 @@
         "warmup_time": -1
     },
     "signal_filtering.MedFilt2D.peakmem_medfilt2d": {
-        "code": "class MedFilt2D:\n    def peakmem_medfilt2d(self, threads):\n        self._medfilt2d(threads)\n\n    def setup(self, threads):\n        np.random.seed(8176)\n        self.chunks = np.array_split(np.random.randn(250, 349), threads)",
+        "code": "class MedFilt2D:\n    def peakmem_medfilt2d(self, threads):\n        self._medfilt2d(threads)\n\n    def setup(self, threads):\n        rng = np.random.default_rng(8176)\n        self.chunks = np.array_split(rng.standard_normal((250, 349)), threads)",
         "name": "signal_filtering.MedFilt2D.peakmem_medfilt2d",
         "param_names": [
             "threads"
@@ -5137,10 +5137,10 @@
         "timeout": 60.0,
         "type": "peakmemory",
         "unit": "bytes",
-        "version": "6b344fcc0b5bb9e118364792e1482bd7d9b9bd59d0bb3522f3746f9f58c770bf"
+        "version": "953bd85e31c1ea64f017cc196388bdcec638344db8296fad61c5f1c808279fb3"
     },
     "signal_filtering.MedFilt2D.time_medfilt2d": {
-        "code": "class MedFilt2D:\n    def time_medfilt2d(self, threads):\n        self._medfilt2d(threads)\n\n    def setup(self, threads):\n        np.random.seed(8176)\n        self.chunks = np.array_split(np.random.randn(250, 349), threads)",
+        "code": "class MedFilt2D:\n    def time_medfilt2d(self, threads):\n        self._medfilt2d(threads)\n\n    def setup(self, threads):\n        rng = np.random.default_rng(8176)\n        self.chunks = np.array_split(rng.standard_normal((250, 349)), threads)",
         "min_run_count": 2,
         "name": "signal_filtering.MedFilt2D.time_medfilt2d",
         "number": 0,
@@ -5159,7 +5159,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "edcdb08ab698cf85a32652afb24dd6805eaf34ea02c9407cbd3e546e0a1b2a15",
+        "version": "7cac260a764be8a665251041ae75f310d5c1005bb374f9464972429e9f0e4859",
         "warmup_time": -1
     },
     "signal_filtering.ParallelSosfilt.time_sosfilt": {
@@ -5532,7 +5532,7 @@
         "warmup_time": -1
     },
     "sparse.Matmul.time_large": {
-        "code": "class Matmul:\n    def time_large(self):\n        for i in range(100):\n            self.matrix1 * self.matrix2\n\n    def setup(self):\n        H1, W1 = 1, 100000\n        H2, W2 = W1, 1000\n        C1 = 10\n        C2 = 1000000\n    \n        random.seed(0)\n    \n        i = random.randint(H1, size=C1)\n        j = random.randint(W1, size=C1)\n        data = random.rand(C1)\n        self.matrix1 = coo_matrix((data, (i, j)), shape=(H1, W1)).tocsr()\n    \n        i = random.randint(H2, size=C2)\n        j = random.randint(W2, size=C2)\n        data = random.rand(C2)\n        self.matrix2 = coo_matrix((data, (i, j)), shape=(H2, W2)).tocsr()",
+        "code": "class Matmul:\n    def time_large(self):\n        for i in range(100):\n            self.matrix1 * self.matrix2\n\n    def setup(self):\n        H1, W1 = 1, 100000\n        H2, W2 = W1, 1000\n        C1 = 10\n        C2 = 1000000\n    \n        rng = np.random.default_rng(0)\n    \n        i = rng.integers(H1, size=C1)\n        j = rng.integers(W1, size=C1)\n        data = rng.random(C1)\n        self.matrix1 = coo_matrix((data, (i, j)), shape=(H1, W1)).tocsr()\n    \n        i = rng.integers(H2, size=C2)\n        j = rng.integers(W2, size=C2)\n        data = rng.random(C2)\n        self.matrix2 = coo_matrix((data, (i, j)), shape=(H2, W2)).tocsr()",
         "min_run_count": 2,
         "name": "sparse.Matmul.time_large",
         "number": 0,
@@ -5974,7 +5974,7 @@
         "warmup_time": -1
     },
     "sparse_csgraph_djisktra.Dijkstra.time_dijkstra_multi": {
-        "code": "class Dijkstra:\n    def time_dijkstra_multi(self, n, min_only):\n        dijkstra(self.data,\n                 directed=False,\n                 indices=self.indices,\n                 min_only=min_only)\n\n    def setup(self, n, min_only):\n        np.random.seed(1234)\n        # make a random connectivity matrix\n        data = scipy.sparse.rand(n, n, density=0.2, format='csc',\n                                 random_state=42, dtype=np.bool_)\n        data.setdiag(np.zeros(n, dtype=np.bool_))\n        self.data = data\n        # choose some random vertices\n        v = np.arange(n)\n        np.random.shuffle(v)\n        self.indices = v[:int(n*.1)]",
+        "code": "class Dijkstra:\n    def time_dijkstra_multi(self, n, min_only):\n        dijkstra(self.data,\n                 directed=False,\n                 indices=self.indices,\n                 min_only=min_only)\n\n    def setup(self, n, min_only):\n        rng = np.random.default_rng(1234)\n        # make a random connectivity matrix\n        data = scipy.sparse.rand(n, n, density=0.2, format='csc',\n                                 random_state=42, dtype=np.bool_)\n        data.setdiag(np.zeros(n, dtype=np.bool_))\n        self.data = data\n        # choose some random vertices\n        v = np.arange(n)\n        rng.shuffle(v)\n        self.indices = v[:int(n*.1)]",
         "min_run_count": 2,
         "name": "sparse_csgraph_djisktra.Dijkstra.time_dijkstra_multi",
         "number": 0,
@@ -5998,11 +5998,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "ab81d663c1daaefb5d54aa8576a74ed64b3171460f71a3ec86353fc15fa142e7",
+        "version": "eaefedd0a120b886387171dd0abb0b3f637394d7a7866f0cf7032de436a14390",
         "warmup_time": -1
     },
     "sparse_csgraph_matching.MaximumBipartiteMatching.time_maximum_bipartite_matching": {
-        "code": "class MaximumBipartiteMatching:\n    def time_maximum_bipartite_matching(self, n, density):\n        maximum_bipartite_matching(self.graph)\n\n    def setup(self, n, density):\n        # Create random sparse matrices. Note that we could use\n        # scipy.sparse.rand for this purpose, but simply using np.random and\n        # disregarding duplicates is quite a bit faster.\n        np.random.seed(42)\n        d = np.random.randint(0, n, size=(int(n*n*density), 2))\n        graph = scipy.sparse.csr_matrix((np.ones(len(d)), (d[:, 0], d[:, 1])),\n                                        shape=(n, n))\n        self.graph = graph",
+        "code": "class MaximumBipartiteMatching:\n    def time_maximum_bipartite_matching(self, n, density):\n        maximum_bipartite_matching(self.graph)\n\n    def setup(self, n, density):\n        # Create random sparse matrices. Note that we could use\n        # scipy.sparse.rand for this purpose, but simply using np.random and\n        # disregarding duplicates is quite a bit faster.\n        rng = np.random.default_rng(42)\n        d = rng.integers(0, n, size=(int(n*n*density), 2))\n        graph = scipy.sparse.csr_matrix((np.ones(len(d)), (d[:, 0], d[:, 1])),\n                                        shape=(n, n))\n        self.graph = graph",
         "min_run_count": 2,
         "name": "sparse_csgraph_matching.MaximumBipartiteMatching.time_maximum_bipartite_matching",
         "number": 0,
@@ -6027,11 +6027,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "0788007ee6966be5e5b57ec419c15b566b95cd90fa1075382a88397b9fd1a7d5",
+        "version": "31f71f40e27f1ce32dd2ba027dc6ad67c2141209e422069d0c1e7cc98a2e2ed3",
         "warmup_time": -1
     },
     "sparse_csgraph_matching.MinWeightFullBipartiteMatching.time_evaluation": {
-        "code": "class MinWeightFullBipartiteMatching:\n    def time_evaluation(self, *args):\n        min_weight_full_bipartite_matching(self.biadjacency_matrix)\n\n    def setup(self, shape, input_type):\n        np.random.seed(42)\n        input_func = {'random_uniform': random_uniform,\n                      'random_uniform_sparse': random_uniform_sparse,\n                      'random_uniform_integer': random_uniform_integer,\n                      'random_geometric': random_geometric,\n                      'random_two_cost': random_two_cost,\n                      'machol_wien': machol_wien}[input_type]\n    \n        self.biadjacency_matrix = input_func(shape)",
+        "code": "class MinWeightFullBipartiteMatching:\n    def time_evaluation(self, *args):\n        min_weight_full_bipartite_matching(self.biadjacency_matrix)\n\n    def setup(self, shape, input_type):\n        rng = np.random.default_rng(42)\n        input_func = {'random_uniform': random_uniform,\n                      'random_uniform_sparse': random_uniform_sparse,\n                      'random_uniform_integer': random_uniform_integer,\n                      'random_geometric': random_geometric,\n                      'random_two_cost': random_two_cost,\n                      'machol_wien': machol_wien}[input_type]\n    \n        self.biadjacency_matrix = input_func(shape, rng)",
         "min_run_count": 2,
         "name": "sparse_csgraph_matching.MinWeightFullBipartiteMatching.time_evaluation",
         "number": 0,
@@ -6064,7 +6064,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "630730e566726d7e16025f85f46f439cf8c66b5fafe68c8d9189d82a667e8df3",
+        "version": "7a964a0b0d5fac7f49cbb921c33f8d3762b10a9ae49818ec949fc6a67bd64135",
         "warmup_time": -1
     },
     "sparse_csgraph_maxflow.MaximumFlow.time_maximum_flow": {
@@ -6097,7 +6097,7 @@
         "warmup_time": -1
     },
     "sparse_linalg_expm.Expm.time_expm": {
-        "code": "class Expm:\n    def time_expm(self, n, format):\n        if format == 'sparse':\n            scipy.linalg.expm(self.A_sparse)\n        elif format == 'dense':\n            scipy.linalg.expm(self.A_dense)\n\n    def setup(self, n, format):\n        np.random.seed(1234)\n    \n        # Let the number of nonzero entries per row\n        # scale like the log of the order of the matrix.\n        nnz_per_row = int(math.ceil(math.log(n)))\n    \n        # time the sampling of a random sparse matrix\n        self.A_sparse = random_sparse_csc(n, n, nnz_per_row)\n    \n        # first format conversion\n        self.A_dense = self.A_sparse.toarray()",
+        "code": "class Expm:\n    def time_expm(self, n, format):\n        if format == 'sparse':\n            scipy.linalg.expm(self.A_sparse)\n        elif format == 'dense':\n            scipy.linalg.expm(self.A_dense)\n\n    def setup(self, n, format):\n        rng = np.random.default_rng(1234)\n    \n        # Let the number of nonzero entries per row\n        # scale like the log of the order of the matrix.\n        nnz_per_row = int(math.ceil(math.log(n)))\n    \n        # time the sampling of a random sparse matrix\n        self.A_sparse = random_sparse_csc(n, n, nnz_per_row, rng)\n    \n        # first format conversion\n        self.A_dense = self.A_sparse.toarray()",
         "min_run_count": 2,
         "name": "sparse_linalg_expm.Expm.time_expm",
         "number": 0,
@@ -6121,7 +6121,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "5b030fdc90211e607b049fdc2559bc5c21dae416c78149ccdf5084f8d8b863b0",
+        "version": "226e2c94531d2d9d2429a8cdc54f17df90d7d010f603d91bfecad087001dc98d",
         "warmup_time": -1
     },
     "sparse_linalg_expm.ExpmMultiply.time_expm_multiply": {
@@ -6197,7 +6197,7 @@
         "warmup_time": -1
     },
     "sparse_linalg_onenormest.BenchmarkOneNormEst.time_onenormest": {
-        "code": "class BenchmarkOneNormEst:\n    def time_onenormest(self, n, solver):\n        if solver == 'exact':\n            # Get the exact values of one-norms of squares.\n            for M in self.matrices:\n                M.dot(M)\n                scipy.sparse.linalg.matfuncs._onenorm(M)\n        elif solver == 'onenormest':\n            # Get the estimates of one-norms of squares.\n            for M in self.matrices:\n                scipy.sparse.linalg.matfuncs._onenormest_matrix_power(M, 2)\n\n    def setup(self, n, solver):\n        np.random.seed(1234)\n        nrepeats = 100\n        shape = (int(n), int(n))\n    \n        if solver == 'exact' and n >= 300:\n            # skip: slow, and not useful to benchmark\n            raise NotImplementedError()\n    \n        if n <= 1000:\n            # Sample the matrices.\n            self.matrices = []\n            for i in range(nrepeats):\n                M = np.random.randn(*shape)\n                self.matrices.append(M)\n        else:\n            max_nnz = 100000\n            nrepeats = 1\n    \n            self.matrices = []\n            for i in range(nrepeats):\n                M = scipy.sparse.rand(shape[0], shape[1], min(max_nnz/(shape[0]*shape[1]), 1e-5))\n                self.matrices.append(M)",
+        "code": "class BenchmarkOneNormEst:\n    def time_onenormest(self, n, solver):\n        if solver == 'exact':\n            # Get the exact values of one-norms of squares.\n            for M in self.matrices:\n                M.dot(M)\n                scipy.sparse.linalg.matfuncs._onenorm(M)\n        elif solver == 'onenormest':\n            # Get the estimates of one-norms of squares.\n            for M in self.matrices:\n                scipy.sparse.linalg.matfuncs._onenormest_matrix_power(M, 2)\n\n    def setup(self, n, solver):\n        rng = np.random.default_rng(1234)\n        nrepeats = 100\n        shape = (int(n), int(n))\n    \n        if solver == 'exact' and n >= 300:\n            # skip: slow, and not useful to benchmark\n            raise NotImplementedError()\n    \n        if n <= 1000:\n            # Sample the matrices.\n            self.matrices = []\n            for i in range(nrepeats):\n                M = rng.standard_normal(shape)\n                self.matrices.append(M)\n        else:\n            max_nnz = 100000\n            nrepeats = 1\n    \n            self.matrices = []\n            for i in range(nrepeats):\n                M = scipy.sparse.rand(shape[0], shape[1], min(max_nnz/(shape[0]*shape[1]), 1e-5), random_state=rng)\n                self.matrices.append(M)",
         "min_run_count": 2,
         "name": "sparse_linalg_onenormest.BenchmarkOneNormEst.time_onenormest",
         "number": 0,
@@ -6272,7 +6272,7 @@
         "warmup_time": -1
     },
     "sparse_linalg_solve.Lgmres.time_inner": {
-        "code": "class Lgmres:\n    def time_inner(self, n, m):\n        lgmres(self.A, self.b, inner_m=m, maxiter=1)\n\n    def setup(self, n, m):\n        np.random.seed(1234)\n        self.A = sparse.eye(n, n) + sparse.rand(n, n, density=0.01)\n        self.b = np.ones(n)",
+        "code": "class Lgmres:\n    def time_inner(self, n, m):\n        lgmres(self.A, self.b, inner_m=m, maxiter=1)\n\n    def setup(self, n, m):\n        rng = np.random.default_rng(1234)\n        self.A = sparse.eye(n, n) + sparse.rand(n, n, density=0.01, random_state=rng)\n        self.b = np.ones(n)",
         "min_run_count": 2,
         "name": "sparse_linalg_solve.Lgmres.time_inner",
         "number": 0,
@@ -6301,11 +6301,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "7a87045c1ddaa5704fb262800ad4c1dde101dc556a9445db9dd76c4029193f2d",
+        "version": "d31c182067e0c1e06fa24a25ae9e5ed76b709f347960521b3f434c30e41e1530",
         "warmup_time": -1
     },
     "spatial.Build.time_build": {
-        "code": "class Build:\n    def time_build(self, mnr, cls_name):\n        \"\"\"\n        Constructing kd-tree\n        =======================\n        dim | # points |  time\n        \"\"\"\n        m, n, r = mnr\n        if cls_name == 'cKDTree_flat':\n            self.T = self.cls(self.data, leafsize=n)\n        else:\n            self.cls(self.data)\n\n    def setup(self, mnr, cls_name):\n        self.cls = KDTree if cls_name == 'KDTree' else cKDTree\n        m, n, r = mnr\n    \n        np.random.seed(1234)\n        self.data = np.concatenate((np.random.randn(n//2,m),\n                                    np.random.randn(n-n//2,m)+np.ones(m)))\n    \n        self.queries = np.concatenate((np.random.randn(r//2,m),\n                                       np.random.randn(r-r//2,m)+np.ones(m)))",
+        "code": "class Build:\n    def time_build(self, mnr, cls_name):\n        \"\"\"\n        Constructing kd-tree\n        =======================\n        dim | # points |  time\n        \"\"\"\n        m, n, r = mnr\n        if cls_name == 'cKDTree_flat':\n            self.T = self.cls(self.data, leafsize=n)\n        else:\n            self.cls(self.data)\n\n    def setup(self, mnr, cls_name):\n        self.cls = KDTree if cls_name == 'KDTree' else cKDTree\n        m, n, r = mnr\n    \n        rng = np.random.default_rng(1234)\n        self.data = np.concatenate((rng.standard_normal((n//2,m)),\n                                    rng.standard_normal((n-n//2,m))+np.ones(m)))\n    \n        self.queries = np.concatenate((rng.standard_normal((r//2,m)),\n                                       rng.standard_normal((r-r//2,m))+np.ones(m)))",
         "min_run_count": 2,
         "name": "spatial.Build.time_build",
         "number": 0,
@@ -6329,7 +6329,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "4ba4812dbaf8d690c45fa276a5f1b3b65d132471009316c8554e20445e8c7924",
+        "version": "e56abf7977e5d2b2a335309fe281c887d0f0c584b6ed13af795e07b151af05d1",
         "warmup_time": -1
     },
     "spatial.BuildUnbalanced.time_build": {
@@ -6428,7 +6428,7 @@
         "warmup_time": -1
     },
     "spatial.ConvexHullBench.time_convex_hull": {
-        "code": "class ConvexHullBench:\n    def time_convex_hull(self, num_points, incremental):\n        \"\"\"Time scipy.spatial.ConvexHull over a range of input data sizes\n        and settings.\n        \"\"\"\n        ConvexHull(self.points, incremental)\n\n    def setup(self, num_points, incremental):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))",
+        "code": "class ConvexHullBench:\n    def time_convex_hull(self, num_points, incremental):\n        \"\"\"Time scipy.spatial.ConvexHull over a range of input data sizes\n        and settings.\n        \"\"\"\n        ConvexHull(self.points, incremental)\n\n    def setup(self, num_points, incremental):\n        rng = np.random.default_rng(123)\n        self.points = rng.random((num_points, 3))",
         "min_run_count": 2,
         "name": "spatial.ConvexHullBench.time_convex_hull",
         "number": 0,
@@ -6453,7 +6453,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "64fda6560789a5a6261b84ec4eaa9f416b469f162f374ee0bfda0ecff981f12a",
+        "version": "cd8dd3be1521de1569d50d0a4469308672c2af59dca3345148e1fa78b00a65e6",
         "warmup_time": -1
     },
     "spatial.GeometricSlerpBench.time_geometric_slerp_3d": {
@@ -6480,7 +6480,7 @@
         "warmup_time": -1
     },
     "spatial.Hausdorff.time_directed_hausdorff": {
-        "code": "class Hausdorff:\n    def time_directed_hausdorff(self, num_points):\n        # time directed_hausdorff code in 3 D\n        distance.directed_hausdorff(self.points1, self.points2)\n\n    def setup(self, num_points):\n        np.random.seed(123)\n        self.points1 = np.random.random_sample((num_points, 3))\n        np.random.seed(71890)\n        self.points2 = np.random.random_sample((num_points, 3))",
+        "code": "class Hausdorff:\n    def time_directed_hausdorff(self, num_points):\n        # time directed_hausdorff code in 3 D\n        distance.directed_hausdorff(self.points1, self.points2)\n\n    def setup(self, num_points):\n        rng = np.random.default_rng(123)\n        self.points1 = rng.random((num_points, 3))\n        self.points2 = rng.random((num_points, 3))",
         "min_run_count": 2,
         "name": "spatial.Hausdorff.time_directed_hausdorff",
         "number": 0,
@@ -6499,7 +6499,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "4c3ada8182e009f3f38b3468aebf2a21211aa46f4b9468985624a9b89a17f539",
+        "version": "c35368df2962162d1c3260e5b0776f6897780414c061124c486df8e21d2611d9",
         "warmup_time": -1
     },
     "spatial.Neighbors.time_count_neighbors": {
@@ -6807,7 +6807,7 @@
         "warmup_time": -1
     },
     "spatial.RadiusUnbalanced.time_query_ball_point": {
-        "code": "class RadiusUnbalanced:\n    def time_query_ball_point(self, mnr, balanced, order, radius):\n        self.T.query_ball_point(self.queries, radius)\n\nclass PresortedDataSetup:\n    def setup(self, mnr, balanced, order, radius):\n        m, n, r = mnr\n    \n        np.random.seed(1234)\n        self.data = {\n            'random': np.random.uniform(size=(n, m)),\n            'sorted': np.repeat(np.arange(n, 0, -1)[:, np.newaxis],\n                                m,\n                                axis=1) / n\n        }\n    \n        self.queries = np.random.uniform(size=(r, m))\n        self.T = cKDTree(self.data.get(order), balanced_tree=balanced)",
+        "code": "class RadiusUnbalanced:\n    def time_query_ball_point(self, mnr, balanced, order, radius):\n        self.T.query_ball_point(self.queries, radius)\n\nclass PresortedDataSetup:\n    def setup(self, mnr, balanced, order, radius):\n        m, n, r = mnr\n    \n        rng = np.random.default_rng(1234)\n        self.data = {\n            'random': rng.uniform(size=(n, m)),\n            'sorted': np.repeat(np.arange(n, 0, -1)[:, np.newaxis],\n                                m,\n                                axis=1) / n\n        }\n    \n        self.queries = rng.uniform(size=(r, m))\n        self.T = cKDTree(self.data.get(order), balanced_tree=balanced)",
         "min_run_count": 2,
         "name": "spatial.RadiusUnbalanced.time_query_ball_point",
         "number": 0,
@@ -6840,11 +6840,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "da28f9379cb1b682fd9c936b07b975e58228704248cadc7c80c8fe28684bb15e",
+        "version": "19ffec4578bc56ccb269e4d25bee6e18d61bd214fe600536a9b683fc36cc41ae",
         "warmup_time": -1
     },
     "spatial.RadiusUnbalanced.time_query_pairs": {
-        "code": "class RadiusUnbalanced:\n    def time_query_pairs(self, mnr, balanced, order, radius):\n        self.T.query_pairs(radius)\n\nclass PresortedDataSetup:\n    def setup(self, mnr, balanced, order, radius):\n        m, n, r = mnr\n    \n        np.random.seed(1234)\n        self.data = {\n            'random': np.random.uniform(size=(n, m)),\n            'sorted': np.repeat(np.arange(n, 0, -1)[:, np.newaxis],\n                                m,\n                                axis=1) / n\n        }\n    \n        self.queries = np.random.uniform(size=(r, m))\n        self.T = cKDTree(self.data.get(order), balanced_tree=balanced)",
+        "code": "class RadiusUnbalanced:\n    def time_query_pairs(self, mnr, balanced, order, radius):\n        self.T.query_pairs(radius)\n\nclass PresortedDataSetup:\n    def setup(self, mnr, balanced, order, radius):\n        m, n, r = mnr\n    \n        rng = np.random.default_rng(1234)\n        self.data = {\n            'random': rng.uniform(size=(n, m)),\n            'sorted': np.repeat(np.arange(n, 0, -1)[:, np.newaxis],\n                                m,\n                                axis=1) / n\n        }\n    \n        self.queries = rng.uniform(size=(r, m))\n        self.T = cKDTree(self.data.get(order), balanced_tree=balanced)",
         "min_run_count": 2,
         "name": "spatial.RadiusUnbalanced.time_query_pairs",
         "number": 0,
@@ -6877,11 +6877,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "a1412769a2db340629a8514a5a4a62f8172a727ef44ad268aaa8fc5d75df0b1b",
+        "version": "395e405c839e9254e33e4d090b3bce650223754da2f1d4762069c7bd35fc562b",
         "warmup_time": -1
     },
     "spatial.RotationBench.time_euler_conversion": {
-        "code": "class RotationBench:\n    def time_euler_conversion(self, num_rotations):\n        '''Time converting rotation from and to euler angles'''\n        Rotation.from_euler(\"XYZ\", self.rotations.as_euler(\"XYZ\"))\n\n    def setup(self, num_rotations):\n        np.random.seed(1234)\n        self.rotations = Rotation.random(num_rotations)",
+        "code": "class RotationBench:\n    def time_euler_conversion(self, num_rotations):\n        '''Time converting rotation from and to euler angles'''\n        Rotation.from_euler(\"XYZ\", self.rotations.as_euler(\"XYZ\"))\n\n    def setup(self, num_rotations):\n        rng = np.random.default_rng(1234)\n        self.rotations = Rotation.random(num_rotations, random_state=rng)",
         "min_run_count": 2,
         "name": "spatial.RotationBench.time_euler_conversion",
         "number": 0,
@@ -6901,11 +6901,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "30d442063d9f255b3c601d66fed0dc3eb750b89eb9253e1290f0532541875c3c",
+        "version": "317bef92ceb488d896f9e3fdeb5b679cf33775c842b0d69cb6cc86539c1140c7",
         "warmup_time": -1
     },
     "spatial.RotationBench.time_matrix_conversion": {
-        "code": "class RotationBench:\n    def time_matrix_conversion(self, num_rotations):\n        '''Time converting rotation from and to matrices'''\n        Rotation.from_matrix(self.rotations.as_matrix())\n\n    def setup(self, num_rotations):\n        np.random.seed(1234)\n        self.rotations = Rotation.random(num_rotations)",
+        "code": "class RotationBench:\n    def time_matrix_conversion(self, num_rotations):\n        '''Time converting rotation from and to matrices'''\n        Rotation.from_matrix(self.rotations.as_matrix())\n\n    def setup(self, num_rotations):\n        rng = np.random.default_rng(1234)\n        self.rotations = Rotation.random(num_rotations, random_state=rng)",
         "min_run_count": 2,
         "name": "spatial.RotationBench.time_matrix_conversion",
         "number": 0,
@@ -6925,11 +6925,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "ebb37912ff93ea6b2dfa4dd3e8da6585adcb19a26384b0d88b4d7b0bd6da9738",
+        "version": "941e658ebc52487aa8f391138f5dfcfa6f10ab6de655aac8db72e5a231efcfc5",
         "warmup_time": -1
     },
     "spatial.RotationBench.time_mrp_conversion": {
-        "code": "class RotationBench:\n    def time_mrp_conversion(self, num_rotations):\n        '''Time converting rotation from and to Modified Rodrigues Parameters'''\n        Rotation.from_mrp(self.rotations.as_mrp())\n\n    def setup(self, num_rotations):\n        np.random.seed(1234)\n        self.rotations = Rotation.random(num_rotations)",
+        "code": "class RotationBench:\n    def time_mrp_conversion(self, num_rotations):\n        '''Time converting rotation from and to Modified Rodrigues Parameters'''\n        Rotation.from_mrp(self.rotations.as_mrp())\n\n    def setup(self, num_rotations):\n        rng = np.random.default_rng(1234)\n        self.rotations = Rotation.random(num_rotations, random_state=rng)",
         "min_run_count": 2,
         "name": "spatial.RotationBench.time_mrp_conversion",
         "number": 0,
@@ -6949,11 +6949,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "1351f3f2284b2e53067f0f7c39d47f59f91cc79745a128fe6e6b13a2d236a6c8",
+        "version": "06071e9ec00b90e3db994e7cbfc50bf3c434cf8f73d361e8f9d46d1580975b42",
         "warmup_time": -1
     },
     "spatial.RotationBench.time_mul_inv": {
-        "code": "class RotationBench:\n    def time_mul_inv(self, num_rotations):\n        '''Time multiplication and inverse of rotations'''\n        self.rotations * self.rotations.inv()\n\n    def setup(self, num_rotations):\n        np.random.seed(1234)\n        self.rotations = Rotation.random(num_rotations)",
+        "code": "class RotationBench:\n    def time_mul_inv(self, num_rotations):\n        '''Time multiplication and inverse of rotations'''\n        self.rotations * self.rotations.inv()\n\n    def setup(self, num_rotations):\n        rng = np.random.default_rng(1234)\n        self.rotations = Rotation.random(num_rotations, random_state=rng)",
         "min_run_count": 2,
         "name": "spatial.RotationBench.time_mul_inv",
         "number": 0,
@@ -6973,11 +6973,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "a687eea14caff3b7c4380ba889eb8e8dc50f63702557c45d95015cbe7c07f8fa",
+        "version": "d9360181db56596df96c9a090a60487a253787016004be6f38880e7fa5cfa01a",
         "warmup_time": -1
     },
     "spatial.RotationBench.time_rotvec_conversion": {
-        "code": "class RotationBench:\n    def time_rotvec_conversion(self, num_rotations):\n        '''Time converting rotation from and to rotation vectors'''\n        Rotation.from_rotvec(self.rotations.as_rotvec())\n\n    def setup(self, num_rotations):\n        np.random.seed(1234)\n        self.rotations = Rotation.random(num_rotations)",
+        "code": "class RotationBench:\n    def time_rotvec_conversion(self, num_rotations):\n        '''Time converting rotation from and to rotation vectors'''\n        Rotation.from_rotvec(self.rotations.as_rotvec())\n\n    def setup(self, num_rotations):\n        rng = np.random.default_rng(1234)\n        self.rotations = Rotation.random(num_rotations, random_state=rng)",
         "min_run_count": 2,
         "name": "spatial.RotationBench.time_rotvec_conversion",
         "number": 0,
@@ -6997,7 +6997,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "a31fbee9db63d0359bd6e006ad67a6cc457435a2e37c3c2004c1cc25200b5ca7",
+        "version": "95d00c40e16a565254066fe193bd2657b526df4851e5412e5c2ef3f05fbb8c73",
         "warmup_time": -1
     },
     "spatial.SphericalVor.time_spherical_voronoi_calculation": {
@@ -7076,7 +7076,7 @@
         "warmup_time": -1
     },
     "spatial.VoronoiBench.time_voronoi_calculation": {
-        "code": "class VoronoiBench:\n    def time_voronoi_calculation(self, num_points, furthest_site):\n        \"\"\"Time conventional Voronoi diagram calculation.\"\"\"\n        Voronoi(self.points, furthest_site=furthest_site)\n\n    def setup(self, num_points, furthest_site):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))",
+        "code": "class VoronoiBench:\n    def time_voronoi_calculation(self, num_points, furthest_site):\n        \"\"\"Time conventional Voronoi diagram calculation.\"\"\"\n        Voronoi(self.points, furthest_site=furthest_site)\n\n    def setup(self, num_points, furthest_site):\n        rng = np.random.default_rng(123)\n        self.points = rng.random((num_points, 3))",
         "min_run_count": 2,
         "name": "spatial.VoronoiBench.time_voronoi_calculation",
         "number": 0,
@@ -7102,11 +7102,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "dd0e842221e4a0436f3010524f8b9d77200b59940ad82fcd5509ac808b6f8c9c",
+        "version": "32ec5cd864ed7eadb4d0aba633fa1af9109a3e15a9c58bd4b134208e93ac128d",
         "warmup_time": -1
     },
     "spatial.Xdist.time_cdist": {
-        "code": "class Xdist:\n    def time_cdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.cdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.cdist(self.points, self.points, self.metric, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        elif metric == 'wminkowski':\n            # use an equal weight vector since weights are required\n            self.kwargs = {'w': np.ones(3)}\n        else:\n            self.kwargs = {}",
+        "code": "class Xdist:\n    def time_cdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.cdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.cdist(self.points, self.points, self.metric, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        rng = np.random.default_rng(123)\n        self.points = rng.random((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        elif metric == 'wminkowski':\n            # use an equal weight vector since weights are required\n            self.kwargs = {'w': np.ones(3)}\n        else:\n            self.kwargs = {}",
         "min_run_count": 2,
         "name": "spatial.Xdist.time_cdist",
         "number": 0,
@@ -7151,11 +7151,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "95b5ad291484978e2ab873dda35a7e2168e0380554d8e427997c9c2dbf3a31e4",
+        "version": "5b5ebb86a4332eb40947ef6f66245427e9c28cddbbd940096e700fdccf652163",
         "warmup_time": -1
     },
     "spatial.Xdist.time_pdist": {
-        "code": "class Xdist:\n    def time_pdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.pdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.pdist(self.points, self.metric, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        elif metric == 'wminkowski':\n            # use an equal weight vector since weights are required\n            self.kwargs = {'w': np.ones(3)}\n        else:\n            self.kwargs = {}",
+        "code": "class Xdist:\n    def time_pdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.pdist over a range of input data\n        sizes and metrics.\n        \"\"\"\n        distance.pdist(self.points, self.metric, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        rng = np.random.default_rng(123)\n        self.points = rng.random((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        elif metric == 'wminkowski':\n            # use an equal weight vector since weights are required\n            self.kwargs = {'w': np.ones(3)}\n        else:\n            self.kwargs = {}",
         "min_run_count": 2,
         "name": "spatial.Xdist.time_pdist",
         "number": 0,
@@ -7200,11 +7200,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "d24e650df51666111bf1500a4f410bd98412634afdc8096e9a85006c6dbfe4b8",
+        "version": "5c1a3b45b059d79c1b0fd8d4ed007720aa6e75921bae8ba343c4169ddf36df40",
         "warmup_time": -1
     },
     "spatial.XdistWeighted.time_cdist": {
-        "code": "class XdistWeighted:\n    def time_cdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.cdist for weighted distance metrics.\"\"\"\n        distance.cdist(self.points, self.points, self.metric, w=self.weights,\n                       **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        else:\n            self.kwargs = {}\n        self.weights = np.ones(3)",
+        "code": "class XdistWeighted:\n    def time_cdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.cdist for weighted distance metrics.\"\"\"\n        distance.cdist(self.points, self.points, self.metric, w=self.weights,\n                       **self.kwargs)\n\n    def setup(self, num_points, metric):\n        rng = np.random.default_rng(123)\n        self.points = rng.random((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        else:\n            self.kwargs = {}\n        self.weights = np.ones(3)",
         "min_run_count": 2,
         "name": "spatial.XdistWeighted.time_cdist",
         "number": 0,
@@ -7245,11 +7245,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "f7f4fdf9bf006826f7c45b90c61e0b28c25ec9f7d1bde27eebc07e549e15fe05",
+        "version": "e1f4bf316e630291b53be079f149d57b062235f0fee0bdb623c31d2e00e56f09",
         "warmup_time": -1
     },
     "spatial.XdistWeighted.time_pdist": {
-        "code": "class XdistWeighted:\n    def time_pdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.pdist for weighted distance metrics.\"\"\"\n        distance.pdist(self.points, self.metric, w=self.weights, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        np.random.seed(123)\n        self.points = np.random.random_sample((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        else:\n            self.kwargs = {}\n        self.weights = np.ones(3)",
+        "code": "class XdistWeighted:\n    def time_pdist(self, num_points, metric):\n        \"\"\"Time scipy.spatial.distance.pdist for weighted distance metrics.\"\"\"\n        distance.pdist(self.points, self.metric, w=self.weights, **self.kwargs)\n\n    def setup(self, num_points, metric):\n        rng = np.random.default_rng(123)\n        self.points = rng.random((num_points, 3))\n        self.metric = metric\n        if metric == 'minkowski-P3':\n            # p=2 is just the euclidean metric, try another p value as well\n            self.kwargs = {'p': 3.0}\n            self.metric = 'minkowski'\n        else:\n            self.kwargs = {}\n        self.weights = np.ones(3)",
         "min_run_count": 2,
         "name": "spatial.XdistWeighted.time_pdist",
         "number": 0,
@@ -7290,7 +7290,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "58c4158224dc6b16f09b66905db84b25ccf489c1706f048dbb2aa98de601b9c7",
+        "version": "03b3befb7962cf01f7b724a86bc0394bcf361385da583bdcb1fa33d35b03cec2",
         "warmup_time": -1
     },
     "special.Airy.time_ai_zeros": {
@@ -7481,7 +7481,7 @@
         "warmup_time": -1
     },
     "stats.BenchQMCDiscrepancy.time_discrepancy": {
-        "code": "class BenchQMCDiscrepancy:\n    def time_discrepancy(self, method):\n        disc = stats.qmc.discrepancy(self.sample, method=method)\n\n    def setup(self, method):\n        np.random.seed(1234)\n        sample = np.random.random_sample((1000, 10))\n        self.sample = sample",
+        "code": "class BenchQMCDiscrepancy:\n    def time_discrepancy(self, method):\n        disc = stats.qmc.discrepancy(self.sample, method=method)\n\n    def setup(self, method):\n        rng = np.random.default_rng(1234)\n        sample = rng.random((1000, 10))\n        self.sample = sample",
         "min_run_count": 2,
         "name": "stats.BenchQMCDiscrepancy.time_discrepancy",
         "number": 0,
@@ -7501,7 +7501,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "8cb7bdfdf1a15abab7c4dc762b0de68377f24c45e8e4a2ac2b1e5f16c85b10d4",
+        "version": "ec7d2d3338198de06cd2b52b697f8bd2396d55eb2c575a67686ff32a83c126a3",
         "warmup_time": -1
     },
     "stats.BenchSkewKurtosis.time_kurtosis": {
@@ -7575,7 +7575,7 @@
         "warmup_time": -1
     },
     "stats.BinnedStatisticDD.time_binned_statistic_dd": {
-        "code": "class BinnedStatisticDD:\n    def time_binned_statistic_dd(self, statistic):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])\n\n    def setup(self, statistic):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
+        "code": "class BinnedStatisticDD:\n    def time_binned_statistic_dd(self, statistic):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])\n\n    def setup(self, statistic):\n        rng = np.random.default_rng(12345678)\n        self.inp = rng.random(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
         "min_run_count": 2,
         "name": "stats.BinnedStatisticDD.time_binned_statistic_dd",
         "number": 0,
@@ -7599,11 +7599,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "508fc7144f1106311d19bb4521c02150c5dbf081379349da5a53c8258fde4505",
+        "version": "7a3c87d67ca9e724d002df80767df631be17cf7d9d034b2cd1b4a17c631adc00",
         "warmup_time": -1
     },
     "stats.BinnedStatisticDD.time_binned_statistic_dd_reuse_bin": {
-        "code": "class BinnedStatisticDD:\n    def time_binned_statistic_dd_reuse_bin(self, statistic):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            binned_statistic_result=self.ret)\n\n    def setup(self, statistic):\n        np.random.seed(12345678)\n        self.inp = np.random.rand(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
+        "code": "class BinnedStatisticDD:\n    def time_binned_statistic_dd_reuse_bin(self, statistic):\n        stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            binned_statistic_result=self.ret)\n\n    def setup(self, statistic):\n        rng = np.random.default_rng(12345678)\n        self.inp = rng.random(9999).reshape(3, 3333) * 200\n        self.subbin_x_edges = np.arange(0, 200, dtype=np.float32)\n        self.subbin_y_edges = np.arange(0, 200, dtype=np.float64)\n        self.ret = stats.binned_statistic_dd(\n            [self.inp[0], self.inp[1]], self.inp[2], statistic=statistic,\n            bins=[self.subbin_x_edges, self.subbin_y_edges])",
         "min_run_count": 2,
         "name": "stats.BinnedStatisticDD.time_binned_statistic_dd_reuse_bin",
         "number": 0,
@@ -7627,7 +7627,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "155a7d0aa43d42f6338e8078e753af03fd6e71246897babe3e3dfea6950ef95d",
+        "version": "82b2d5c6e62123e3b067049ef37d7bc6b1b72227cf39069214820e444c6819e7",
         "warmup_time": -1
     },
     "stats.ContinuousFitAnalyticalMLEOverride.time_fit": {
@@ -7751,7 +7751,7 @@
         "warmup_time": -1
     },
     "stats.DescriptiveStats.time_mode": {
-        "code": "class DescriptiveStats:\n    def time_mode(self, n_levels):\n        stats.mode(self.levels, axis=0)\n\n    def setup(self, n_levels):\n        np.random.seed(12345678)\n        self.levels = np.random.randint(n_levels, size=(1000, 10))",
+        "code": "class DescriptiveStats:\n    def time_mode(self, n_levels):\n        stats.mode(self.levels, axis=0)\n\n    def setup(self, n_levels):\n        rng = np.random.default_rng(12345678)\n        self.levels = rng.integers(n_levels, size=(1000, 10))",
         "min_run_count": 2,
         "name": "stats.DescriptiveStats.time_mode",
         "number": 0,
@@ -7769,7 +7769,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "41bd0acf96a81da25d1dedf655e86fe988a6a5943f04e5e2103aa2b36d427338",
+        "version": "f86630b539b378654085c43863880a1d482b02c7cc01eade90599efb9e32886a",
         "warmup_time": -1
     },
     "stats.DistanceFunctions.time_energy_distance": {
@@ -7817,7 +7817,7 @@
         "warmup_time": -1
     },
     "stats.Distribution.time_distribution": {
-        "code": "class Distribution:\n    def time_distribution(self, distribution, properties):\n        if distribution == 'gamma':\n            if properties == 'pdf':\n                stats.gamma.pdf(self.x, a=5, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.gamma.cdf(self.x, a=5, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.gamma.rvs(size=1000, a=5, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.gamma.fit(self.x, loc=4, scale=10)\n        elif distribution == 'cauchy':\n            if properties == 'pdf':\n                stats.cauchy.pdf(self.x, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.cauchy.cdf(self.x, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.cauchy.rvs(size=1000, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.cauchy.fit(self.x, loc=4, scale=10)\n        elif distribution == 'beta':\n            if properties == 'pdf':\n                stats.beta.pdf(self.x, a=5, b=3, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.beta.cdf(self.x, a=5, b=3, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.beta.rvs(size=1000, a=5, b=3, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.beta.fit(self.x, loc=4, scale=10)\n\n    def setup(self, distribution, properties):\n        np.random.seed(12345678)\n        self.x = np.random.rand(100)",
+        "code": "class Distribution:\n    def time_distribution(self, distribution, properties):\n        if distribution == 'gamma':\n            if properties == 'pdf':\n                stats.gamma.pdf(self.x, a=5, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.gamma.cdf(self.x, a=5, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.gamma.rvs(size=1000, a=5, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.gamma.fit(self.x, loc=4, scale=10)\n        elif distribution == 'cauchy':\n            if properties == 'pdf':\n                stats.cauchy.pdf(self.x, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.cauchy.cdf(self.x, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.cauchy.rvs(size=1000, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.cauchy.fit(self.x, loc=4, scale=10)\n        elif distribution == 'beta':\n            if properties == 'pdf':\n                stats.beta.pdf(self.x, a=5, b=3, loc=4, scale=10)\n            elif properties == 'cdf':\n                stats.beta.cdf(self.x, a=5, b=3, loc=4, scale=10)\n            elif properties == 'rvs':\n                stats.beta.rvs(size=1000, a=5, b=3, loc=4, scale=10)\n            elif properties == 'fit':\n                stats.beta.fit(self.x, loc=4, scale=10)\n\n    def setup(self, distribution, properties):\n        rng = np.random.default_rng(12345678)\n        self.x = rng.random(100)",
         "min_run_count": 2,
         "name": "stats.Distribution.time_distribution",
         "number": 0,
@@ -8007,7 +8007,7 @@
         "warmup_time": -1
     },
     "stats.GaussianKDE.time_gaussian_kde_evaluate_few_points": {
-        "code": "class GaussianKDE:\n    def time_gaussian_kde_evaluate_few_points(self):\n        # test gaussian_kde evaluate on a small number of points\n        self.kernel(self.positions[:, :10])\n\n    def setup(self):\n        np.random.seed(12345678)\n        n = 2000\n        m1 = np.random.normal(size=n)\n        m2 = np.random.normal(scale=0.5, size=n)\n    \n        xmin = m1.min()\n        xmax = m1.max()\n        ymin = m2.min()\n        ymax = m2.max()\n    \n        X, Y = np.mgrid[xmin:xmax:200j, ymin:ymax:200j]\n        self.positions = np.vstack([X.ravel(), Y.ravel()])\n        values = np.vstack([m1, m2])\n        self.kernel = stats.gaussian_kde(values)",
+        "code": "class GaussianKDE:\n    def time_gaussian_kde_evaluate_few_points(self):\n        # test gaussian_kde evaluate on a small number of points\n        self.kernel(self.positions[:, :10])\n\n    def setup(self):\n        rng = np.random.default_rng(12345678)\n        n = 2000\n        m1 = rng.normal(size=n)\n        m2 = rng.normal(scale=0.5, size=n)\n    \n        xmin = m1.min()\n        xmax = m1.max()\n        ymin = m2.min()\n        ymax = m2.max()\n    \n        X, Y = np.mgrid[xmin:xmax:200j, ymin:ymax:200j]\n        self.positions = np.vstack([X.ravel(), Y.ravel()])\n        values = np.vstack([m1, m2])\n        self.kernel = stats.gaussian_kde(values)",
         "min_run_count": 2,
         "name": "stats.GaussianKDE.time_gaussian_kde_evaluate_few_points",
         "number": 0,
@@ -8018,11 +8018,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "e26a6406fba75b6323177dc436e67bdc94d81f0e5a2494b243ab16348dfaaa04",
+        "version": "308194c7334a4a538b11825b2d3c8af1c98d8781be384b66ba60cdf3a74172bd",
         "warmup_time": -1
     },
     "stats.GaussianKDE.time_gaussian_kde_evaluate_many_points": {
-        "code": "class GaussianKDE:\n    def time_gaussian_kde_evaluate_many_points(self):\n        # test gaussian_kde evaluate on many points\n        self.kernel(self.positions)\n\n    def setup(self):\n        np.random.seed(12345678)\n        n = 2000\n        m1 = np.random.normal(size=n)\n        m2 = np.random.normal(scale=0.5, size=n)\n    \n        xmin = m1.min()\n        xmax = m1.max()\n        ymin = m2.min()\n        ymax = m2.max()\n    \n        X, Y = np.mgrid[xmin:xmax:200j, ymin:ymax:200j]\n        self.positions = np.vstack([X.ravel(), Y.ravel()])\n        values = np.vstack([m1, m2])\n        self.kernel = stats.gaussian_kde(values)",
+        "code": "class GaussianKDE:\n    def time_gaussian_kde_evaluate_many_points(self):\n        # test gaussian_kde evaluate on many points\n        self.kernel(self.positions)\n\n    def setup(self):\n        rng = np.random.default_rng(12345678)\n        n = 2000\n        m1 = rng.normal(size=n)\n        m2 = rng.normal(scale=0.5, size=n)\n    \n        xmin = m1.min()\n        xmax = m1.max()\n        ymin = m2.min()\n        ymax = m2.max()\n    \n        X, Y = np.mgrid[xmin:xmax:200j, ymin:ymax:200j]\n        self.positions = np.vstack([X.ravel(), Y.ravel()])\n        values = np.vstack([m1, m2])\n        self.kernel = stats.gaussian_kde(values)",
         "min_run_count": 2,
         "name": "stats.GaussianKDE.time_gaussian_kde_evaluate_many_points",
         "number": 0,
@@ -8033,11 +8033,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "020ca2c74779542e651854a57f96d06d52ca4d7f69c9238c982915bae56e70f6",
+        "version": "3c2e299b62fd8e3ba479e90c5bd344e34fb8f7022216fc1d7b04abe974b8fccb",
         "warmup_time": -1
     },
     "stats.GroupSampling.time_ortho_group": {
-        "code": "class GroupSampling:\n    def time_ortho_group(self, dim):\n        stats.ortho_group.rvs(dim)\n\n    def setup(self, dim):\n        np.random.seed(12345678)",
+        "code": "class GroupSampling:\n    def time_ortho_group(self, dim):\n        stats.ortho_group.rvs(dim, random_state=self.rng)\n\n    def setup(self, dim):\n        self.rng = np.random.default_rng(12345678)",
         "min_run_count": 2,
         "name": "stats.GroupSampling.time_ortho_group",
         "number": 0,
@@ -8057,11 +8057,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "3bd7721ff032c5ca603db78ac629399c68cfeec09af5277ced816a307a6382d5",
+        "version": "990e7dccd766d90861f0219f1c0d310d1d3b59bb4b4e6799315da81ce9145221",
         "warmup_time": -1
     },
     "stats.GroupSampling.time_special_ortho_group": {
-        "code": "class GroupSampling:\n    def time_special_ortho_group(self, dim):\n        stats.special_ortho_group.rvs(dim)\n\n    def setup(self, dim):\n        np.random.seed(12345678)",
+        "code": "class GroupSampling:\n    def time_special_ortho_group(self, dim):\n        stats.special_ortho_group.rvs(dim, random_state=self.rng)\n\n    def setup(self, dim):\n        self.rng = np.random.default_rng(12345678)",
         "min_run_count": 2,
         "name": "stats.GroupSampling.time_special_ortho_group",
         "number": 0,
@@ -8081,11 +8081,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "5e6521ac414a671bf64d2a85f95777a39808e2882554394c0e5cf5ed9b3cdcd2",
+        "version": "f4e28da0afccf9a82fb77c3b935947e05c6e29cf0d7f17d5fea109f1a80dd724",
         "warmup_time": -1
     },
     "stats.GroupSampling.time_unitary_group": {
-        "code": "class GroupSampling:\n    def time_unitary_group(self, dim):\n        stats.unitary_group.rvs(dim)\n\n    def setup(self, dim):\n        np.random.seed(12345678)",
+        "code": "class GroupSampling:\n    def time_unitary_group(self, dim):\n        stats.unitary_group.rvs(dim, random_state=self.rng)\n\n    def setup(self, dim):\n        self.rng = np.random.default_rng(12345678)",
         "min_run_count": 2,
         "name": "stats.GroupSampling.time_unitary_group",
         "number": 0,
@@ -8105,11 +8105,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "a390c30a4e37f262ab3307d490460144a446aa60a4046c828a1605bc444932ca",
+        "version": "38be16fe30bc049ce08b7c656fd6269a98aa0a39e8b6bb5801aaf0dbd85f4be9",
         "warmup_time": -1
     },
     "stats.InferentialStats.time_ttest_ind_diff_var": {
-        "code": "class InferentialStats:\n    def time_ttest_ind_diff_var(self):\n        # test different sized sample with different variances\n        stats.ttest_ind(self.a, self.c)\n        stats.ttest_ind(self.a, self.c, equal_var=False)\n\n    def setup(self):\n        np.random.seed(12345678)\n        self.a = stats.norm.rvs(loc=5, scale=10, size=500)\n        self.b = stats.norm.rvs(loc=8, scale=10, size=20)\n        self.c = stats.norm.rvs(loc=8, scale=20, size=20)",
+        "code": "class InferentialStats:\n    def time_ttest_ind_diff_var(self):\n        # test different sized sample with different variances\n        stats.ttest_ind(self.a, self.c)\n        stats.ttest_ind(self.a, self.c, equal_var=False)\n\n    def setup(self):\n        rng = np.random.default_rng(12345678)\n        self.a = stats.norm.rvs(loc=5, scale=10, size=500, random_state=rng)\n        self.b = stats.norm.rvs(loc=8, scale=10, size=20, random_state=rng)\n        self.c = stats.norm.rvs(loc=8, scale=20, size=20, random_state=rng)",
         "min_run_count": 2,
         "name": "stats.InferentialStats.time_ttest_ind_diff_var",
         "number": 0,
@@ -8120,11 +8120,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "6cc7d8eef7288a17bea3b1690475da91b002d18c849985591137bba64ec99438",
+        "version": "89695940aeed391d1b17e3dd038a7e48536362ea58ee6f2d97582089aa57c7fe",
         "warmup_time": -1
     },
     "stats.InferentialStats.time_ttest_ind_same_var": {
-        "code": "class InferentialStats:\n    def time_ttest_ind_same_var(self):\n        # test different sized sample with variances\n        stats.ttest_ind(self.a, self.b)\n        stats.ttest_ind(self.a, self.b, equal_var=False)\n\n    def setup(self):\n        np.random.seed(12345678)\n        self.a = stats.norm.rvs(loc=5, scale=10, size=500)\n        self.b = stats.norm.rvs(loc=8, scale=10, size=20)\n        self.c = stats.norm.rvs(loc=8, scale=20, size=20)",
+        "code": "class InferentialStats:\n    def time_ttest_ind_same_var(self):\n        # test different sized sample with variances\n        stats.ttest_ind(self.a, self.b)\n        stats.ttest_ind(self.a, self.b, equal_var=False)\n\n    def setup(self):\n        rng = np.random.default_rng(12345678)\n        self.a = stats.norm.rvs(loc=5, scale=10, size=500, random_state=rng)\n        self.b = stats.norm.rvs(loc=8, scale=10, size=20, random_state=rng)\n        self.c = stats.norm.rvs(loc=8, scale=20, size=20, random_state=rng)",
         "min_run_count": 2,
         "name": "stats.InferentialStats.time_ttest_ind_same_var",
         "number": 0,
@@ -8135,7 +8135,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "462d2cc05dd76e27f79702bef4899c50a49040a7355fb2872e64decfe9e5f1ec",
+        "version": "dbee2b881cebefc6784ea60a51e9e32156a57245cfd0284f6d132fea6d18edf5",
         "warmup_time": -1
     },
     "stats.Kendalltau.time_kendalltau": {
