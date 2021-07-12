@@ -8302,5 +8302,27 @@
         "version": "5f4ac6b1839ff144dc740f6149f93a001a4aa6e71f4d8a09514e2bfab9317beb",
         "warmup_time": -1
     },
+    "stats.Somersd.time_somersd": {
+        "code": "class Somersd:\n    def time_somersd(self, n_size):\n        res = stats.somersd(self.x, self.y)\n\n    def setup(self, n_size):\n        rng = np.random.default_rng(12345678)\n        self.x = rng.choice(n_size, size=n_size)\n        self.y = rng.choice(n_size, size=n_size)",
+        "min_run_count": 2,
+        "name": "stats.Somersd.time_somersd",
+        "number": 0,
+        "param_names": [
+            "n_size"
+        ],
+        "params": [
+            [
+                "10",
+                "100"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "dfb33ea1548666287ee2f0edabc510bf8b4dfff0921b0815dab88622e98d081f",
+        "warmup_time": -1
+    },
     "version": 2
 }
