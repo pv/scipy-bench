@@ -1694,7 +1694,7 @@
         "warmup_time": -1
     },
     "interpolate.BenchPPoly.time_evaluation": {
-        "code": "class BenchPPoly:\n    def time_evaluation(self):\n        self.pp(self.xp)\n\n    def setup(self):\n        rng = np.random.default_rng(1234)\n        m, k = 55, 3\n        x = np.sort(rng.random(m+1))\n        c = rng.random((3, m))\n        self.pp = interpolate.PPoly(c, x)\n    \n        npts = 100\n        self.xp = np.linspace(0, 1, npts)",
+        "code": "class BenchPPoly:\n    def time_evaluation(self):\n        self.pp(self.xp)\n\n    def setup(self):\n        rng = np.random.default_rng(1234)\n        m, k = 55, 3\n        x = np.sort(rng.random(m+1))\n        c = rng.random((k, m))\n        self.pp = interpolate.PPoly(c, x)\n    \n        npts = 100\n        self.xp = np.linspace(0, 1, npts)",
         "min_run_count": 2,
         "name": "interpolate.BenchPPoly.time_evaluation",
         "number": 0,
@@ -1705,7 +1705,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "f7706e0503a428d30fb6a3b0e63d628728cf26042f9e4d8bfabd47dbee2abdb9",
+        "version": "9c97ad8eb89793df6d942e57466574de767d644e4ace3c597033b6a88a2813a5",
         "warmup_time": -1
     },
     "interpolate.BivariateSpline.time_lsq_bivariate_spline": {
@@ -4744,7 +4744,7 @@
         "warmup_time": -1
     },
     "signal.FFTConvolve.time_convolve2d": {
-        "code": "class FFTConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.fftconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        self.a = rng.standard_normal(size[0])\n        self.b = rng.standard_normal(size[1])",
+        "code": "class FFTConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.fftconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        rng = np.random.default_rng(1234)\n        self.a = rng.standard_normal(size[0])\n        self.b = rng.standard_normal(size[1])",
         "min_run_count": 2,
         "name": "signal.FFTConvolve.time_convolve2d",
         "number": 0,
@@ -4802,7 +4802,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "531415b126bbcc413e07d1969593c94c4ebc23624900baed890225ad58e30820",
+        "version": "dce62910a489dc15af038ccccc437229eedbcba0f6285abdf3ab404c3bf6e712",
         "warmup_time": -1
     },
     "signal.FIRLS.time_firls": {
@@ -4910,7 +4910,7 @@
         "warmup_time": -1
     },
     "signal.OAConvolve.time_convolve2d": {
-        "code": "class OAConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.oaconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        rng = np.random.default_rng(1234)\n        # sample a bunch of pairs of 2d arrays\n        pairs = []\n        self.a = rng.standard_normal(size[0])\n        self.b = rng.standard_normal(size[1])",
+        "code": "class OAConvolve:\n    def time_convolve2d(self, mode, size):\n        signal.oaconvolve(self.a, self.b, mode=mode)\n\n    def setup(self, mode, size):\n        rng = np.random.default_rng(1234)\n        self.a = rng.standard_normal(size[0])\n        self.b = rng.standard_normal(size[1])",
         "min_run_count": 2,
         "name": "signal.OAConvolve.time_convolve2d",
         "number": 0,
@@ -4935,7 +4935,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "6b9acd5ef48c215bddb63e3356d7157391808d895dad161e6e5e0930feccfc24",
+        "version": "8b7ebbd14f386a03f961eb0479943494c8b931b466ddf5756a139bb74ca6485f",
         "warmup_time": -1
     },
     "signal.Resample.time_complex": {
@@ -7773,7 +7773,7 @@
         "warmup_time": -1
     },
     "stats.DistanceFunctions.time_energy_distance": {
-        "code": "class DistanceFunctions:\n    def time_energy_distance(self, n_size):\n        distance = stats.energy_distance(\n                 self.u_values, self.v_values,\n                 self.u_weights, self.v_weights)\n\n    def setup(self, n_size):\n        rng = np.random.default_rng(12345678)\n        self.u_values= rng.random(n_size) * 10\n        self.u_weights = rng.random(n_size) * 10\n        self.v_values = rng.random(n_size // 2) * 10\n        self.v_weights = rng.random(n_size // 2) * 10",
+        "code": "class DistanceFunctions:\n    def time_energy_distance(self, n_size):\n        distance = stats.energy_distance(\n                 self.u_values, self.v_values,\n                 self.u_weights, self.v_weights)\n\n    def setup(self, n_size):\n        rng = np.random.default_rng(12345678)\n        self.u_values = rng.random(n_size) * 10\n        self.u_weights = rng.random(n_size) * 10\n        self.v_values = rng.random(n_size // 2) * 10\n        self.v_weights = rng.random(n_size // 2) * 10",
         "min_run_count": 2,
         "name": "stats.DistanceFunctions.time_energy_distance",
         "number": 0,
@@ -7791,11 +7791,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "3a571298f38e10836a7b96183f9f45ea210e03dc74d7e170d5f0d7a3b8a0da76",
+        "version": "5746629059f9114dbfe97400d67eda07ce74ecb137e5f1f70b7df3564f95b0aa",
         "warmup_time": -1
     },
     "stats.DistanceFunctions.time_wasserstein_distance": {
-        "code": "class DistanceFunctions:\n    def time_wasserstein_distance(self, n_size):\n        distance = stats.wasserstein_distance(\n                 self.u_values, self.v_values,\n                 self.u_weights, self.v_weights)\n\n    def setup(self, n_size):\n        rng = np.random.default_rng(12345678)\n        self.u_values= rng.random(n_size) * 10\n        self.u_weights = rng.random(n_size) * 10\n        self.v_values = rng.random(n_size // 2) * 10\n        self.v_weights = rng.random(n_size // 2) * 10",
+        "code": "class DistanceFunctions:\n    def time_wasserstein_distance(self, n_size):\n        distance = stats.wasserstein_distance(\n                 self.u_values, self.v_values,\n                 self.u_weights, self.v_weights)\n\n    def setup(self, n_size):\n        rng = np.random.default_rng(12345678)\n        self.u_values = rng.random(n_size) * 10\n        self.u_weights = rng.random(n_size) * 10\n        self.v_values = rng.random(n_size // 2) * 10\n        self.v_weights = rng.random(n_size // 2) * 10",
         "min_run_count": 2,
         "name": "stats.DistanceFunctions.time_wasserstein_distance",
         "number": 0,
@@ -7813,7 +7813,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "1385c333d64bba17144276ffc76dbf3ab7f9a7694d918f668ddcd0e6c554bce6",
+        "version": "8fd4e183f388121f6421934cbf90df4dba7ab7e139dcf17a27b5582fa9adae0d",
         "warmup_time": -1
     },
     "stats.Distribution.time_distribution": {
