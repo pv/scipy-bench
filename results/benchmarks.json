@@ -7504,6 +7504,39 @@
         "version": "ec7d2d3338198de06cd2b52b697f8bd2396d55eb2c575a67686ff32a83c126a3",
         "warmup_time": -1
     },
+    "stats.BenchQMCHalton.time_halton": {
+        "code": "class BenchQMCHalton:\n    def time_halton(self, d, scramble, n):\n        seq = stats.qmc.Halton(d, scramble=scramble, seed=self.rng)\n        seq.random(n)\n\n    def setup(self, d, scramble, n):\n        self.rng = np.random.default_rng(1234)",
+        "min_run_count": 2,
+        "name": "stats.BenchQMCHalton.time_halton",
+        "number": 0,
+        "param_names": [
+            "d",
+            "scramble",
+            "n"
+        ],
+        "params": [
+            [
+                "1",
+                "10"
+            ],
+            [
+                "True",
+                "False"
+            ],
+            [
+                "10",
+                "1000",
+                "100000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "3711103c2e44afcf99ac941af518c557a82700eafc78eafcdf317d0453309ff9",
+        "warmup_time": -1
+    },
     "stats.BenchSkewKurtosis.time_kurtosis": {
         "code": "class BenchSkewKurtosis:\n    def time_kurtosis(self, order, size, bias):\n        stats.kurtosis(self.x, bias=bias)\n\n    def setup(self, order, size, bias):\n        np.random.random(1234)\n        self.x = np.random.random(size)",
         "min_run_count": 2,
