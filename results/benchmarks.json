@@ -7505,14 +7505,15 @@
         "warmup_time": -1
     },
     "stats.BenchQMCHalton.time_halton": {
-        "code": "class BenchQMCHalton:\n    def time_halton(self, d, scramble, n):\n        seq = stats.qmc.Halton(d, scramble=scramble, seed=self.rng)\n        seq.random(n)\n\n    def setup(self, d, scramble, n):\n        self.rng = np.random.default_rng(1234)",
+        "code": "class BenchQMCHalton:\n    def time_halton(self, d, scramble, n, workers):\n        seq = stats.qmc.Halton(d, scramble=scramble, seed=self.rng)\n        seq.random(n, workers=workers)\n\n    def setup(self, d, scramble, n, workers):\n        self.rng = np.random.default_rng(1234)",
         "min_run_count": 2,
         "name": "stats.BenchQMCHalton.time_halton",
         "number": 0,
         "param_names": [
             "d",
             "scramble",
-            "n"
+            "n",
+            "workers"
         ],
         "params": [
             [
@@ -7527,6 +7528,10 @@
                 "10",
                 "1000",
                 "100000"
+            ],
+            [
+                "1",
+                "4"
             ]
         ],
         "rounds": 2,
@@ -7534,7 +7539,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "3711103c2e44afcf99ac941af518c557a82700eafc78eafcdf317d0453309ff9",
+        "version": "89c2063cf24f2f43ae17d191bb2ba0a5841f0cb1a0a9f791e2e14e70aa884f08",
         "warmup_time": -1
     },
     "stats.BenchSkewKurtosis.time_kurtosis": {
