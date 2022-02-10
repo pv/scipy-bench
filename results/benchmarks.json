@@ -4214,7 +4214,7 @@
         "warmup_time": -1
     },
     "optimize_qap.QuadraticAssignment.track_score": {
-        "code": "class QuadraticAssignment:\n    def track_score(self, method, qap_prob):\n        res = quadratic_assignment(self.A, self.B, self.method)\n        score = int(res['score'])\n        percent_diff = (score - self.opt_solution) / self.opt_solution\n        return percent_diff\n\n    def setup(self, method, qap_prob):\n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = np.load(os.path.join(dir_path, \"qapdata/qap_probs.npz\"),\n                           allow_pickle=True)\n        slnfile = np.load(os.path.join(dir_path, \"qapdata/qap_sols.npz\"),\n                          allow_pickle=True)\n        self.A = datafile[qap_prob][0]\n        self.B = datafile[qap_prob][1]\n        self.opt_solution = slnfile[qap_prob]\n        self.method = method",
+        "code": "class QuadraticAssignment:\n    def track_score(self, method, qap_prob):\n        res = quadratic_assignment(self.A, self.B, self.method)\n        score = int(res['fun'])\n        percent_diff = (score - self.opt_solution) / self.opt_solution\n        return percent_diff\n\n    def setup(self, method, qap_prob):\n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = np.load(os.path.join(dir_path, \"qapdata/qap_probs.npz\"),\n                           allow_pickle=True)\n        slnfile = np.load(os.path.join(dir_path, \"qapdata/qap_sols.npz\"),\n                          allow_pickle=True)\n        self.A = datafile[qap_prob][0]\n        self.B = datafile[qap_prob][1]\n        self.opt_solution = slnfile[qap_prob]\n        self.method = method",
         "name": "optimize_qap.QuadraticAssignment.track_score",
         "param_names": [
             "Method",
@@ -4353,7 +4353,7 @@
         "timeout": 60.0,
         "type": "track",
         "unit": "unit",
-        "version": "7fd078571786b0045317452e802e6a9349ec55adc9aaa282a4aff71f97abbeef"
+        "version": "1c3a31da291b33b9e2a8136e0427f40e80e3cf63ac9508e5d5249c5c058a3cd1"
     },
     "optimize_zeros.Newton.time_newton": {
         "code": "class Newton:\n    def time_newton(self, func, meth):\n        newton(self.f, self.x0, args=(), fprime=self.f_1, fprime2=self.f_2)\n\n    def setup(self, func, meth):\n        self.x0 = 3\n        self.f_1 = None\n        self.f_2 = None\n        if func == 'f1':\n            self.f = lambda x: x ** 2 - 2 * x - 1\n            if meth in ('newton', 'halley'):\n                self.f_1 = lambda x: 2 * x - 2\n            if meth == 'halley':\n                self.f_2 = lambda x: 2.0 + 0 * x\n        else:\n            self.f = lambda x: exp(x) - cos(x)\n            if meth in ('newton', 'halley'):\n                self.f_1 = lambda x: exp(x) + sin(x)\n            if meth == 'halley':\n                self.f_2 = lambda x: exp(x) + cos(x)",
@@ -5370,6 +5370,31 @@
         "version": "fb2157b5f6933e49f97c0545b2f85985bc912c4436d81538ead45e721ce9404e",
         "warmup_time": -1
     },
+    "sparse.CsrHstack.time_csr_hstack": {
+        "code": "class CsrHstack:\n    def time_csr_hstack(self, num_rows):\n        sparse.hstack([self.mat, self.mat])\n\n    def setup(self, num_rows):\n        num_cols = int(1e5)\n        density = 2e-3\n        nnz_per_row = int(density*num_cols)\n        self.mat = random_sparse(num_rows, num_cols, nnz_per_row)",
+        "min_run_count": 2,
+        "name": "sparse.CsrHstack.time_csr_hstack",
+        "number": 0,
+        "param_names": [
+            "num_rows"
+        ],
+        "params": [
+            [
+                "10000",
+                "25000",
+                "50000",
+                "100000",
+                "250000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "09719b41d20ade7d878bdbbbd053da7e66b7738c20eb23102b7ee3767ae7e1ee",
+        "warmup_time": -1
+    },
     "sparse.Densify.time_toarray": {
         "code": "class Densify:\n    def time_toarray(self, format, order):\n        self.X.toarray(order=order)\n\n    def setup(self, format, order):\n        warnings.simplefilter('ignore', SparseEfficiencyWarning)\n        self.X = sparse.rand(1000, 1000, format=format, density=0.01)",
         "min_run_count": 2,
@@ -5627,7 +5652,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:337",
+        "setup_cache_key": "sparse:351",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5657,7 +5682,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:337",
+        "setup_cache_key": "sparse:351",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5687,7 +5712,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:337",
+        "setup_cache_key": "sparse:351",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5717,7 +5742,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:337",
+        "setup_cache_key": "sparse:351",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5747,7 +5772,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:337",
+        "setup_cache_key": "sparse:351",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -5777,7 +5802,7 @@
         ],
         "rounds": 2,
         "sample_time": 0.01,
-        "setup_cache_key": "sparse:337",
+        "setup_cache_key": "sparse:351",
         "setup_cache_timeout": 120,
         "timeout": 60.0,
         "type": "time",
@@ -6197,7 +6222,7 @@
         "warmup_time": -1
     },
     "sparse_linalg_onenormest.BenchmarkOneNormEst.time_onenormest": {
-        "code": "class BenchmarkOneNormEst:\n    def time_onenormest(self, n, solver):\n        if solver == 'exact':\n            # Get the exact values of one-norms of squares.\n            for M in self.matrices:\n                M.dot(M)\n                scipy.sparse.linalg.matfuncs._onenorm(M)\n        elif solver == 'onenormest':\n            # Get the estimates of one-norms of squares.\n            for M in self.matrices:\n                scipy.sparse.linalg.matfuncs._onenormest_matrix_power(M, 2)\n\n    def setup(self, n, solver):\n        rng = np.random.default_rng(1234)\n        nrepeats = 100\n        shape = (int(n), int(n))\n    \n        if solver == 'exact' and n >= 300:\n            # skip: slow, and not useful to benchmark\n            raise NotImplementedError()\n    \n        if n <= 1000:\n            # Sample the matrices.\n            self.matrices = []\n            for i in range(nrepeats):\n                M = rng.standard_normal(shape)\n                self.matrices.append(M)\n        else:\n            max_nnz = 100000\n            nrepeats = 1\n    \n            self.matrices = []\n            for i in range(nrepeats):\n                M = scipy.sparse.rand(shape[0], shape[1], min(max_nnz/(shape[0]*shape[1]), 1e-5), random_state=rng)\n                self.matrices.append(M)",
+        "code": "class BenchmarkOneNormEst:\n    def time_onenormest(self, n, solver):\n        if solver == 'exact':\n            # Get the exact values of one-norms of squares.\n            for M in self.matrices:\n                M.dot(M)\n                scipy.sparse.linalg._matfuncs._onenorm(M)\n        elif solver == 'onenormest':\n            # Get the estimates of one-norms of squares.\n            for M in self.matrices:\n                scipy.sparse.linalg._matfuncs._onenormest_matrix_power(M, 2)\n\n    def setup(self, n, solver):\n        rng = np.random.default_rng(1234)\n        nrepeats = 100\n        shape = (int(n), int(n))\n    \n        if solver == 'exact' and n >= 300:\n            # skip: slow, and not useful to benchmark\n            raise NotImplementedError()\n    \n        if n <= 1000:\n            # Sample the matrices.\n            self.matrices = []\n            for i in range(nrepeats):\n                M = rng.standard_normal(shape)\n                self.matrices.append(M)\n        else:\n            max_nnz = 100000\n            nrepeats = 1\n    \n            self.matrices = []\n            for i in range(nrepeats):\n                M = scipy.sparse.rand(shape[0], shape[1], min(max_nnz/(shape[0]*shape[1]), 1e-5), random_state=rng)\n                self.matrices.append(M)",
         "min_run_count": 2,
         "name": "sparse_linalg_onenormest.BenchmarkOneNormEst.time_onenormest",
         "number": 0,
@@ -6302,6 +6327,46 @@
         "type": "time",
         "unit": "seconds",
         "version": "d31c182067e0c1e06fa24a25ae9e5ed76b709f347960521b3f434c30e41e1530",
+        "warmup_time": -1
+    },
+    "sparse_linalg_svds.BenchSVDS.time_svds": {
+        "code": "class BenchSVDS:\n    def time_svds(self, k, problem, solver):\n        # consider k = int(np.min(self.A.shape) * k)\n        np.random.seed(0)\n        svds(self.A, k=k, solver=solver)\n\n    def setup(self, k, problem, solver):\n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"svds_benchmark_files\",\n                                \"svds_benchmark_files.npz\")\n        matrices = np.load(datafile, allow_pickle=True)\n        self.A = matrices[problem][()]",
+        "min_run_count": 2,
+        "name": "sparse_linalg_svds.BenchSVDS.time_svds",
+        "number": 0,
+        "param_names": [
+            "k",
+            "problem",
+            "solver"
+        ],
+        "params": [
+            [
+                "25"
+            ],
+            [
+                "'abb313'",
+                "'illc1033'",
+                "'illc1850'",
+                "'qh1484'",
+                "'rbs480a'",
+                "'tols4000'",
+                "'well1033'",
+                "'well1850'",
+                "'west0479'",
+                "'west2021'"
+            ],
+            [
+                "'arpack'",
+                "'lobpcg'",
+                "'propack'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "30f98c71f4282694a9bb723cd2896a8d584018aa5c1cd79b1dada37899109f4d",
         "warmup_time": -1
     },
     "spatial.Build.time_build": {
@@ -8364,134 +8429,6 @@
         "version": "e40c6966209a7519ed42c879b1c63cd2316c4b165c0d274919c8c83485eefdfd",
         "warmup_time": -1
     },
-    "stats.NumericalInverseHermite.time_fni": {
-        "code": "class NumericalInverseHermite:\n    def time_fni(self, distcase):\n        distname, shapes = distcase\n        slow_dists = {'ksone', 'kstwo', 'levy_stable', 'skewnorm'}\n        fail_dists = {'beta', 'gausshyper', 'geninvgauss', 'ncf', 'nct',\n                      'norminvgauss', 'genhyperbolic', 'studentized_range'}\n    \n        if distname in slow_dists or distname in fail_dists:\n            raise NotImplementedError(\"skipped\")\n    \n        dist = getattr(stats, distname)(*shapes)\n    \n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning, \"overflow encountered\")\n            sup.filter(RuntimeWarning, \"divide by zero\")\n            sup.filter(RuntimeWarning, \"invalid value encountered\")\n            stats.NumericalInverseHermite(dist)\n\n    def setup(self, *args):\n        self.rand = [np.random.normal(loc=i, size=1000) for i in range(3)]",
-        "min_run_count": 2,
-        "name": "stats.NumericalInverseHermite.time_fni",
-        "number": 0,
-        "param_names": [
-            "distribution"
-        ],
-        "params": [
-            [
-                "['alpha', (3.570477051665046,)]",
-                "['anglit', ()]",
-                "['arcsine', ()]",
-                "['argus', (1.0,)]",
-                "['beta', (2.3098496451481823, 0.6268795430096368)]",
-                "['betaprime', (5, 6)]",
-                "['bradford', (0.29891359763170633,)]",
-                "['burr', (10.5, 4.3)]",
-                "['burr12', (10, 4)]",
-                "['cauchy', ()]",
-                "['chi', (78,)]",
-                "['chi2', (55,)]",
-                "['cosine', ()]",
-                "['crystalball', (2.0, 3.0)]",
-                "['dgamma', (1.1023326088288166,)]",
-                "['dweibull', (2.0685080649914673,)]",
-                "['erlang', (10,)]",
-                "['expon', ()]",
-                "['exponnorm', (1.5,)]",
-                "['exponpow', (2.697119160358469,)]",
-                "['exponweib', (2.8923945291034436, 1.9505288745913174)]",
-                "['f', (29, 18)]",
-                "['fatiguelife', (29,)]",
-                "['fisk', (3.085754862225318,)]",
-                "['foldcauchy', (4.716467345583189,)]",
-                "['foldnorm', (1.952125337355587,)]",
-                "['gamma', (1.9932305483800778,)]",
-                "['gausshyper', (13.7637716041307, 3.118963664868143, 2.514598035018302, 5.1811649903971615)]",
-                "['genexpon', (9.13259764654189, 16.23195660059063, 3.2819552690843983)]",
-                "['genextreme', (-0.1,)]",
-                "['gengamma', (4.4162385429431925, 3.119309167924276)]",
-                "['gengamma', (4.4162385429431925, -3.119309167924276)]",
-                "['genhalflogistic', (0.7727472780992932,)]",
-                "['genhyperbolic', (0.5, 1.5, -0.5)]",
-                "['geninvgauss', (2.3, 1.5)]",
-                "['genlogistic', (0.41192440799679475,)]",
-                "['gennorm', (1.2988442399460265,)]",
-                "['halfgennorm', (0.6748054997000371,)]",
-                "['genpareto', (0.1,)]",
-                "['gilbrat', ()]",
-                "['gompertz', (0.9474371307510525,)]",
-                "['gumbel_l', ()]",
-                "['gumbel_r', ()]",
-                "['halfcauchy', ()]",
-                "['halflogistic', ()]",
-                "['halfnorm', ()]",
-                "['hypsecant', ()]",
-                "['invgamma', (4.066899613699307,)]",
-                "['invgauss', (0.14546264555347513,)]",
-                "['invweibull', (10.58,)]",
-                "['johnsonsb', (4.317267509914106, 3.1837781130785063)]",
-                "['johnsonsu', (2.554395574161155, 2.2482281679651965)]",
-                "['kappa4', (0.0, 0.0)]",
-                "['kappa4', (-0.1, 0.1)]",
-                "['kappa4', (0.0, 0.1)]",
-                "['kappa4', (0.1, 0.0)]",
-                "['kappa3', (1.0,)]",
-                "['ksone', (1000,)]",
-                "['kstwo', (10,)]",
-                "['kstwobign', ()]",
-                "['laplace', ()]",
-                "['laplace_asymmetric', (2,)]",
-                "['levy', ()]",
-                "['levy_l', ()]",
-                "['levy_stable', (1.8, -0.5)]",
-                "['loggamma', (0.4141193182605212,)]",
-                "['logistic', ()]",
-                "['loglaplace', (3.2505926592051435,)]",
-                "['lognorm', (0.9536822696057533,)]",
-                "['loguniform', (0.01, 1.25)]",
-                "['lomax', (1.8771398388773268,)]",
-                "['maxwell', ()]",
-                "['mielke', (10.4, 4.6)]",
-                "['moyal', ()]",
-                "['nakagami', (4.967379486666624,)]",
-                "['ncf', (27, 27, 0.41578441799226107)]",
-                "['nct', (14, 0.24045031331198066)]",
-                "['ncx2', (21, 1.0560465975116415)]",
-                "['norm', ()]",
-                "['norminvgauss', (1.25, 0.5)]",
-                "['pareto', (2.621716532144454,)]",
-                "['pearson3', (0.1,)]",
-                "['powerlaw', (1.659113328990585,)]",
-                "['powerlognorm', (2.1413923530064087, 0.44639540782048337)]",
-                "['powernorm', (4.445365225459078,)]",
-                "['rayleigh', ()]",
-                "['rdist', (1.6,)]",
-                "['recipinvgauss', (0.6300426780936912,)]",
-                "['reciprocal', (0.01, 1.25)]",
-                "['rice', (0.7749725210111873,)]",
-                "['semicircular', ()]",
-                "['skewcauchy', (0.5,)]",
-                "['skewnorm', (4.0,)]",
-                "['studentized_range', (3.0, 10.0)]",
-                "['t', (2.7433514990818093,)]",
-                "['trapezoid', (0.2, 0.8)]",
-                "['triang', (0.15785029824528218,)]",
-                "['truncexpon', (4.690772545681048,)]",
-                "['truncnorm', (-1.0978730080013919, 2.730675410903198)]",
-                "['truncnorm', (0.1, 2.0)]",
-                "['tukeylambda', (3.1321477856738267,)]",
-                "['uniform', ()]",
-                "['vonmises', (3.99390425810714,)]",
-                "['vonmises_line', (3.99390425810714,)]",
-                "['wald', ()]",
-                "['weibull_max', (2.8687961709100187,)]",
-                "['weibull_min', (1.7866166930421596,)]",
-                "['wrapcauchy', (0.031071279018614728,)]"
-            ]
-        ],
-        "rounds": 2,
-        "sample_time": 0.01,
-        "timeout": 60.0,
-        "type": "time",
-        "unit": "seconds",
-        "version": "5f4ac6b1839ff144dc740f6149f93a001a4aa6e71f4d8a09514e2bfab9317beb",
-        "warmup_time": -1
-    },
     "stats.RankSums.time_ranksums": {
         "code": "class RankSums:\n    def time_ranksums(self, alternative):\n        stats.ranksums(self.u1, self.u2, alternative=alternative)\n\n    def setup(self, alternative):\n        rng = np.random.default_rng(0xb6acd7192d6e5da0f68b5d8ab8ce7af2)\n        self.u1 = rng.uniform(-1, 1, 200)\n        self.u2 = rng.uniform(-0.5, 1.5, 300)",
         "min_run_count": 2,
@@ -8538,7 +8475,7 @@
         "warmup_time": -1
     },
     "stats_sampling.DiscreteAliasUrn.time_dau_rvs": {
-        "code": "class DiscreteAliasUrn:\n    def time_dau_rvs(self, distribution):\n        self.rng.rvs(100000)\n\n    def setup(self, distribution):\n        distname, params = distribution\n        dist = getattr(stats, distname)\n        domain = dist.support(*params)\n        self.urng = np.random.default_rng(0x2fc9eb71cd5120352fa31b7a048aa867)\n        x = np.arange(domain[0], domain[1] + 1)\n        self.pv = dist.pmf(x, *params)\n        self.rng = stats.DiscreteAliasUrn(self.pv, seed=self.urng)",
+        "code": "class DiscreteAliasUrn:\n    def time_dau_rvs(self, distribution):\n        self.rng.rvs(100000)\n\n    def setup(self, distribution):\n        distname, params = distribution\n        dist = getattr(stats, distname)\n        domain = dist.support(*params)\n        self.urng = np.random.default_rng(0x2fc9eb71cd5120352fa31b7a048aa867)\n        x = np.arange(domain[0], domain[1] + 1)\n        self.pv = dist.pmf(x, *params)\n        self.rng = sampling.DiscreteAliasUrn(self.pv, random_state=self.urng)",
         "min_run_count": 2,
         "name": "stats_sampling.DiscreteAliasUrn.time_dau_rvs",
         "number": 0,
@@ -8558,11 +8495,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "45304daf9f58c6bba517c21e45a335b7489f91494682715c6ac58c8ee903cdff",
+        "version": "6b88f34846069c9939ef15e29eb5201c5607871e4eeca7adecf002d011f52eae",
         "warmup_time": -1
     },
     "stats_sampling.DiscreteAliasUrn.time_dau_setup": {
-        "code": "class DiscreteAliasUrn:\n    def time_dau_setup(self, distribution):\n        stats.DiscreteAliasUrn(self.pv, seed=self.urng)\n\n    def setup(self, distribution):\n        distname, params = distribution\n        dist = getattr(stats, distname)\n        domain = dist.support(*params)\n        self.urng = np.random.default_rng(0x2fc9eb71cd5120352fa31b7a048aa867)\n        x = np.arange(domain[0], domain[1] + 1)\n        self.pv = dist.pmf(x, *params)\n        self.rng = stats.DiscreteAliasUrn(self.pv, seed=self.urng)",
+        "code": "class DiscreteAliasUrn:\n    def time_dau_setup(self, distribution):\n        sampling.DiscreteAliasUrn(self.pv, random_state=self.urng)\n\n    def setup(self, distribution):\n        distname, params = distribution\n        dist = getattr(stats, distname)\n        domain = dist.support(*params)\n        self.urng = np.random.default_rng(0x2fc9eb71cd5120352fa31b7a048aa867)\n        x = np.arange(domain[0], domain[1] + 1)\n        self.pv = dist.pmf(x, *params)\n        self.rng = sampling.DiscreteAliasUrn(self.pv, random_state=self.urng)",
         "min_run_count": 2,
         "name": "stats_sampling.DiscreteAliasUrn.time_dau_setup",
         "number": 0,
@@ -8582,11 +8519,235 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "cb740341e9aaab3480cf01727e789fc79823f2c3468b6fc4b93e344315499539",
+        "version": "bda0f2e0e6255266e59e6bc96a02be428321d96692599632d7624f13553d042a",
+        "warmup_time": -1
+    },
+    "stats_sampling.DiscreteGuideTable.time_dgt_rvs": {
+        "code": "class DiscreteGuideTable:\n    def time_dgt_rvs(self, distribution):\n        self.rng.rvs(100000)\n\n    def setup(self, distribution):\n        distname, params = distribution\n        dist = getattr(stats, distname)\n        domain = dist.support(*params)\n        self.urng = np.random.default_rng(0x2fc9eb71cd5120352fa31b7a048aa867)\n        x = np.arange(domain[0], domain[1] + 1)\n        self.pv = dist.pmf(x, *params)\n        self.rng = sampling.DiscreteGuideTable(self.pv, random_state=self.urng)",
+        "min_run_count": 2,
+        "name": "stats_sampling.DiscreteGuideTable.time_dgt_rvs",
+        "number": 0,
+        "param_names": [
+            "distribution"
+        ],
+        "params": [
+            [
+                "['nhypergeom', (20, 7, 1)]",
+                "['hypergeom', (30, 12, 6)]",
+                "['nchypergeom_wallenius', (140, 80, 60, 0.5)]",
+                "['binom', (5, 0.4)]"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "e03788c7b128ba2a175cabd5b86368ca897f689b938592bac71fc9624ca77f6e",
+        "warmup_time": -1
+    },
+    "stats_sampling.DiscreteGuideTable.time_dgt_setup": {
+        "code": "class DiscreteGuideTable:\n    def time_dgt_setup(self, distribution):\n        sampling.DiscreteGuideTable(self.pv, random_state=self.urng)\n\n    def setup(self, distribution):\n        distname, params = distribution\n        dist = getattr(stats, distname)\n        domain = dist.support(*params)\n        self.urng = np.random.default_rng(0x2fc9eb71cd5120352fa31b7a048aa867)\n        x = np.arange(domain[0], domain[1] + 1)\n        self.pv = dist.pmf(x, *params)\n        self.rng = sampling.DiscreteGuideTable(self.pv, random_state=self.urng)",
+        "min_run_count": 2,
+        "name": "stats_sampling.DiscreteGuideTable.time_dgt_setup",
+        "number": 0,
+        "param_names": [
+            "distribution"
+        ],
+        "params": [
+            [
+                "['nhypergeom', (20, 7, 1)]",
+                "['hypergeom', (30, 12, 6)]",
+                "['nchypergeom_wallenius', (140, 80, 60, 0.5)]",
+                "['binom', (5, 0.4)]"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "3be59357b3df606b44ad30c5541c3b96b674eea3dd862f35a3adc2efed76a174",
+        "warmup_time": -1
+    },
+    "stats_sampling.NumericalInverseHermite.time_hinv_rvs": {
+        "code": "class NumericalInverseHermite:\n    def time_hinv_rvs(self, dist, order):\n        self.rng.rvs(100000)\n\n    def setup(self, dist, order):\n        self.urng = np.random.default_rng(0xb235b58c1f616c59c18d8568f77d44d1)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = sampling.NumericalInverseHermite(\n                    dist, order=order, random_state=self.urng\n                )\n            except sampling.UNURANError:\n                raise NotImplementedError(f\"setup failed for {dist}\")",
+        "min_run_count": 2,
+        "name": "stats_sampling.NumericalInverseHermite.time_hinv_rvs",
+        "number": 0,
+        "param_names": [
+            "dist",
+            "order"
+        ],
+        "params": [
+            [
+                "beta(2, 3)",
+                "norm(0, 1)",
+                "sqrtlinshft(0.0)",
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
+            ],
+            [
+                "3",
+                "5"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "19863e9777cdcdcfd71246653f38a6e98d181fb7798b397db10e4bdb133dbef5",
+        "warmup_time": -1
+    },
+    "stats_sampling.NumericalInverseHermite.time_hinv_setup": {
+        "code": "class NumericalInverseHermite:\n    def time_hinv_setup(self, dist, order):\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            sampling.NumericalInverseHermite(\n                dist, order=order, random_state=self.urng\n            )\n\n    def setup(self, dist, order):\n        self.urng = np.random.default_rng(0xb235b58c1f616c59c18d8568f77d44d1)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = sampling.NumericalInverseHermite(\n                    dist, order=order, random_state=self.urng\n                )\n            except sampling.UNURANError:\n                raise NotImplementedError(f\"setup failed for {dist}\")",
+        "min_run_count": 2,
+        "name": "stats_sampling.NumericalInverseHermite.time_hinv_setup",
+        "number": 0,
+        "param_names": [
+            "dist",
+            "order"
+        ],
+        "params": [
+            [
+                "beta(2, 3)",
+                "norm(0, 1)",
+                "sqrtlinshft(0.0)",
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
+            ],
+            [
+                "3",
+                "5"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "b46b63615ca1af51e386dfc1a23464aaf2e2092bff3f8fbdf7c4e6470724089f",
+        "warmup_time": -1
+    },
+    "stats_sampling.NumericalInversePolynomial.time_pinv_rvs": {
+        "code": "class NumericalInversePolynomial:\n    def time_pinv_rvs(self, dist):\n        self.rng.rvs(100000)\n\n    def setup(self, dist):\n        self.urng = np.random.default_rng(0xb235b58c1f616c59c18d8568f77d44d1)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = sampling.NumericalInversePolynomial(\n                    dist, random_state=self.urng\n                )\n            except sampling.UNURANError:\n                raise NotImplementedError(f\"setup failed for {dist}\")",
+        "min_run_count": 2,
+        "name": "stats_sampling.NumericalInversePolynomial.time_pinv_rvs",
+        "number": 0,
+        "param_names": [
+            "dist"
+        ],
+        "params": [
+            [
+                "beta(2, 3)",
+                "norm(0, 1)",
+                "sqrtlinshft(0.0)",
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "9409c98ae118772734ceabc492303ed555b4c7342b4ec90d1634cc175af284af",
+        "warmup_time": -1
+    },
+    "stats_sampling.NumericalInversePolynomial.time_pinv_setup": {
+        "code": "class NumericalInversePolynomial:\n    def time_pinv_setup(self, dist):\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            sampling.NumericalInversePolynomial(\n                dist, random_state=self.urng\n            )\n\n    def setup(self, dist):\n        self.urng = np.random.default_rng(0xb235b58c1f616c59c18d8568f77d44d1)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = sampling.NumericalInversePolynomial(\n                    dist, random_state=self.urng\n                )\n            except sampling.UNURANError:\n                raise NotImplementedError(f\"setup failed for {dist}\")",
+        "min_run_count": 2,
+        "name": "stats_sampling.NumericalInversePolynomial.time_pinv_setup",
+        "number": 0,
+        "param_names": [
+            "dist"
+        ],
+        "params": [
+            [
+                "beta(2, 3)",
+                "norm(0, 1)",
+                "sqrtlinshft(0.0)",
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "2f626ddf9731113d2c15a8107e8261759ba51e82a4a9cab95feb4d000575d3ab",
+        "warmup_time": -1
+    },
+    "stats_sampling.SimpleRatioUniforms.time_srou_rvs": {
+        "code": "class SimpleRatioUniforms:\n    def time_srou_rvs(self, dist, cdf_at_mode):\n        self.rng.rvs(100000)\n\n    def setup(self, dist, cdf_at_mode):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        try:\n            if cdf_at_mode:\n                cdf_at_mode = dist.cdf(dist.mode)\n            else:\n                cdf_at_mode = None\n            self.rng = sampling.SimpleRatioUniforms(\n                dist, mode=dist.mode,\n                cdf_at_mode=cdf_at_mode,\n                random_state=self.urng\n            )\n        except sampling.UNURANError:\n            raise NotImplementedError(\"{dist} not T-concave\")",
+        "min_run_count": 2,
+        "name": "stats_sampling.SimpleRatioUniforms.time_srou_rvs",
+        "number": 0,
+        "param_names": [
+            "dist",
+            "cdf_at_mode"
+        ],
+        "params": [
+            [
+                "beta(2, 3)",
+                "norm(0, 1)",
+                "sqrtlinshft(0.0)",
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
+            ],
+            [
+                "0",
+                "1"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "67946ccf9ef9170d7e5f4c61e15d9c8ebdc8743e17ac08311db64e933a270a97",
+        "warmup_time": -1
+    },
+    "stats_sampling.SimpleRatioUniforms.time_srou_setup": {
+        "code": "class SimpleRatioUniforms:\n    def time_srou_setup(self, dist, cdf_at_mode):\n        if cdf_at_mode:\n            cdf_at_mode = dist.cdf(dist.mode)\n        else:\n            cdf_at_mode = None\n        sampling.SimpleRatioUniforms(\n            dist, mode=dist.mode,\n            cdf_at_mode=cdf_at_mode,\n            random_state=self.urng\n        )\n\n    def setup(self, dist, cdf_at_mode):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        try:\n            if cdf_at_mode:\n                cdf_at_mode = dist.cdf(dist.mode)\n            else:\n                cdf_at_mode = None\n            self.rng = sampling.SimpleRatioUniforms(\n                dist, mode=dist.mode,\n                cdf_at_mode=cdf_at_mode,\n                random_state=self.urng\n            )\n        except sampling.UNURANError:\n            raise NotImplementedError(\"{dist} not T-concave\")",
+        "min_run_count": 2,
+        "name": "stats_sampling.SimpleRatioUniforms.time_srou_setup",
+        "number": 0,
+        "param_names": [
+            "dist",
+            "cdf_at_mode"
+        ],
+        "params": [
+            [
+                "beta(2, 3)",
+                "norm(0, 1)",
+                "sqrtlinshft(0.0)",
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
+            ],
+            [
+                "0",
+                "1"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "ae899bc9b7de70482d2a86340d8636d6801bba84cd26e54e360ff71018e04f2f",
         "warmup_time": -1
     },
     "stats_sampling.TransformedDensityRejection.time_tdr_rvs": {
-        "code": "class TransformedDensityRejection:\n    def time_tdr_rvs(self, dist, c):\n        self.rng.rvs(100000)\n\n    def setup(self, dist, c):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = stats.TransformedDensityRejection(dist, c=c,\n                                                             seed=self.urng)\n            except RuntimeError:\n                # contdist3 is not T-concave for c=0. So, skip such test-cases\n                raise NotImplementedError(f\"{dist} not T-concave for c={c}\")",
+        "code": "class TransformedDensityRejection:\n    def time_tdr_rvs(self, dist, c):\n        self.rng.rvs(100000)\n\n    def setup(self, dist, c):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = sampling.TransformedDensityRejection(\n                    dist, c=c, random_state=self.urng\n                )\n            except sampling.UNURANError:\n                # contdist3 is not T-concave for c=0. So, skip such test-cases\n                raise NotImplementedError(f\"{dist} not T-concave for c={c}\")",
         "min_run_count": 2,
         "name": "stats_sampling.TransformedDensityRejection.time_tdr_rvs",
         "number": 0,
@@ -8599,7 +8760,9 @@
                 "beta(2, 3)",
                 "norm(0, 1)",
                 "sqrtlinshft(0.0)",
-                "sqrtlinshft(10000.0)"
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
             ],
             [
                 "0.0",
@@ -8611,11 +8774,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "63af7dfbe678a01e69fc2f16e35ae4e0a349cf2b1fa97f284539b8c9d3e05a39",
+        "version": "a332c89030a337f1703538e1b696b24df50fdb2df9d7f87463adf8cf2ccbc748",
         "warmup_time": -1
     },
     "stats_sampling.TransformedDensityRejection.time_tdr_setup": {
-        "code": "class TransformedDensityRejection:\n    def time_tdr_setup(self, dist, c):\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            stats.TransformedDensityRejection(dist, c=c,\n                                              seed=self.urng)\n\n    def setup(self, dist, c):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = stats.TransformedDensityRejection(dist, c=c,\n                                                             seed=self.urng)\n            except RuntimeError:\n                # contdist3 is not T-concave for c=0. So, skip such test-cases\n                raise NotImplementedError(f\"{dist} not T-concave for c={c}\")",
+        "code": "class TransformedDensityRejection:\n    def time_tdr_setup(self, dist, c):\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            sampling.TransformedDensityRejection(\n                dist, c=c, random_state=self.urng\n            )\n\n    def setup(self, dist, c):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        with np.testing.suppress_warnings() as sup:\n            sup.filter(RuntimeWarning)\n            try:\n                self.rng = sampling.TransformedDensityRejection(\n                    dist, c=c, random_state=self.urng\n                )\n            except sampling.UNURANError:\n                # contdist3 is not T-concave for c=0. So, skip such test-cases\n                raise NotImplementedError(f\"{dist} not T-concave for c={c}\")",
         "min_run_count": 2,
         "name": "stats_sampling.TransformedDensityRejection.time_tdr_setup",
         "number": 0,
@@ -8628,7 +8791,9 @@
                 "beta(2, 3)",
                 "norm(0, 1)",
                 "sqrtlinshft(0.0)",
-                "sqrtlinshft(10000.0)"
+                "sqrtlinshft(10000.0)",
+                "sin2",
+                "sin10"
             ],
             [
                 "0.0",
@@ -8640,7 +8805,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "af4be092e9b994fcd88f19dcf6add0c8efbe87ea5120800745dd685a2fa4d586",
+        "version": "42f37a6626008856bf5460fe9e6eaaac803a080624a60f7406cb0a58df06187f",
         "warmup_time": -1
     },
     "version": 2
