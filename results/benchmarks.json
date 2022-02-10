@@ -6259,7 +6259,7 @@
         "warmup_time": -1
     },
     "sparse_linalg_solve.Bench.time_solve": {
-        "code": "class Bench:\n    def time_solve(self, n, solver):\n        if solver == 'dense':\n            linalg.solve(self.P_dense, self.b)\n        elif solver == 'cg':\n            cg(self.P_sparse, self.b)\n        elif solver == 'minres':\n            minres(self.P_sparse, self.b)\n        elif solver == 'gmres':\n            gmres(self.P_sparse, self.b)\n        elif solver == 'lgmres':\n            lgmres(self.P_sparse, self.b)\n        elif solver == 'gcrotmk':\n            gcrotmk(self.P_sparse, self.b)\n        elif solver == 'spsolve':\n            spsolve(self.P_sparse, self.b)\n        else:\n            raise ValueError('Unknown solver: %r' % solver)\n\n    def setup(self, n, solver):\n        if solver == 'dense' and n >= 25:\n            raise NotImplementedError()\n    \n        self.b = np.ones(n*n)\n        self.P_sparse = _create_sparse_poisson2d(n)\n    \n        if solver == 'dense':\n            self.P_dense = self.P_sparse.A",
+        "code": "class Bench:\n    def time_solve(self, n, solver):\n        if solver == 'dense':\n            linalg.solve(self.P_dense, self.b)\n        else:\n            self.mapping[solver](self.P_sparse, self.b)\n\n    def setup(self, n, solver):\n        if solver == 'dense' and n >= 25:\n            raise NotImplementedError()\n    \n        self.b = np.ones(n*n)\n        self.P_sparse = _create_sparse_poisson2d(n)\n    \n        if solver == 'dense':\n            self.P_dense = self.P_sparse.A",
         "min_run_count": 2,
         "name": "sparse_linalg_solve.Bench.time_solve",
         "number": 0,
@@ -6285,7 +6285,8 @@
                 "'minres'",
                 "'gmres'",
                 "'lgmres'",
-                "'gcrotmk'"
+                "'gcrotmk'",
+                "'tfqmr'"
             ]
         ],
         "rounds": 2,
@@ -6293,7 +6294,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "31a8ef9e4f642dff8bf29be4a8d79e1d3c776514bd30682b111a56e70ed7f6da",
+        "version": "f2f689cccfc390b2f47b6d7aa6d9974d58b45e2ab77a73bbd2bce1a69d9ff378",
         "warmup_time": -1
     },
     "sparse_linalg_solve.Lgmres.time_inner": {
