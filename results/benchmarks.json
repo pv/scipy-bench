@@ -3684,7 +3684,7 @@
         "warmup_time": -1
     },
     "optimize_linprog.MagicSquare.time_magic_square": {
-        "code": "class MagicSquare:\n    def time_magic_square(self, meth, prob):\n        method, options = meth\n        with suppress_warnings() as sup:\n            sup.filter(OptimizeWarning, \"A_eq does not appear\")\n            res = linprog(c=self.c, A_eq=self.A_eq, b_eq=self.b_eq,\n                          bounds=(0, 1), method=method, options=options)\n            self.fun = res.fun\n\n    def setup(self, meth, prob):\n        if not is_xslow():\n            if prob[0] > 4:\n                raise NotImplementedError(\"skipped\")\n    \n        dims, obj = prob\n        self.A_eq, self.b_eq, self.c, numbers = magic_square(dims)\n        self.fun = None",
+        "code": "class MagicSquare:\n    def time_magic_square(self, meth, prob):\n        method, options = meth\n        with suppress_warnings() as sup:\n            sup.filter(OptimizeWarning, \"A_eq does not appear\")\n            res = linprog(c=self.c, A_eq=self.A_eq, b_eq=self.b_eq,\n                          bounds=(0, 1), method=method, options=options)\n            self.fun = res.fun\n\n    def setup(self, meth, prob):\n        if not is_xslow():\n            if prob[0] > 4:\n                raise NotImplementedError(\"skipped\")\n    \n        dims, obj = prob\n        self.A_eq, self.b_eq, self.c, numbers, _ = magic_square(dims)\n        self.fun = None",
         "min_run_count": 2,
         "name": "optimize_linprog.MagicSquare.time_magic_square",
         "number": 0,
@@ -3709,11 +3709,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "a2d63b603727562fee9f2834a915d3322d974a7771e2d575a937b135cac94e8a",
+        "version": "fcd1f8f0c666a2335be965e77fa535d9f66d5150ee6889e743f72e65b62b74c9",
         "warmup_time": -1
     },
     "optimize_linprog.MagicSquare.track_magic_square": {
-        "code": "class MagicSquare:\n    def track_magic_square(self, meth, prob):\n        dims, obj = prob\n        if self.fun is None:\n            self.time_magic_square(meth, prob)\n        self.abs_error = np.abs(self.fun - obj)\n        self.rel_error = np.abs((self.fun - obj)/obj)\n        return min(self.abs_error, self.rel_error)\n\n    def setup(self, meth, prob):\n        if not is_xslow():\n            if prob[0] > 4:\n                raise NotImplementedError(\"skipped\")\n    \n        dims, obj = prob\n        self.A_eq, self.b_eq, self.c, numbers = magic_square(dims)\n        self.fun = None",
+        "code": "class MagicSquare:\n    def track_magic_square(self, meth, prob):\n        dims, obj = prob\n        if self.fun is None:\n            self.time_magic_square(meth, prob)\n        self.abs_error = np.abs(self.fun - obj)\n        self.rel_error = np.abs((self.fun - obj)/obj)\n        return min(self.abs_error, self.rel_error)\n\n    def setup(self, meth, prob):\n        if not is_xslow():\n            if prob[0] > 4:\n                raise NotImplementedError(\"skipped\")\n    \n        dims, obj = prob\n        self.A_eq, self.b_eq, self.c, numbers, _ = magic_square(dims)\n        self.fun = None",
         "name": "optimize_linprog.MagicSquare.track_magic_square",
         "param_names": [
             "method",
@@ -3734,7 +3734,7 @@
         "timeout": 60.0,
         "type": "track",
         "unit": "unit",
-        "version": "e3b369f3a7e63a53038f20ea5c1c758640a6b4385b5e7b361771ed478805c7c2"
+        "version": "072ab9c2faf33c9ea3532454c71b53e4489172eb72056407dd71026bfe576a46"
     },
     "optimize_linprog.Netlib.time_netlib": {
         "code": "class Netlib:\n    def time_netlib(self, meth, prob):\n        method, options = meth\n        res = linprog(c=self.c,\n                      A_ub=self.A_ub,\n                      b_ub=self.b_ub,\n                      A_eq=self.A_eq,\n                      b_eq=self.b_eq,\n                      bounds=self.bounds,\n                      method=method,\n                      options=options)\n        self.fun = res.fun\n\n    def setup(self, meth, prob):\n        if prob not in enabled_problems:\n            raise NotImplementedError(\"skipped\")\n    \n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                prob + \".npz\")\n        data = np.load(datafile, allow_pickle=True)\n        self.c = data[\"c\"]\n        self.A_eq = data[\"A_eq\"]\n        self.A_ub = data[\"A_ub\"]\n        self.b_ub = data[\"b_ub\"]\n        self.b_eq = data[\"b_eq\"]\n        self.bounds = np.squeeze(data[\"bounds\"])\n        self.obj = float(data[\"obj\"].flatten()[0])\n        self.fun = None",
@@ -4065,6 +4065,51 @@
         "type": "track",
         "unit": "unit",
         "version": "e850b6f6e316fd1bf5294dabbb3b89686f0bd67a92e7c4b77f898c8170cba67d"
+    },
+    "optimize_milp.MilpMagicSquare.time_magic_square": {
+        "code": "class MilpMagicSquare:\n    def time_magic_square(self, n):\n        res = milp(c=self.c*0, constraints=self.constraints,\n                   bounds=(0, 1), integrality=True)\n        assert res.status == 0\n        x = np.round(res.x)\n        s = (self.numbers.flatten() * x).reshape(n**2, n, n)\n        square = np.sum(s, axis=0)\n        assert_allclose(square.sum(axis=0), self.M)\n        assert_allclose(square.sum(axis=1), self.M)\n        assert_allclose(np.diag(square).sum(), self.M)\n        assert_allclose(np.diag(square[:, ::-1]).sum(), self.M)\n\n    def setup(self, n):\n        A_eq, b_eq, self.c, self.numbers, self.M = magic_square(n)\n        self.constraints = (A_eq, b_eq, b_eq)",
+        "min_run_count": 2,
+        "name": "optimize_milp.MilpMagicSquare.time_magic_square",
+        "number": 0,
+        "param_names": [
+            "size"
+        ],
+        "params": [
+            [
+                "3",
+                "4",
+                "5",
+                "6"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "45001f35848be1c530f4d4dbb23da4aaf938b4ed16f02516a846d7ca76f8e59a",
+        "warmup_time": -1
+    },
+    "optimize_milp.MilpMiplibBenchmarks.time_milp": {
+        "code": "class MilpMiplibBenchmarks:\n    def time_milp(self, prob):\n        res = milp(c=self.c, constraints=self.constraints, bounds=self.bounds,\n                   integrality=self.integrality)\n        assert res.success\n\n    def setup(self, prob):\n        if not hasattr(self, 'data'):\n            dir_path = os.path.dirname(os.path.realpath(__file__))\n            datafile = os.path.join(dir_path, \"linprog_benchmark_files\",\n                                    \"milp_benchmarks.npz\")\n            self.data = np.load(datafile, allow_pickle=True)\n    \n        c, A_ub, b_ub, A_eq, b_eq, bounds, integrality = self.data[prob]\n    \n        lb = [li for li, ui in bounds]\n        ub = [ui for li, ui in bounds]\n    \n        cons = []\n        if A_ub is not None:\n            cons.append((A_ub, -np.inf, b_ub))\n        if A_eq is not None:\n            cons.append((A_eq, b_eq, b_eq))\n    \n        self.c = c\n        self.constraints = cons\n        self.bounds = (lb, ub)\n        self.integrality = integrality",
+        "min_run_count": 2,
+        "name": "optimize_milp.MilpMiplibBenchmarks.time_milp",
+        "number": 0,
+        "param_names": [
+            "problem"
+        ],
+        "params": [
+            [
+                "'piperout-27'"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "768f84f9719db25c0a8ad7c565843bda06ffff5ce5d51520a8039b0bd6e76654",
+        "warmup_time": -1
     },
     "optimize_qap.QuadraticAssignment.time_evaluation": {
         "code": "class QuadraticAssignment:\n    def time_evaluation(self, method, qap_prob):\n        quadratic_assignment(self.A, self.B, self.method)\n\n    def setup(self, method, qap_prob):\n        dir_path = os.path.dirname(os.path.realpath(__file__))\n        datafile = np.load(os.path.join(dir_path, \"qapdata/qap_probs.npz\"),\n                           allow_pickle=True)\n        slnfile = np.load(os.path.join(dir_path, \"qapdata/qap_sols.npz\"),\n                          allow_pickle=True)\n        self.A = datafile[qap_prob][0]\n        self.B = datafile[qap_prob][1]\n        self.opt_solution = slnfile[qap_prob]\n        self.method = method",
