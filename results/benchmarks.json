@@ -8151,7 +8151,6 @@
                 "'triang'",
                 "'truncexpon'",
                 "'truncnorm'",
-                "'truncweibull_min'",
                 "'tukeylambda'",
                 "'uniform'",
                 "'vonmises'",
