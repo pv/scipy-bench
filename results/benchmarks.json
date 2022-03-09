@@ -7653,6 +7653,36 @@
         "version": "89c2063cf24f2f43ae17d191bb2ba0a5841f0cb1a0a9f791e2e14e70aa884f08",
         "warmup_time": -1
     },
+    "stats.BenchQMCSobol.time_sobol": {
+        "code": "class BenchQMCSobol:\n    def time_sobol(self, d, base2):\n        # scrambling is happening at init only, not worth checking\n        seq = stats.qmc.Sobol(d, scramble=False, seed=self.rng)\n        seq.random_base2(base2)\n\n    def setup(self, d, base2):\n        self.rng = np.random.default_rng(168525179735951991038384544)\n        stats.qmc.Sobol(1)  # make it load direction numbers",
+        "min_run_count": 2,
+        "name": "stats.BenchQMCSobol.time_sobol",
+        "number": 0,
+        "param_names": [
+            "d",
+            "base2"
+        ],
+        "params": [
+            [
+                "1",
+                "50",
+                "100"
+            ],
+            [
+                "3",
+                "10",
+                "11",
+                "12"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "72629a0171dbe7bf4fafa14a439d1185d78c9015cb1b46cd0de5165f1c9f0859",
+        "warmup_time": -1
+    },
     "stats.BenchSkewKurtosis.time_kurtosis": {
         "code": "class BenchSkewKurtosis:\n    def time_kurtosis(self, order, size, bias):\n        stats.kurtosis(self.x, bias=bias)\n\n    def setup(self, order, size, bias):\n        np.random.random(1234)\n        self.x = np.random.random(size)",
         "min_run_count": 2,
