@@ -2852,28 +2852,6 @@
         "version": "72f43bf3cb772c6ef6be46598b81a7ba5d59f9fc12fb58e3a2f1148c8ec755fb",
         "warmup_time": -1
     },
-    "linalg.SpecialMatrices.time_tri": {
-        "code": "class SpecialMatrices:\n    def time_tri(self, size):\n        sl.tri(size)\n\n    def setup(self, size):\n        self.x = np.arange(1, size + 1).astype(float)\n        self.small_blocks = [np.ones([2, 2])] * (size//2)\n        self.big_blocks = [np.ones([size//2, size//2]),\n                           np.ones([size//2, size//2])]",
-        "min_run_count": 2,
-        "name": "linalg.SpecialMatrices.time_tri",
-        "number": 0,
-        "param_names": [
-            "size"
-        ],
-        "params": [
-            [
-                "4",
-                "128"
-            ]
-        ],
-        "rounds": 2,
-        "sample_time": 0.01,
-        "timeout": 60.0,
-        "type": "time",
-        "unit": "seconds",
-        "version": "d05516db154b58d2f451d73de93d7796248136f0ca2000c3ad0e85943dca37ff",
-        "warmup_time": -1
-    },
     "linalg_logm.Logm.time_logm": {
         "code": "class Logm:\n    def time_logm(self, dtype, n, structure):\n        scipy.linalg.logm(self.A, disp=False)\n\n    def setup(self, dtype, n, structure):\n        n = int(n)\n        dtype = np.dtype(dtype)\n    \n        A = np.random.rand(n, n)\n        if dtype == np.complex128:\n            A = A + 1j*np.random.rand(n, n)\n    \n        if structure == 'pos':\n            A = A @ A.T.conj()\n        elif structure == 'her':\n            A = A + A.T.conj()\n    \n        self.A = A",
         "min_run_count": 2,
@@ -6167,7 +6145,7 @@
         "warmup_time": -1
     },
     "sparse_linalg_expm.Expm.time_expm": {
-        "code": "class Expm:\n    def time_expm(self, n, format):\n        if format == 'sparse':\n            scipy.linalg.expm(self.A_sparse)\n        elif format == 'dense':\n            scipy.linalg.expm(self.A_dense)\n\n    def setup(self, n, format):\n        rng = np.random.default_rng(1234)\n    \n        # Let the number of nonzero entries per row\n        # scale like the log of the order of the matrix.\n        nnz_per_row = int(math.ceil(math.log(n)))\n    \n        # time the sampling of a random sparse matrix\n        self.A_sparse = random_sparse_csc(n, n, nnz_per_row, rng)\n    \n        # first format conversion\n        self.A_dense = self.A_sparse.toarray()",
+        "code": "class Expm:\n    def time_expm(self, n, format):\n        if format == 'sparse':\n            sp_expm(self.A_sparse)\n        elif format == 'dense':\n            scipy.linalg.expm(self.A_dense)\n\n    def setup(self, n, format):\n        rng = np.random.default_rng(1234)\n    \n        # Let the number of nonzero entries per row\n        # scale like the log of the order of the matrix.\n        nnz_per_row = int(math.ceil(math.log(n)))\n    \n        # time the sampling of a random sparse matrix\n        self.A_sparse = random_sparse_csc(n, n, nnz_per_row, rng)\n    \n        # first format conversion\n        self.A_dense = self.A_sparse.toarray()",
         "min_run_count": 2,
         "name": "sparse_linalg_expm.Expm.time_expm",
         "number": 0,
@@ -6191,7 +6169,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "226e2c94531d2d9d2429a8cdc54f17df90d7d010f603d91bfecad087001dc98d",
+        "version": "0872767333496288223a5b7d4c4ab78001a86756a95991d314c2cf6e45c6f384",
         "warmup_time": -1
     },
     "sparse_linalg_expm.ExpmMultiply.time_expm_multiply": {
@@ -7514,6 +7492,395 @@
         "type": "time",
         "unit": "seconds",
         "version": "1579c9226a7e0ebb2047466a04620c619f219cd514361ff859b0381365c498ab",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_array_negative_float": {
+        "code": "class Factorial:\n    def time_factorial_exact_false_array_negative_float(self):\n        factorial(self.negative_floats, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_array_negative_float",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "52f4bb82b807563db9baf1731697c85d5cb81caf4c0feac66f6c56e22a4593e8",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_array_negative_int": {
+        "code": "class Factorial:\n    def time_factorial_exact_false_array_negative_int(self):\n        factorial(self.negative_ints, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_array_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "027e7a0d776fcd4d608054aef9403d6128ab8d2b633d6eb73b7e78856d7a4c36",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_array_positive_float": {
+        "code": "class Factorial:\n    def time_factorial_exact_false_array_positive_float(self):\n        factorial(self.positive_floats, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_array_positive_float",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "d2490cf130f6a09f01e4b2a8968b890b85bc35e9cda4f9483b4b907297f6a2cd",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_array_positive_int": {
+        "code": "class Factorial:\n    def time_factorial_exact_false_array_positive_int(self):\n        factorial(self.positive_ints, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_array_positive_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "3491c872d831a258a69fca05689ed23787c46da5b94694a27a5cb3da82942f7b",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_scalar_negative_float": {
+        "code": "class Factorial:\n    def time_factorial_exact_false_scalar_negative_float(self):\n        factorial(-10000.8, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_scalar_negative_float",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "96d9c74b881904bd3e56b4268555ce76384be044bd2593bca8b76f7f955d7d3e",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_scalar_negative_int": {
+        "code": "class Factorial:\n    def time_factorial_exact_false_scalar_negative_int(self):\n        factorial(-10000, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_scalar_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "edc3d5a8947384d3d2d1168f417a84141e20628780a195cbbfa3dc252fa8c203",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_scalar_positive_float": {
+        "code": "class Factorial:\n    @with_attributes(params=[(100.8, 1000.3, 10000.5)],\n                     param_names=['n'])\n    def time_factorial_exact_false_scalar_positive_float(self, n):\n        factorial(n, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_scalar_positive_float",
+        "number": 0,
+        "param_names": [
+            "n"
+        ],
+        "params": [
+            [
+                "100.8",
+                "1000.3",
+                "10000.5"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "2556b14897979afdb5ff30d8772766733b2b3a4099b2ebce0f3f3fcb36f01b2c",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_false_scalar_positive_int": {
+        "code": "class Factorial:\n    @with_attributes(params=[(100, 1000, 10000)],\n                     param_names=['n'])\n    def time_factorial_exact_false_scalar_positive_int(self, n):\n        factorial(n, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_false_scalar_positive_int",
+        "number": 0,
+        "param_names": [
+            "n"
+        ],
+        "params": [
+            [
+                "100",
+                "1000",
+                "10000"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "1c67c71f22fb6ba9b15651170d51dc6f4acf1faf4170c00a2aaec4f3ce16c41c",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_true_array_negative_float": {
+        "code": "class Factorial:\n    def time_factorial_exact_true_array_negative_float(self):\n        factorial(self.negative_floats, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_true_array_negative_float",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "83b76206cb3d1a79bac38d0fa6f4a3bc91d34be23947125ef2ad90da5e0aceac",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_true_array_negative_int": {
+        "code": "class Factorial:\n    def time_factorial_exact_true_array_negative_int(self):\n        factorial(self.negative_ints, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_true_array_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "62e6998b2d87f26260ef15baeb2c63676539bd7b2df8b7f7e3a281ef330ff650",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_true_array_positive_int": {
+        "code": "class Factorial:\n    def time_factorial_exact_true_array_positive_int(self):\n        factorial(self.positive_ints, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_true_array_positive_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "2d2cb98b7434deac576c791e380b86c3934f9750dd5315c4cecfd2a7c5be4027",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_true_scalar_negative_float": {
+        "code": "class Factorial:\n    def time_factorial_exact_true_scalar_negative_float(self):\n        factorial(-10000.8, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_true_scalar_negative_float",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "6cc0c61b90f8715124ad96dfe819bb9d1571ae666fec8f3975aff95869f211cd",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_true_scalar_negative_int": {
+        "code": "class Factorial:\n    def time_factorial_exact_true_scalar_negative_int(self):\n        factorial(-10000, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_true_scalar_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "0ba7ce5f97627d762ba86570c0947805cb66616be5b22e9ca59e8c399ccc8333",
+        "warmup_time": -1
+    },
+    "special.Factorial.time_factorial_exact_true_scalar_positive_int": {
+        "code": "class Factorial:\n    @with_attributes(params=[(100, 200, 400)],\n                     param_names=['n'])\n    def time_factorial_exact_true_scalar_positive_int(self, n):\n        factorial(n, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(10, 111, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints\n        self.positive_floats = np.linspace(100.2, 1000.8, num=10)\n        self.negative_floats = -1 * self.positive_floats",
+        "min_run_count": 2,
+        "name": "special.Factorial.time_factorial_exact_true_scalar_positive_int",
+        "number": 0,
+        "param_names": [
+            "n"
+        ],
+        "params": [
+            [
+                "100",
+                "200",
+                "400"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "3887e0a19b629929794ac2c1ee028d41a71d8ff986d18ac57590c109c0ed00eb",
+        "warmup_time": -1
+    },
+    "special.Factorial2.time_factorial2_exact_false_array_negative_int": {
+        "code": "class Factorial2:\n    def time_factorial2_exact_false_array_negative_int(self):\n        factorial2(self.negative_ints, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(100, 201, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints",
+        "min_run_count": 2,
+        "name": "special.Factorial2.time_factorial2_exact_false_array_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "1b77c8a78527e72085470594c22b6980b14f23995415d8b42dee2e8ba6c42728",
+        "warmup_time": -1
+    },
+    "special.Factorial2.time_factorial2_exact_false_array_positive_int": {
+        "code": "class Factorial2:\n    def time_factorial2_exact_false_array_positive_int(self):\n        factorial2(self.positive_ints, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(100, 201, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints",
+        "min_run_count": 2,
+        "name": "special.Factorial2.time_factorial2_exact_false_array_positive_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "269ab42491b1df6b2340ae99e451064ed72d938513912a31b581b7b99f8752d3",
+        "warmup_time": -1
+    },
+    "special.Factorial2.time_factorial2_exact_false_scalar_negative_int": {
+        "code": "class Factorial2:\n    def time_factorial2_exact_false_scalar_negative_int(self):\n        factorial2(-10000, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(100, 201, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints",
+        "min_run_count": 2,
+        "name": "special.Factorial2.time_factorial2_exact_false_scalar_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "8e3ebe5412028d7c9b80084a8f8909f4967b61d64e309360da682e617fcb1d24",
+        "warmup_time": -1
+    },
+    "special.Factorial2.time_factorial2_exact_false_scalar_positive_int": {
+        "code": "class Factorial2:\n    @with_attributes(params=[(100, 200, 400)],\n                     param_names=['n'])\n    def time_factorial2_exact_false_scalar_positive_int(self, n):\n        factorial2(n, exact=False)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(100, 201, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints",
+        "min_run_count": 2,
+        "name": "special.Factorial2.time_factorial2_exact_false_scalar_positive_int",
+        "number": 0,
+        "param_names": [
+            "n"
+        ],
+        "params": [
+            [
+                "100",
+                "200",
+                "400"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "9103ec47b020aec0e0e6b42a0284980d952d74f59d42f02bef00070b3f1bec62",
+        "warmup_time": -1
+    },
+    "special.Factorial2.time_factorial2_exact_true_scalar_negative_int": {
+        "code": "class Factorial2:\n    def time_factorial2_exact_true_scalar_negative_int(self):\n        factorial2(-10000, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(100, 201, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints",
+        "min_run_count": 2,
+        "name": "special.Factorial2.time_factorial2_exact_true_scalar_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "40adb7033cda41a81a61fbc58839e5f84dd57d0400257fbae82efdf69072ecd9",
+        "warmup_time": -1
+    },
+    "special.Factorial2.time_factorial2_exact_true_scalar_positive_int": {
+        "code": "class Factorial2:\n    @with_attributes(params=[(100, 200, 400)],\n                     param_names=['n'])\n    def time_factorial2_exact_true_scalar_positive_int(self, n):\n        factorial2(n, exact=True)\n\n    def setup(self, *args):\n        self.positive_ints = np.arange(100, 201, step=20, dtype=int)\n        self.negative_ints = -1 * self.positive_ints",
+        "min_run_count": 2,
+        "name": "special.Factorial2.time_factorial2_exact_true_scalar_positive_int",
+        "number": 0,
+        "param_names": [
+            "n"
+        ],
+        "params": [
+            [
+                "100",
+                "200",
+                "400"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "3c00cb739b243c1ec018df42506617f8efc9a33b87efa4e5b35ebd889106a1b8",
+        "warmup_time": -1
+    },
+    "special.FactorialK.time_factorialk_exact_false_scalar_negative_int": {
+        "code": "class FactorialK:\n    def time_factorialk_exact_false_scalar_negative_int(self):\n        factorialk(-10000, 3, exact=True)",
+        "min_run_count": 2,
+        "name": "special.FactorialK.time_factorialk_exact_false_scalar_negative_int",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "7104a9bf068a517a1dcc6073c833f3161184b9b1170932e0455cd11ff5a8382c",
+        "warmup_time": -1
+    },
+    "special.FactorialK.time_factorialk_exact_true_scalar_positive_int": {
+        "code": "class FactorialK:\n    @with_attributes(params=[(100, 500), range(1, 10)],\n                     param_names=['n', 'k'])\n    def time_factorialk_exact_true_scalar_positive_int(self, n, k):\n        factorialk(n, k, exact=True)",
+        "min_run_count": 2,
+        "name": "special.FactorialK.time_factorialk_exact_true_scalar_positive_int",
+        "number": 0,
+        "param_names": [
+            "n",
+            "k"
+        ],
+        "params": [
+            [
+                "100",
+                "500"
+            ],
+            [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9"
+            ]
+        ],
+        "rounds": 2,
+        "sample_time": 0.01,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "c20d9cfb24931092405db32dc72e47695359d489cdfdce4bf2bc5c63840fd05b",
         "warmup_time": -1
     },
     "special.Loggamma.time_loggamma_asymptotic": {
