@@ -8481,6 +8481,7 @@
                 "'genpareto'",
                 "'geom'",
                 "'gibrat'",
+                "'gilbrat'",
                 "'gompertz'",
                 "'gumbel_l'",
                 "'gumbel_r'",
@@ -9129,7 +9130,7 @@
         "warmup_time": -1
     },
     "stats_sampling.SimpleRatioUniforms.time_srou_rvs": {
-        "code": "class SimpleRatioUniforms:\n    def time_srou_rvs(self, dist, cdf_at_mode):\n        self.rng.rvs(100000)\n\n    def setup(self, dist, cdf_at_mode):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        try:\n            if cdf_at_mode:\n                cdf_at_mode = dist.cdf(dist.mode)\n            else:\n                cdf_at_mode = None\n            self.rng = sampling.SimpleRatioUniforms(\n                dist, mode=dist.mode,\n                cdf_at_mode=cdf_at_mode,\n                random_state=self.urng\n            )\n        except sampling.UNURANError:\n            raise NotImplementedError(\"{dist} not T-concave\")",
+        "code": "class SimpleRatioUniforms:\n    def time_srou_rvs(self, dist, cdf_at_mode):\n        self.rng.rvs(100000)\n\n    def setup(self, dist, cdf_at_mode):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        try:\n            if cdf_at_mode:\n                cdf_at_mode = dist.cdf(dist.mode)\n            else:\n                cdf_at_mode = None\n            self.rng = sampling.SimpleRatioUniforms(\n                dist, mode=dist.mode,\n                cdf_at_mode=cdf_at_mode,\n                random_state=self.urng\n            )\n        except sampling.UNURANError:\n            raise NotImplementedError(f\"{dist} not T-concave\")",
         "min_run_count": 2,
         "name": "stats_sampling.SimpleRatioUniforms.time_srou_rvs",
         "number": 0,
@@ -9156,11 +9157,11 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "67946ccf9ef9170d7e5f4c61e15d9c8ebdc8743e17ac08311db64e933a270a97",
+        "version": "d0c99572fe2cccc755afca2eb664efead270cc60d099ce47e4a00154c4ee0182",
         "warmup_time": -1
     },
     "stats_sampling.SimpleRatioUniforms.time_srou_setup": {
-        "code": "class SimpleRatioUniforms:\n    def time_srou_setup(self, dist, cdf_at_mode):\n        if cdf_at_mode:\n            cdf_at_mode = dist.cdf(dist.mode)\n        else:\n            cdf_at_mode = None\n        sampling.SimpleRatioUniforms(\n            dist, mode=dist.mode,\n            cdf_at_mode=cdf_at_mode,\n            random_state=self.urng\n        )\n\n    def setup(self, dist, cdf_at_mode):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        try:\n            if cdf_at_mode:\n                cdf_at_mode = dist.cdf(dist.mode)\n            else:\n                cdf_at_mode = None\n            self.rng = sampling.SimpleRatioUniforms(\n                dist, mode=dist.mode,\n                cdf_at_mode=cdf_at_mode,\n                random_state=self.urng\n            )\n        except sampling.UNURANError:\n            raise NotImplementedError(\"{dist} not T-concave\")",
+        "code": "class SimpleRatioUniforms:\n    def time_srou_setup(self, dist, cdf_at_mode):\n        if cdf_at_mode:\n            cdf_at_mode = dist.cdf(dist.mode)\n        else:\n            cdf_at_mode = None\n        sampling.SimpleRatioUniforms(\n            dist, mode=dist.mode,\n            cdf_at_mode=cdf_at_mode,\n            random_state=self.urng\n        )\n\n    def setup(self, dist, cdf_at_mode):\n        self.urng = np.random.default_rng(0xfaad7df1c89e050200dbe258636b3265)\n        try:\n            if cdf_at_mode:\n                cdf_at_mode = dist.cdf(dist.mode)\n            else:\n                cdf_at_mode = None\n            self.rng = sampling.SimpleRatioUniforms(\n                dist, mode=dist.mode,\n                cdf_at_mode=cdf_at_mode,\n                random_state=self.urng\n            )\n        except sampling.UNURANError:\n            raise NotImplementedError(f\"{dist} not T-concave\")",
         "min_run_count": 2,
         "name": "stats_sampling.SimpleRatioUniforms.time_srou_setup",
         "number": 0,
@@ -9187,7 +9188,7 @@
         "timeout": 60.0,
         "type": "time",
         "unit": "seconds",
-        "version": "ae899bc9b7de70482d2a86340d8636d6801bba84cd26e54e360ff71018e04f2f",
+        "version": "8054131086182a80820d80803108b2a2e7c75e6c05e40defad1226a5c3a89d01",
         "warmup_time": -1
     },
     "stats_sampling.TransformedDensityRejection.time_tdr_rvs": {
