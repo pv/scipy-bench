@@ -1,0 +1,8 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Atom(TM) CPU N2800   @ 1.86GHz",
+    "machine": "atom",
+    "os": "Linux 3.16.0-4-amd64",
+    "ram": "4041288",
+    "version": 1
+}

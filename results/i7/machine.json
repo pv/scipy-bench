@@ -1,0 +1,9 @@
+{
+    "arch": "x86_64",
+    "cpu": "Intel(R) Core(TM) i7 CPU 920 @ 2.67GHz",
+    "machine": "i7",
+    "num_cpu": "8",
+    "os": "Linux",
+    "ram": "16416652",
+    "version": 1
+}
